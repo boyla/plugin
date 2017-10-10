@@ -72,7 +72,6 @@ public class SplashActivity extends BaseActivity {
     private CompositeSubscription mCompositeSubscription;
     private TextView tvWelcome;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
