@@ -230,7 +230,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     break;
                 case "praise":
                     momentViewHolder.praiseListView.setUsers(item.likes);
-                    refreshLikeListAndCommentList(item, (MomentViewHolder) holder, dataPosition);
+                    refreshLikeListAndCommentList(item, (MomentViewHolder) holder, dataPosition, false);
                     break;
             }
         }
@@ -302,6 +302,10 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void refreshLikeListAndCommentList(Moment moment, MomentViewHolder holder, int dataPosition) {
+        refreshLikeListAndCommentList(moment, holder, dataPosition, true);
+    }
+
+    private void refreshLikeListAndCommentList(Moment moment, MomentViewHolder holder, int dataPosition, boolean refreshComment) {
         List<Comment> commentsDatas = moment.getComments();
         boolean hasComment = moment.hasComment();
         boolean hasLike = moment.hasLikes();
@@ -312,7 +316,9 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             holder.digCommentBody.setVisibility(View.GONE);
         }
         if (hasComment) {//处理评论列表
-            holder.commentList.setDatas(commentsDatas);
+            if(refreshComment){
+                holder.commentList.setDatas(commentsDatas);
+            }
             holder.commentList.setVisibility(View.VISIBLE);
             holder.commentList.setOnItemClickListener(new CommentListView.OnItemClickListener() {
                 @Override
