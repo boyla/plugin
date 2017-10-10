@@ -144,14 +144,14 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     }
 
     @Override
-    public void update2AddFavorite(int position) {
+    public void update2AddFavorite(int dataPosition) {
         User addItem = new User(App.currentUserProfile.getNickName(),App.currentUserProfile.getAvatar());
         addItem.id = App.currentUserProfile.getObjectId();
         if(addItem != null){
-            Moment item = (Moment) momentAdapter.getDatas().get(position);
+            Moment item = (Moment) momentAdapter.getDatas().get(dataPosition);
             item.likes.add(addItem);
 //            momentAdapter.notifyDataSetChanged();
-            momentAdapter.notifyItemChanged(position + 1,"praise");
+            momentAdapter.notifyItemChanged(dataPosition + 2,"praise");
         }
     }
 
