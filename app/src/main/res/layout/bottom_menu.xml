@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bottom_tab_bg"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/rlChats"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:clickable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="10dp">
+
+            <top.wifistar.customview.ThemeImageView
+                android:id="@+id/ivChats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="6dp"
+                custom:needTheme="true"
+                android:src="@drawable/bottom_tab_chats" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvChats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingBottom="1.5dp"
+            android:text="@string/chats"
+            android:textColor="@color/bottom_tab_text_color_normal"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlMoments"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:clickable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="10dp">
+
+            <top.wifistar.customview.ThemeImageView
+                android:id="@+id/ivMoments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="6dp"
+                custom:needTheme="true"
+                android:src="@drawable/bottom_tab_moments" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMoments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingBottom="1.5dp"
+            android:text="@string/moments"
+            android:textColor="@color/bottom_tab_text_color"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlConnections"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:clickable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="10dp">
+
+            <top.wifistar.customview.ThemeImageView
+                android:id="@+id/ivConnections"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="6dp"
+                android:src="@drawable/bottom_tab_connections"
+                custom:needTheme="true" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvConnections"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:paddingBottom="1.5dp"
+            android:text="@string/connections"
+            android:textColor="@color/bottom_tab_text_color"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlDiscover"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:clickable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="10dp">
+
+            <top.wifistar.customview.ThemeImageView
+                android:id="@+id/ivDiscover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:paddingBottom="6dp"
+                custom:needTheme="true"
+                android:src="@drawable/bottom_tab_discover" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvDiscover"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingBottom="1.5dp"
+            android:text="@string/discover"
+            android:textColor="@color/bottom_tab_text_color"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlMe"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingBottom="10dp">
+
+            <top.wifistar.customview.ThemeImageView
+                android:id="@+id/ivMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="7dp"
+                custom:needTheme="true"
+                android:src="@drawable/bottom_tab_me" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvMe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingBottom="3dp"
+            android:text="Me"
+            android:textColor="@color/bottom_tab_text_color"
+            android:textSize="11sp" />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="top.wifistar">
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
+    <!-- REQUIRED PERMISSIONS (for Urban Airship GCM) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!-- GCM requires a Google account. -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Keeps the processor from sleeping when a message is received. -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    //接收IM消息的自定义权限
+    <permission
+        android:name="top.wifistar.permission.RECEIVE_MSG"
+        android:protectionLevel="signature" />
+    //使用接收IM消息权限
+    <uses-permission android:name="top.wifistar.permission.RECEIVE_MSG" />
+    //接收来电的自定义权限
+    <permission
+        android:name="top.wifistar.permission.INCOMING_CALL"
+        android:protectionLevel="signature" />
+    //使用接收来电权限
+    <uses-permission android:name="top.wifistar.permission.INCOMING_CALL" />
+    //允许程序录制音频
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    //允许应用程序修改全局声音设置的权限
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    //允许使用PowerManager的WakeLocks在进程休眠时能够后台保持
+    <application
+        android:name=".app.App"
+        android:configChanges="locale"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:persistent="true"
+        android:largeHeap="true"
+        android:theme="@style/Theme.AppCompat.NoActionBar">
+        <activity android:name=".activity.HomeActivity"></activity>
+        <activity android:name=".activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="io.rong.imkit.MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="top.wifistar"
+                    android:pathPrefix="/conversation/"
+                    android:scheme="rong" />
+            </intent-filter>
+        </activity>
+
+        <service android:name=".service.WiFiNetworkService" />
+
+        <activity android:name=".activity.Main2Activity"></activity>
+
+        <activity android:name=".activity.ImagePagerActivity"></activity>
+
+    </application>
+
+</manifest>

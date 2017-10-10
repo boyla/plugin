@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_bg"
+    android:orientation="vertical">
+
+    <top.wifistar.customview.ProgressCombineView xmlns:progressCombine="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progressCombineView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/activity_bg"
+        progressCombine:customLayout="@layout/empty_message_list"
+        progressCombine:emptyBackgroundColor="@color/activity_bg"
+        progressCombine:errorBackgroundColor="@color/activity_bg"
+        progressCombine:errorButtonTextColor="@color/text_gray"
+        progressCombine:errorContentTextColor="@color/text_gray"
+        progressCombine:errorTitleTextColor="@color/text_gray"
+        progressCombine:loadingProgressBarHeight="58dp"
+        progressCombine:loadingProgressBarWidth="58dp"
+        progressCombine:loadingStateDotPlay="true"
+        progressCombine:loadingStateText="@string/loading...">
+
+        <com.jcodecraeer.xrecyclerview.XRecyclerView
+            android:id="@+id/xRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/activity_bg"
+            android:scrollbars="none" />
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            layout="@layout/layout_editview"/>
+
+    </top.wifistar.customview.ProgressCombineView>
+</RelativeLayout>

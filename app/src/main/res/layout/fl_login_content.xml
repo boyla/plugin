@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="top"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:textColor="#fff"
+        android:textSize="28sp"
+        android:text="@string/welcome"/>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="65dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivAccountIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/icon_user_name" />
+
+        <!--android:maxLength="20"-->
+        <EditText
+            android:id="@+id/etLoginAccount"
+            style="@style/LoginEditText"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:hint="@string/username"
+            android:textColor="#fff" />
+
+        <ImageView
+            android:id="@+id/ivClearAccount"
+            android:layout_width="15dip"
+            android:layout_height="15dip"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/clean_button_selector"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="65dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivPasswordIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/icon_psw" />
+
+        <EditText
+            android:id="@+id/etLoginPassword"
+            style="@style/LoginEditText"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:hint="@string/psw" />
+
+        <ImageView
+            android:id="@+id/ivClearPassword"
+            android:layout_width="15dip"
+            android:layout_height="15dip"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/clean_button_selector"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btLoginSignIn"
+        android:textSize="18sp"
+        android:layout_width="155dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="34dip"
+        android:background="@drawable/rs_select_btn_blue"
+        android:textAllCaps="false"
+        android:text="@string/sign_in"
+        android:textColor="@drawable/sign_in_btn_color" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="20dp"
+        android:gravity="bottom">
+
+        <TextView
+            android:id="@+id/tvForgetPsw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            android:text="@string/forget_psw"/>
+
+        <TextView
+            android:id="@+id/tvSignup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:textSize="16sp"
+            android:textColor="#ffffff"
+            android:text="@string/sign_up"/>
+
+    </RelativeLayout>
+</LinearLayout>

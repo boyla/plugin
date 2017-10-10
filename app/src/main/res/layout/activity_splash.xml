@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/flContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ivBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="-50dp"
+        android:layout_marginRight="-300dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/splash" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/top_black_to_transparent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bottom_transparent_to_black" />
+
+    <View
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/left_black_to_transparent" />
+
+    <View
+        android:layout_width="10dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:background="@drawable/right_transparent_to_black" />
+
+
+
+    <FrameLayout
+        android:id="@+id/flStart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <FrameLayout
+            android:id="@+id/flWords"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="-165dp"
+            android:text="@string/app_name"
+            android:textColor="#fff"
+            android:textSize="28sp" />
+
+        <TextView
+            android:id="@+id/tvWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="-115dp"
+            android:textColor="#fff"
+            android:textSize="15sp" />
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <top.wifistar.customview.TopReminder
+        android:id="@+id/topReminder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:reminderTheme="warningTheme" />
+</FrameLayout>

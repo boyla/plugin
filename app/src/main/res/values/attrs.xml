@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="topReminder">
+        <attr name="leftIcon" format="reference" />
+        <attr name="maxLines" format="integer" />
+        <attr name="showIcon" format="boolean" />
+        <attr name="swipeToDismiss" format="boolean" />
+        <attr name="paddingVertical" format="reference" />
+        <attr name="paddingHorizontal" format="reference" />
+        <attr name="reminderText" format="string" />
+        <attr name="reminderTheme">
+            <enum name="defaultTheme" value="0" />
+            <enum name="warningTheme" value="1" />
+            <enum name="errorTheme" value="2" />
+            <enum name="successTheme" value="3" />
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="CircleImageView">
+        <attr name="civ_border_width" format="dimension" />
+        <attr name="civ_border_color" format="color" />
+        <attr name="civ_border_overlay" format="boolean" />
+        <attr name="civ_fill_color" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="progressCombine">
+        <attr name="loadingProgressBarWidth" format="dimension" />
+        <attr name="loadingProgressBarHeight" format="dimension" />
+        <attr name="loadingBackgroundColor" format="color" />
+        <attr name="loadingStateText" format="string" />
+        <attr name="loadingStateTextColor" format="color" />
+        <attr name="loadingStateDotPlay" format="boolean" />
+
+        <attr name="customLayout" format="reference" />
+
+        <attr name="emptyImageWidth" format="dimension" />
+        <attr name="emptyImageHeight" format="dimension" />
+        <attr name="emptyTitleTextSize" format="dimension" />
+        <attr name="emptyContentTextSize" format="dimension" />
+        <attr name="emptyTitleTextColor" format="color" />
+        <attr name="emptyContentTextColor" format="color" />
+        <attr name="emptyBackgroundColor" format="color" />
+
+        <attr name="errorImageWidth" format="dimension" />
+        <attr name="errorImageHeight" format="dimension" />
+        <attr name="errorTitleTextSize" format="dimension" />
+        <attr name="errorContentTextSize" format="dimension" />
+        <attr name="errorTitleTextColor" format="color" />
+        <attr name="errorContentTextColor" format="color" />
+        <attr name="errorButtonTextColor" format="color" />
+        <attr name="errorBackgroundColor" format="color" />
+    </declare-styleable>
+</resources>

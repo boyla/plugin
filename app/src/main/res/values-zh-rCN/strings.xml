@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">邻波</string>
+    <string name="splash_word_1">把身边的人连起来</string>
+    <string name="splash_word_2">我的故乡在时间之外，数之不尽的时光</string>
+    <string name="splash_word_3">与其感慨路难行，不如马上出发.</string>
+
+    <string name="welcome">欢    迎</string>
+    <string name="username">用户名</string>
+    <string name="your_username">用户名</string>
+    <string name="email">电子邮箱</string>
+    <string name="your_email">注册邮箱</string>
+    <string name="psw">密码</string>
+    <string name="new_psw">新密码</string>
+    <string name="cancel">返    回</string>
+    <string name="done">确    认</string>
+    <string name="login_successfully">登陆成功</string>
+
+
+    <string name="email_is_empty">电子邮箱不能为空</string>
+    <string name="username_too_short">用户名至少6个字符</string>
+    <string name="psw_too_short">密码至少6个字符</string>
+    <string name="register_success">注册成功，尝试用新账号登陆吧~</string>
+    <string name="item_used"> 被使用了，试试别的吧</string>
+    <string name="invalid_email">无效的邮箱: </string>
+
+    <string name="sign_in">登    陆</string>
+    <string name="sign_up">注    册</string>
+    <string name="forget_psw">忘记密码</string>
+    <string name="reset_psw">重置密码</string>
+</resources>

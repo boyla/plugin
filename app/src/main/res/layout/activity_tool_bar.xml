@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tool_bar_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="50dp"
+        android:background="@color/primary"
+        android:fitsSystemWindows="true"
+        android:clipToPadding="true"
+        android:paddingLeft="0dp"
+        app:navigationIcon="@drawable/back"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <FrameLayout
+            android:id="@+id/tool_bar_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <com.shizhefei.view.indicator.FixedIndicatorView
+                android:id="@+id/tab_indicator"
+                android:layout_width="160dp"
+                android:layout_height="50dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/custom_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <top.wifistar.customview.CircleImageView
+                    android:id="@+id/mCustomLogo"
+                    android:layout_width="43dp"
+                    android:layout_height="43dp"
+                    android:src="@drawable/default_avartar"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="10dp"
+                    app:civ_border_width="2dp"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingBottom="0dp"
+                    android:paddingTop="0dp">
+
+                    <TextView
+                        android:id="@+id/mCustomTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/tool_bar_title_more_button_select"
+                        android:paddingRight="15dp"
+                        android:textColor="@color/theme_tool_bar_text_color"
+                        android:textSize="22sp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/mCustomSubTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="0dp"
+                        android:ellipsize="marquee"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:paddingRight="15dp"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:textColor="@android:color/white"
+                        android:textSize="10sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvTitleCenter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="My profile"
+                android:textSize="18sp"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/rgToolBarTab"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:minHeight="@dimen/toolbar_min_height"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/toolbarTabLeft"
+                style="@style/ToolBar.RadioButton"
+                android:background="@drawable/toolbar_tab_left_selector" />
+
+
+            <TextView
+                android:id="@+id/toolbarTabRight"
+                style="@style/ToolBar.RadioButton"
+                android:background="@drawable/toolbar_tab_right_selector" />
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <View
+        android:id="@+id/vToolBarDivider"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/transparent" />
+
+</LinearLayout>

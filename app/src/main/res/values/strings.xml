@@ -1,0 +1,56 @@
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:locale="en">
+    <string name="app_name">WiFiStar</string>
+    <string name="splash_word_1">We connect more</string>
+    <string name="splash_word_2">From a place beyond time,and time beyond counting</string>
+    <string name="splash_word_3">Better to run than curse the road</string>
+    <string name="welcome">Welcome</string>
+    <string name="username">Username</string>
+    <string name="your_username">Your username</string>
+    <string name="email">Email</string>
+    <string name="your_email">Your email</string>
+    <string name="psw">Password</string>
+    <string name="new_psw">Your new password</string>
+    <string name="cancel">Cancel</string>
+    <string name="done">Done</string>
+    <string name="login_successfully">Login successfully</string>
+
+
+    <string name="email_is_empty">Email is empty</string>
+    <string name="username_too_short">Username is too short, 6 characters at least</string>
+    <string name="psw_too_short">Password is too short, 6 characters at least</string>
+    <string name="register_success">Registration completed, sign in with the new account</string>
+    <string name="item_used"> is used, please change another</string>
+    <string name="invalid_email">Invalid email: </string>
+
+
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="forget_psw">Forget password?</string>
+    <string name="reset_psw">Reset password</string>
+
+    <!-- IM -->
+    <string name="default_username">gLn8FBJAkKSBoCGafMNeSQ==</string>
+    <string name="default_password">VlWAkOnVs2nENbcYn/O/zg==</string>
+
+    <string name="network_unavailable">Network unreachable!</string>
+    <string name="No_Message_Title">No messages</string>
+    <string name="No_Message_Body_1">The more messages you send, the more responses you will receive. So start contacting potential matches now.</string>
+    <string name="Browse_Matches">Browse nearby</string>
+    <string name="loading...">Loading...</string>
+    <string name="Message_Just_Now"><i>Just now</i></string>
+    <string name="Message_Few_Minutes"><i>%s minutes</i></string>
+    <string name="Yesterday">Yesterday</string>
+
+    <!-- BottomMenu -->
+    <string name="chats">Chats</string>
+    <string name="moments">Moments</string>
+    <string name="connections">Connections</string>
+    <string name="discover">Discover</string>
+
+    <!-- ProgressCombineView -->
+    <string name="network_failed_title">Oops! Something goes wrong</string>
+    <string name="Oops_Loading_failed">Oops! Loading failed, please try again!</string>
+    <string name="network_offline">The internet connection appears to be offline.</string>
+</resources>

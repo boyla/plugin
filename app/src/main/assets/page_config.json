@@ -1,0 +1,37 @@
+[
+  {
+    "type": "activity",
+    "nameAlias": "Login",
+    "clazz": "com.bana.dating.usercenter.activity.LoginActivity",
+    "template": "",
+    "params": ""
+  },
+  {
+    "type": "fragment",
+    "nameAlias": "Chats",
+    "clazz": "top.wifistar.fragment.ChatsFragment",
+    "template": "",
+    "params": ""
+  },
+  {
+    "type": "fragment",
+    "nameAlias": "Moments",
+    "clazz": "top.wifistar.fragment.MomentsFragment",
+    "template": "",
+    "params": ""
+  },
+  {
+    "type": "fragment",
+    "nameAlias": "Connections",
+    "clazz": "top.wifistar.fragment.ConnectionsFragment",
+    "template": "",
+    "params": ""
+  },
+  {
+    "type": "fragment",
+    "nameAlias": "Discover",
+    "clazz": "top.wifistar.fragment.DiscoverFragment",
+    "template": "",
+    "params": ""
+  }
+]

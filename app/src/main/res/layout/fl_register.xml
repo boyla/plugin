@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llRegister"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:textColor="#fff"
+        android:textSize="28sp"
+        android:text="@string/sign_up"/>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="65dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/iv"
+            android:layout_width="16dp"
+            android:layout_height="14dp"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/email_icon_normal" />
+
+        <EditText
+            android:id="@+id/etEmail"
+            style="@style/LoginEditText"
+            android:maxLength="50"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:inputType="textEmailAddress"
+            android:hint="@string/email" />
+
+        <ImageView
+            android:id="@+id/ivEmail"
+            android:layout_width="15dip"
+            android:layout_height="15dip"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/clean_button_selector"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="63dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivAccountIcon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/username_icon_normal" />
+
+        <!--android:maxLength="20"-->
+        <EditText
+            android:id="@+id/etUsername"
+            style="@style/LoginEditText"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:maxLength="30"
+            android:hint="@string/username"
+            android:textColor="#fff" />
+
+        <ImageView
+            android:id="@+id/ivClearAccount"
+            android:layout_width="15dip"
+            android:layout_height="15dip"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/clean_button_selector"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="64dp"
+        android:paddingRight="15dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/ivPasswordIcon"
+            android:layout_width="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="2dp"
+            android:layout_gravity="left|center_vertical"
+            android:src="@drawable/icon_password_normal" />
+
+        <EditText
+            android:id="@+id/etPassword"
+            style="@style/LoginEditText"
+            android:layout_weight="1"
+            android:width="0dp"
+            android:maxLength="30"
+            android:hint="@string/psw" />
+
+        <ImageView
+            android:id="@+id/ivClearPassword"
+            android:layout_width="15dip"
+            android:layout_height="15dip"
+            android:layout_gravity="right|center_vertical"
+            android:src="@drawable/clean_button_selector"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="65dp"
+        android:paddingRight="65dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cancel"
+            android:textSize="18sp"
+            android:layout_marginRight="10dp"
+            android:textAllCaps="false"
+            android:background="@drawable/rs_select_btn_blue"
+            android:textColor="@drawable/sign_in_btn_color"/>
+
+        <Button
+            android:id="@+id/btRegisterDone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/done"
+            android:textSize="18sp"
+            android:layout_marginLeft="10dp"
+            android:textAllCaps="false"
+            android:background="@drawable/rs_select_btn_blue"
+            android:textColor="@drawable/sign_in_btn_color"/>
+    </LinearLayout>
+
+</LinearLayout>
