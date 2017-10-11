@@ -462,12 +462,12 @@ public class SplashActivity extends BaseActivity {
                     query.getObject(bmobUser.getProfileId(), new QueryListener<UserProfile>() {
                         @Override
                         public void done(UserProfile userProfile, BmobException e) {
+                            App.currentUserProfile = userProfile;
                             ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), userProfile);
                             loadingDialog.dismiss();
                             count++;
                             updateUser();
                             goToMain();
-
                         }
                     });
 

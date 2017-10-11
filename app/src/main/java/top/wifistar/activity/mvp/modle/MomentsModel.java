@@ -37,7 +37,7 @@ public class MomentsModel {
 		requestServer(listener);
 	}
 
-	public void addFavort( String momentId,final IDataRequestListener listener) {
+	public void addFavort(final String momentId,final IDataRequestListener listener) {
 		Moment moment = new Moment();
 		moment.setObjectId(momentId);
 
@@ -63,8 +63,29 @@ public class MomentsModel {
 		});
 	}
 
-	public void deleteFavort(final IDataRequestListener listener) {
-		requestServer(listener);
+	public void deleteFavort(final String momentId,final IDataRequestListener listener) {
+		Moment moment = new Moment();
+		moment.setObjectId(momentId);
+
+		User user = new User(App.currentUserProfile.getNickName(),App.currentUserProfile.getAvatar());
+		user.id = App.currentUserProfile.getObjectId();
+		String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+		user.setObjectId(objId);
+
+		BmobRelation relation = new BmobRelation();
+		relation.remove(user);
+		moment.setFavors(relation);
+		moment.update(new UpdateListener() {
+			@Override
+			public void done(BmobException e) {
+				if(e==null){
+					Log.i("bmob","取消赞成功");
+					listener.onSuccess();
+				}else{
+					Log.i("bmob","取消赞失败："+e.getMessage());
+				}
+			}
+		});
 	}
 
 	public void addComment( final IDataRequestListener listener) {

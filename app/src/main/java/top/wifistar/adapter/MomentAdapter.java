@@ -229,7 +229,8 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     momentViewHolder.commentList.setDatas(item.getComments());
                     break;
                 case "praise":
-                    momentViewHolder.praiseListView.setUsers(item.likes);
+                    refreshLike(item, momentViewHolder);
+                    //momentViewHolder.praiseListView.setUsers(item.likes);
                     refreshLikeListAndCommentList(item, (MomentViewHolder) holder, dataPosition, false);
                     break;
             }
@@ -237,6 +238,11 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void queryLikes(Moment moment, MomentViewHolder holder, int dataPosition) {
+        if (moment.likes != null) {
+            refreshLike(moment, holder);
+            queryComments(moment, holder, dataPosition);
+            return;
+        }
         // 查询喜欢这个帖子的所有用户，因此查询的是用户表
         BmobQuery<User> query = new BmobQuery<User>();
         Moment post = new Moment();
@@ -247,7 +253,8 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             @Override
             public void done(List<User> object, BmobException e) {
                 if (e == null) {
-                    refreshLike(moment, holder, object);
+                    moment.likes = object;
+                    refreshLike(moment, holder);
                 } else {
                     Log.i("bmob", "失败：" + e.getMessage());
                 }
@@ -256,17 +263,17 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         });
     }
 
-    private void refreshLike(Moment moment, MomentViewHolder holder, List<User> object) {
-        moment.likes = object;
+    private void refreshLike(Moment moment, MomentViewHolder holder) {
         boolean hasLike = moment.hasLikes();
         if (hasLike) {//处理点赞列表
             holder.praiseListView.setOnItemClickListener(new PraiseListView.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
-                    //todo open profile
+                    //todo open profile with profile id(user.id)
 
                 }
             });
+            userFirst(moment.likes);
             holder.praiseListView.setUsers(moment.likes);
             holder.praiseListView.setVisibility(View.VISIBLE);
         } else {
@@ -281,7 +288,22 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         }
     }
 
+    private void userFirst(List<User> likes) {
+        String curId = App.currentUserProfile.getObjectId();
+        for (int i = 0; i < likes.size(); i++) {
+            if (curId.equals(likes.get(i).id)) {
+                likes.add(0, likes.get(i));
+                likes.remove(i + 1);
+                break;
+            }
+        }
+    }
+
     private void queryComments(Moment moment, MomentViewHolder holder, int dataPosition) {
+        if (moment.getComments() != null) {
+            refreshLikeListAndCommentList(moment, holder, dataPosition);
+            return;
+        }
         BmobQuery<Comment> query = new BmobQuery<Comment>();
 
         query.addWhereEqualTo("momentId", moment.getObjectId());
@@ -315,8 +337,9 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         } else {
             holder.digCommentBody.setVisibility(View.GONE);
         }
+
         if (hasComment) {//处理评论列表
-            if(refreshComment){
+            if (refreshComment) {
                 holder.commentList.setDatas(commentsDatas);
             }
             holder.commentList.setVisibility(View.VISIBLE);
@@ -354,36 +377,44 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
+        if (moment.getUser().getName() != null) {
+            setUserToHolder(moment, holder);
+            return;
+        }
         BmobQuery<User> query = new BmobQuery<User>();
         query.getObject(moment.getUser().getObjectId(), new QueryListener<User>() {
             @Override
             public void done(User object, BmobException e) {
                 if (e == null) {
                     moment.setUser(object);
-                    String name = moment.getUser().getName();
-                    String headImg = moment.getUser().getHeadUrl();
-                    Glide.with(context).load(headImg).diskCacheStrategy(DiskCacheStrategy.ALL).transform(new GlideCircleTransform(context)).into(holder.headIv);
-                    holder.nameTv.setText(name);
-                    //加载完User后
-                    if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {
-                        holder.deleteBtn.setVisibility(View.VISIBLE);
-                    } else {
-                        holder.deleteBtn.setVisibility(View.GONE);
-                    }
-                    holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //删除
-                            if (presenter != null) {
-                                presenter.deleteCircle(moment.getObjectId());
-                            }
-                        }
-                    });
+                    setUserToHolder(moment, holder);
                 } else {
                     Utils.showToast("失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
         });
+    }
+
+    private void setUserToHolder(Moment moment, MomentViewHolder holder) {
+        String name = moment.getUser().getName();
+        String headImg = moment.getUser().getHeadUrl();
+        Glide.with(context).load(headImg).diskCacheStrategy(DiskCacheStrategy.ALL).transform(new GlideCircleTransform(context)).into(holder.headIv);
+        holder.nameTv.setText(name);
+        //加载完User后
+        if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {
+            holder.deleteBtn.setVisibility(View.VISIBLE);
+            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //删除
+                    if (presenter != null) {
+                        presenter.deleteMoment(moment.getObjectId());
+                    }
+                }
+            });
+        } else {
+            holder.deleteBtn.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -405,13 +436,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     private class PopupItemClickListener implements SnsPopupWindow.OnItemClickListener {
         private String mFavorId;
         //动态在列表中的位置
-        private int mCirclePosition;
+        private int dataPosition;
         private long mLasttime = 0;
         private Moment mMoment;
 
-        public PopupItemClickListener(int circlePosition, Moment moment, String favorId) {
+        public PopupItemClickListener(int dataPosition, Moment moment, String favorId) {
             this.mFavorId = favorId;
-            this.mCirclePosition = circlePosition;
+            this.dataPosition = dataPosition;
             this.mMoment = moment;
         }
 
@@ -424,16 +455,16 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     mLasttime = System.currentTimeMillis();
                     if (presenter != null) {
                         if ("赞".equals(actionitem.mTitle.toString())) {
-                            presenter.addFavort(mMoment.getObjectId(), mCirclePosition);
+                            presenter.addFavort(mMoment.getObjectId(), dataPosition);
                         } else {//取消点赞
-                            presenter.deleteFavort(mCirclePosition, mFavorId);
+                            presenter.deleteFavort(mMoment.getObjectId(), dataPosition);
                         }
                     }
                     break;
                 case 1://发布评论
                     if (presenter != null) {
                         CommentConfig config = new CommentConfig();
-                        config.circlePosition = mCirclePosition;
+                        config.circlePosition = dataPosition;
                         config.commentType = CommentConfig.Type.PUBLIC;
                         presenter.showEditTextBody(config);
                     }

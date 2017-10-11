@@ -18,7 +18,7 @@ public interface MomentsContract {
     interface View extends BaseView {
         void update2DeleteCircle(String circleId);
         void update2AddFavorite(int circlePosition);
-        void update2DeleteFavort(int circlePosition, String favortId);
+        void update2DeleteFavort(int dataPosition);
         void update2AddComment(int circlePosition, Comment addItem);
         void update2DeleteComment(int circlePosition, String commentId);
         void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig);
@@ -27,9 +27,9 @@ public interface MomentsContract {
 
     interface Presenter extends BasePresenter {
         void loadData(int loadType);
-        void deleteCircle(final String circleId);
-        void addFavort(String momentId,final int circlePosition);
-        void deleteFavort(final int circlePosition, final String favortId);
+        void deleteMoment(final String circleId);
+        void addFavort(final String momentId,final int circlePosition);
+        void deleteFavort(final String momentId,final int dataPosition);
         void deleteComment(final int circlePosition, final String commentId);
 
     }

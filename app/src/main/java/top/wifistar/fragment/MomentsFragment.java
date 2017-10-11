@@ -149,21 +149,27 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         addItem.id = App.currentUserProfile.getObjectId();
         if(addItem != null){
             Moment item = (Moment) momentAdapter.getDatas().get(dataPosition);
-            item.likes.add(addItem);
-//            momentAdapter.notifyDataSetChanged();
-            momentAdapter.notifyItemChanged(dataPosition + 2,"praise");
+            item.likes.add(0,addItem);
+            if(item.likes.size()==1){
+                momentAdapter.notifyDataSetChanged();
+            }else{
+                momentAdapter.notifyItemChanged(dataPosition + 2,"praise");
+            }
         }
     }
 
     @Override
-    public void update2DeleteFavort(int position, String favortId) {
-        Moment item = (Moment) momentAdapter.getDatas().get(position);
-        List<BmobPointer> items = item.getFavors().getObjects();
-        for(int i=0; i<items.size(); i++){
-            if(favortId.equals(items.get(i).getObjectId())){
-                items.remove(i);
-                momentAdapter.notifyDataSetChanged();
-                //momentAdapter.notifyItemChanged(circlePosition+1);
+    public void update2DeleteFavort(int dataPosition) {
+        String myProfileId = App.currentUserProfile.getObjectId();
+        Moment item = (Moment) momentAdapter.getDatas().get(dataPosition);
+        for(int i=0; i<item.likes.size(); i++){
+            if(myProfileId.equals(item.likes.get(i).id)){
+                item.likes.remove(i);
+                if(item.likes.size()==0){
+                    momentAdapter.notifyDataSetChanged();
+                }else{
+                    momentAdapter.notifyItemChanged(dataPosition + 2,"praise");
+                }
                 return;
             }
         }
