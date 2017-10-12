@@ -71,14 +71,12 @@ public class HomeActivity extends ToolbarActivity {
 
     @Override
     protected void initUI() {
-
         super.setContentView(R.layout.activity_main);
         topReminder = (TopReminder) findViewById(R.id.topReminder);
         bottomMenuView = (BottomMenuView) findViewById(R.id.bottomMenuView);
         setToolbarTitle();
         EventUtils.registerEventBus(this);
         refreshPage();
-
     }
 
     @Override

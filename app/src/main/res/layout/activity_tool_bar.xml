@@ -15,14 +15,14 @@
         android:fitsSystemWindows="true"
         android:clipToPadding="true"
         android:paddingLeft="0dp"
-        app:navigationIcon="@drawable/back"
+        android:gravity="center_vertical"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <FrameLayout
             android:id="@+id/tool_bar_frame"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <com.shizhefei.view.indicator.FixedIndicatorView
                 android:id="@+id/tab_indicator"
