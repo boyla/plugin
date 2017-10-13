@@ -14,6 +14,8 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.jaeger.library.StatusBarUtil;
 import com.shizhefei.view.indicator.FixedIndicatorView;
 import top.wifistar.R;
 import top.wifistar.customview.CircleImageView;
@@ -112,11 +114,9 @@ public abstract class ToolbarActivity extends BaseActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }
         initTopBar();
+        int mStatusBarColor = getResources().getColor(R.color.primary);
+        StatusBarUtil.setColorNoTranslucent(this,mStatusBarColor);
         mContentView.getViewTreeObserver().addOnGlobalLayoutListener(keyboardLayoutListener);
     }
 
@@ -151,9 +151,9 @@ public abstract class ToolbarActivity extends BaseActivity {
 
     private View setToolbarContent(View contentView) {
         mContentView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.activity_tool_bar, null, false);
+        mTitleCenter = (TextView) mContentView.findViewById(R.id.tvTitleCenter);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(lp);
-
         mContentView.addView(contentView);
         loadToolBar(mContentView);
         return mContentView;
@@ -186,7 +186,6 @@ public abstract class ToolbarActivity extends BaseActivity {
         mCustomSubTitle = (TextView) mToolbar.findViewById(R.id.mCustomSubTitle);
         tabIndicator = (FixedIndicatorView) mToolbar.findViewById(R.id.tab_indicator);
         custom_view = mToolbar.findViewById(R.id.custom_view);
-        mTitleCenter = (TextView) mToolbar.findViewById(R.id.tvTitleCenter);
 
         rgToolBarTab = (LinearLayout) mToolbar.findViewById(R.id.rgToolBarTab);
 

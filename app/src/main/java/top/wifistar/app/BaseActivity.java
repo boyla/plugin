@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import top.wifistar.bean.User;
 import top.wifistar.corepage.CorePageManager;
@@ -67,6 +66,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         initCache();
 
         initUI();
+
         //register network monitor receiver
         IntentFilter filter=new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 

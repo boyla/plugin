@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import com.jaeger.library.StatusBarUtil;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import java.util.List;
 import cn.bmob.v3.datatype.BmobPointer;

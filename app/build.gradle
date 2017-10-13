@@ -95,4 +95,5 @@ dependencies {
         exclude group: 'io.reactivex'
         exclude group: 'com.squareup.okhttp3'
     }
+    compile 'com.jaeger.statusbarutil:library:1.4.0'
 }

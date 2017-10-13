@@ -1,57 +1,16 @@
 package top.wifistar.activity;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
-import android.text.TextUtils;
-import android.util.Log;
+
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.google.flatbuffers.FlatBufferBuilder;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
-
-//import io.rong.imkit.RongIM;
-//import io.rong.imkit.fragment.ConversationListFragment;
-//import io.rong.imlib.RongIMClient;
-//import io.rong.imlib.model.Conversation;
-//import io.rong.imlib.model.UserInfo;
-import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.customview.LoadingView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
-import top.wifistar.bean.User;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
-import top.wifistar.fragment.FragmentPageConfig;
-import top.wifistar.im.IMUser;
-import top.wifistar.service.WiFiNetworkService;
-import top.wifistar.utils.ACache;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
