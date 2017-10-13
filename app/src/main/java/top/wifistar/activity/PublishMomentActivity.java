@@ -105,7 +105,7 @@ public class PublishMomentActivity extends ToolbarActivity {
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     protected void setToolbarTitle() {
         mToolbar.setNavigationIcon(R.drawable.back);
-        setCenterTitle("发说说");
+        setCenterTitle("新动态");
         tool_bar_frame.setVisibility(View.VISIBLE);
         mCustomLogo.setVisibility(View.GONE);
         invalidateOptionsMenu();
