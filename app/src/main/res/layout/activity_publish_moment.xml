@@ -33,6 +33,8 @@
         android:id="@+id/et_context"
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:padding="15dp"
+        android:background="@null"
         android:hint="这一刻的想法..."/>
     <GridView
         android:id="@+id/gridView"

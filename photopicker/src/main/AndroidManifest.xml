@@ -3,5 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lidong.photopicker">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-sdk tools:overrideLibrary="com.jaeger.library" />
 </manifest>

@@ -1,8 +1,12 @@
 package top.wifistar.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,6 +47,7 @@ public class PublishMomentActivity extends ToolbarActivity {
     private String depp;
     private EditText textView;
     private String TAG =PublishMomentActivity.class.getSimpleName();
+    private static final int PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void initTopBar() {
@@ -66,13 +71,20 @@ public class PublishMomentActivity extends ToolbarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String imgs = (String) parent.getItemAtPosition(position);
+                //when click add item to pick a picture
                 if ("000000".equals(imgs) ){
-                    PhotoPickerIntent intent = new PhotoPickerIntent(PublishMomentActivity.this);
-                    intent.setSelectModel(SelectModel.MULTI);
-                    intent.setShowCarema(true); // 是否显示拍照
-                    intent.setMaxTotal(6); // 最多选择照片数量，默认为6
-                    intent.setSelectedPaths(imagePaths); // 已选中的照片地址， 用于回显选中状态
-                    startActivityForResult(intent, REQUEST_CAMERA_CODE);
+                    //check permission
+                    if (ContextCompat.checkSelfPermission(PublishMomentActivity.this,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        //ask for permission
+                        ActivityCompat.requestPermissions(PublishMomentActivity.this,
+                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                                PERMISSION_REQUEST_CODE);
+                    }else{
+                        //show pictures select page
+                        jumpToPicSelectPage();
+                    }
                 }else{
                     PhotoPreviewIntent intent = new PhotoPreviewIntent(PublishMomentActivity.this);
                     intent.setCurrentItem(position);
@@ -102,6 +114,37 @@ public class PublishMomentActivity extends ToolbarActivity {
 
     }
 
+    private void jumpToPicSelectPage() {
+        PhotoPickerIntent intent = new PhotoPickerIntent(PublishMomentActivity.this);
+        intent.setSelectModel(SelectModel.MULTI);
+        intent.setShowCarema(true); // 是否显示拍照
+        intent.setMaxTotal(6); // 最多选择照片数量，默认为6
+        intent.setSelectedPaths(imagePaths); // 已选中的照片地址， 用于回显选中状态
+        startActivityForResult(intent, REQUEST_CAMERA_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    jumpToPicSelectPage();
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+        }
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     protected void setToolbarTitle() {
         mToolbar.setNavigationIcon(R.drawable.back);
@@ -123,6 +166,7 @@ public class PublishMomentActivity extends ToolbarActivity {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         } else if (item.getItemId() == R.id.publish) {
+            //todo post moment
 //            Intent intent = new Intent(this, RecordActivity.class);
 //            startActivity(intent);
         }
@@ -213,7 +257,7 @@ public class PublishMomentActivity extends ToolbarActivity {
 
             final String path=listUrls.get(position);
             if (path.equals("000000")){
-                holder.image.setImageResource(R.mipmap.ic_launcher);
+                holder.image.setImageResource(R.drawable.add_pic);
             }else {
                 Glide.with(PublishMomentActivity.this)
                         .load(path)
