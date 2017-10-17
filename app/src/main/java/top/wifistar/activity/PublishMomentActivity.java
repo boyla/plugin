@@ -28,10 +28,18 @@ import com.lidong.photopicker.intent.PhotoPickerIntent;
 import com.lidong.photopicker.intent.PhotoPreviewIntent;
 import org.json.JSONArray;
 import java.util.ArrayList;
+
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
+import top.wifistar.bean.BUser;
+import top.wifistar.bean.demo.Moment;
+import top.wifistar.bean.demo.User;
 import top.wifistar.manager.FileUploadManager;
+import top.wifistar.utils.ACache;
 import top.wifistar.utils.EventUtils;
+import top.wifistar.utils.Utils;
 
 
 public class PublishMomentActivity extends ToolbarActivity {
@@ -118,7 +126,7 @@ public class PublishMomentActivity extends ToolbarActivity {
         PhotoPickerIntent intent = new PhotoPickerIntent(PublishMomentActivity.this);
         intent.setSelectModel(SelectModel.MULTI);
         intent.setShowCarema(true); // 是否显示拍照
-        intent.setMaxTotal(6); // 最多选择照片数量，默认为6
+        intent.setMaxTotal(9); // 最多选择照片数量，默认为6
         intent.setSelectedPaths(imagePaths); // 已选中的照片地址， 用于回显选中状态
         startActivityForResult(intent, REQUEST_CAMERA_CODE);
     }
@@ -167,8 +175,29 @@ public class PublishMomentActivity extends ToolbarActivity {
             onBackPressed();
         } else if (item.getItemId() == R.id.publish) {
             //todo post moment
-//            Intent intent = new Intent(this, RecordActivity.class);
-//            startActivity(intent);
+            String type = "4";
+            if(imagePaths.size()>1){
+                type = "2";
+            }
+            Moment momentToPost = new Moment();
+            momentToPost.setType(type);
+            momentToPost.setContent(textView.getText().toString());
+            //set user
+            String id = ACache.get(this).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+            User user = new User();
+            user.setObjectId(id);
+            momentToPost.setUser(user);
+            momentToPost.save(new SaveListener<String>() {
+
+                @Override
+                public void done(String objectId, BmobException e) {
+                    if(e==null){
+                        Utils.showToast("发布动态成功");
+                    }else{
+                        Utils.showToast("发布动态失败："+e.getMessage());
+                    }
+                }
+            });
         }
 
         return super.onOptionsItemSelected(item);
@@ -224,7 +253,7 @@ public class PublishMomentActivity extends ToolbarActivity {
         private LayoutInflater inflater;
         public GridAdapter(ArrayList<String> listUrls) {
             this.listUrls = listUrls;
-            if(listUrls.size() == 7){
+            if(listUrls.size() == 10){
                 listUrls.remove(listUrls.size()-1);
             }
             inflater = LayoutInflater.from(PublishMomentActivity.this);

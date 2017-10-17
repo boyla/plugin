@@ -24,7 +24,7 @@ public class Moment extends BmobObject {
 	private static final long serialVersionUID = 1L;
 
 	private String content;
-	private String type;//0:文字 1:链接  2:图片 3:视频
+	private String type;//4:文字 1:链接  2:图片 3:视频
 	private String linkImg;
 	private String linkTitle;
 	private List<Photo> photos;
