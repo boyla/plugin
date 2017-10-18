@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
@@ -37,7 +38,6 @@ import top.wifistar.bean.demo.Moment;
 import top.wifistar.bean.demo.CommentConfig;
 import top.wifistar.bean.demo.Comment;
 //import top.wifistar.bean.demo.Favor;
-import top.wifistar.bean.demo.Photo;
 import top.wifistar.bean.demo.User;
 import top.wifistar.customview.CircleVideoView;
 import top.wifistar.customview.CommentListView;
@@ -171,7 +171,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     break;
                 case MomentViewHolder.TYPE_IMAGE:// 处理图片
                     if (holder instanceof ImageViewHolder) {
-                        final List<Photo> photos = moment.getPhotos();
+                        final List<String> photos = Arrays.asList(moment.getPhotos().split(","));
                         if (photos != null && photos.size() > 0) {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.VISIBLE);
                             ((ImageViewHolder) holder).multiImageView.setList(photos);
@@ -181,8 +181,8 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                                     //imagesize是作为loading时的图片size
                                     ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
                                     List<String> photoUrls = new ArrayList<String>();
-                                    for (Photo photo : photos) {
-                                        photoUrls.add(photo.url);
+                                    for (String photo : photos) {
+                                        photoUrls.add(photo);
                                     }
                                     ImagePagerActivity.startImagePagerActivity(context, photoUrls, position, imageSize);
                                 }

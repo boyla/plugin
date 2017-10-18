@@ -3,6 +3,7 @@ package top.wifistar.fragment;
 import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +24,10 @@ import android.widget.Toast;
 
 import com.jaeger.library.StatusBarUtil;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 import cn.bmob.v3.datatype.BmobPointer;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -40,7 +45,9 @@ import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.TitleBar;
 import top.wifistar.dialog.UpLoadDialog;
+import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.utils.CommonUtils;
+import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
 /**
@@ -392,5 +399,23 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 }
             }
         });
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EventUtils.registerEventBus(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventUtils.unregisterEventBus(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewMoment(PublishMomentEvent event) {
+        momentAdapter.getDatas().add(0,event.moment);
+        momentAdapter.notifyItemInserted(1);
     }
 }

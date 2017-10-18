@@ -2,6 +2,7 @@ package top.wifistar.bean.demo;
 
 import android.text.TextUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -27,7 +28,7 @@ public class Moment extends BmobObject {
 	private String type;//4:文字 1:链接  2:图片 3:视频
 	private String linkImg;
 	private String linkTitle;
-	private List<Photo> photos;
+	private String photos;
 	private BmobRelation favors;
 	private List<Comment> comments;
 	private User user;
@@ -74,10 +75,10 @@ public class Moment extends BmobObject {
 	public void setLinkTitle(String linkTitle) {
 		this.linkTitle = linkTitle;
 	}
-	public List<Photo> getPhotos() {
+	public String getPhotos() {
 		return photos;
 	}
-	public void setPhotos(List<Photo> photos) {
+	public void setPhotos(String photos) {
 		this.photos = photos;
 	}
 	public User getUser() {

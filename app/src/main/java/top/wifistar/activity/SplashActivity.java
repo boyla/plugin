@@ -493,11 +493,7 @@ public class SplashActivity extends BaseActivity {
 
     private void updateUser() {
         if(count==2){
-            String objId = ACache.get(context).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-            App.getHandler().postDelayed(() -> {
-                UserProfile profile = App.currentUserProfile;
-                BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar());
-            }, 1111);
+            Utils.updateUser();
         }
     }
 

@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import top.wifistar.R;
@@ -27,7 +28,7 @@ public class MultiImageView extends LinearLayout {
 	public static int MAX_WIDTH = 0;
 
 	// 照片的Url列表
-	private List<Photo> imagesList;
+	private ArrayList<Photo> imagesList;
 
 	/** 长度 单位为Pixel **/
 	private int pxOneMaxWandH;  // 单张图最大允许宽高
@@ -53,7 +54,16 @@ public class MultiImageView extends LinearLayout {
 		super(context, attrs);
 	}
 
-	public void setList(List<Photo> lists) throws IllegalArgumentException{
+	public void setList(List<String> photoStrs) {
+		ArrayList<Photo> photos = new ArrayList<>();
+		for(String item : photoStrs){
+			Photo photo = new Photo();
+			photo.url = item;
+			photos.add(photo);
+		}
+		setList(photos);
+	}
+	public void setList(ArrayList<Photo> lists) throws IllegalArgumentException{
 		if(lists==null){
 			throw new IllegalArgumentException("imageList is null...");
 		}

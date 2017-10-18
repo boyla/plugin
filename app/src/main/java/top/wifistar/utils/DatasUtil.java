@@ -169,7 +169,7 @@ public class DatasUtil {
 				moment.setLinkTitle("百度一下，你就知道");
 			} else if(type == 1){
 				moment.setType("2");// 图片
-				moment.setPhotos(createPhotos());
+				//moment.setPhotos(createPhotos());
 			}else {
 				moment.setType("3");// 视频
 				String videoUrl = "http://yiwcicledemo.s.qupai.me/v/80c81c19-7c02-4dee-baca-c97d9bbd6607.mp4";
@@ -197,8 +197,8 @@ public class DatasUtil {
 		return result;
 	}
 
-	public static List<Photo> createPhotos() {
-		List<Photo> photos = new ArrayList<Photo>();
+	public static ArrayList<Photo> createPhotos() {
+		ArrayList<Photo> photos = new ArrayList<Photo>();
 		int size = getRandomNum(PHOTOS.size());
 		if (size > 0) {
 			if (size > 9) {

@@ -22,6 +22,12 @@ public class User extends BmobObject {
 		this.headUrl = headUrl;
 	}
 
+	public User(String name, String headUrl,String id){
+		this.name = name;
+		this.headUrl = headUrl;
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}

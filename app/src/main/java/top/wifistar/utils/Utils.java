@@ -43,6 +43,8 @@ import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.IMUserRealm;
 import top.wifistar.bean.UserProfile;
+import top.wifistar.bean.demo.User;
+import top.wifistar.bmob.BmobUtils;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.TopReminder;
 
@@ -992,5 +994,22 @@ public class Utils {
             result = context.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
+    }
+
+    public static void updateUser() {
+            String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+            App.getHandler().postDelayed(() -> {
+                UserProfile profile = App.currentUserProfile;
+                BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar());
+            }, 1111);
+    }
+
+    public static User getShortUser(){
+        UserProfile profile = App.currentUserProfile;
+        User user = null;
+        if(profile!=null){
+            user = new User(profile.getNickName(), profile.getAvatar(),profile.getObjectId());
+        }
+        return user;
     }
 }
