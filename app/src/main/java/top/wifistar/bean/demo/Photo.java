@@ -8,6 +8,6 @@ import cn.bmob.v3.BmobObject;
 public class Photo extends BmobObject {
 
     public String url;
-    public Integer w;
+    public Integer w = 0;
     public Integer h;
 }

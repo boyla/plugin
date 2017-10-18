@@ -1,6 +1,7 @@
 package top.wifistar.customview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,6 +10,8 @@ import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -194,27 +197,39 @@ public class MultiImageView extends LinearLayout {
 			imageView.setScaleType(ScaleType.CENTER_INSIDE);
 			//imageView.setMaxHeight(pxOneMaxWandH);
 
-            int expectW = photo.w;
-            int expectH = photo.h;
+			//get real w and h of pic
+			Glide.with(getContext())
+					.load(photo.url)
+					.asBitmap()//强制Glide返回一个Bitmap对象
+					.diskCacheStrategy(DiskCacheStrategy.ALL)
+					.into(new SimpleTarget<Bitmap>() {
+						@Override
+						public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+							photo.w = bitmap.getWidth();
+							photo.h = bitmap.getHeight();
 
-            if(expectW == 0 || expectH == 0){
-                imageView.setLayoutParams(onePicPara);
-            }else{
-                int actualW = 0;
-                int actualH = 0;
-                float scale = ((float) expectH)/((float) expectW);
-                if(expectW > pxOneMaxWandH){
-                    actualW = pxOneMaxWandH;
-                    actualH = (int)(actualW * scale);
-                } else if(expectW < pxMoreWandH){
-                    actualW = pxMoreWandH;
-                    actualH = (int)(actualW * scale);
-                }else{
-                    actualW = expectW;
-                    actualH = expectH;
-                }
-                imageView.setLayoutParams(new LayoutParams(actualW, actualH));
-            }
+							int expectW = photo.w;
+							int expectH = photo.h;
+							if(expectW == 0 || expectH == 0){
+								imageView.setLayoutParams(onePicPara);
+							}else{
+								int actualW = 0;
+								int actualH = 0;
+								float scale = ((float) expectH)/((float) expectW);
+								if(expectW > pxOneMaxWandH){
+									actualW = pxOneMaxWandH;
+									actualH = (int)(actualW * scale);
+								} else if(expectW < pxMoreWandH){
+									actualW = pxMoreWandH;
+									actualH = (int)(actualW * scale);
+								}else{
+									actualW = expectW;
+									actualH = expectH;
+								}
+								imageView.setLayoutParams(new LayoutParams(actualW, actualH));
+							}
+						}
+					});
 		}
 
 		imageView.setId(photo.url.hashCode());
