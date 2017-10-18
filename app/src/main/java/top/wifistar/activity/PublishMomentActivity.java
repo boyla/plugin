@@ -253,16 +253,14 @@ public class PublishMomentActivity extends ToolbarActivity {
             momentToPost.setPhotos(TextUtils.join(",", urls));
         }
         //set user
-        String id = ACache.get(this).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-        User user = new User();
-        user.setObjectId(id);
-        momentToPost.setUser(user);
+        momentToPost.setUser(Utils.getShortUser());
         momentToPost.save(new SaveListener<String>() {
 
             @Override
             public void done(String objectId, BmobException e) {
                 if (e == null) {
                     Utils.showToast("发布动态成功");
+                    momentToPost.setObjectId(objectId);
                     PublishMomentEvent event = new PublishMomentEvent();
                     event.moment = momentToPost;
                     EventUtils.post(event);

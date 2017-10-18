@@ -1,6 +1,7 @@
 package top.wifistar.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SimpleItemAnimator;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,13 +25,18 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.jaeger.library.StatusBarUtil;
+import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
+
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobPointer;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.DeleteBatchListener;
 import pub.devrel.easypermissions.EasyPermissions;
 import top.wifistar.R;
 import top.wifistar.activity.PublishMomentActivity;
@@ -44,23 +51,25 @@ import top.wifistar.bean.demo.CommentConfig;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.TitleBar;
+import top.wifistar.dialog.LoadingDialog;
 import top.wifistar.dialog.UpLoadDialog;
 import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.utils.CommonUtils;
 import top.wifistar.utils.EventUtils;
+import top.wifistar.utils.ProgressDialogUtil;
 import top.wifistar.utils.Utils;
 
 /**
  * Created by hasee on 2017/4/8.
  */
 
-public class MomentsFragment extends BaseFragment implements MomentsContract.View,EasyPermissions.PermissionCallbacks  {
+public class MomentsFragment extends BaseFragment implements MomentsContract.View, EasyPermissions.PermissionCallbacks {
 
     //TextView tvNoData;
 
     MomentAdapter momentAdapter;
 
-    protected static final String TAG ="Moments:  ";
+    protected static final String TAG = "Moments:  ";
 
     private LinearLayout edittextbody;
     private EditText editText;
@@ -96,13 +105,15 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         //tvNoData = bindViewById(R.id.tvNoData);
         recyclerView = bindViewById(R.id.xRecyclerView);
         progressCombineView = bindViewById(R.id.progressCombineView);
-        edittextbody = bindViewById(R.id.editTextBodyLl);
+        edittextbody = (LinearLayout) getActivity().findViewById(R.id.editTextBodyLl);
         presenter = new MomentsPresenter(this);
         momentAdapter = new MomentAdapter(getActivity());
+        recyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
+        recyclerView.setBackgroundColor(Color.parseColor("#fa4d4d4d"));
         momentAdapter.setCirclePresenter(presenter);
         recyclerView.setAdapter(momentAdapter);
         //优化更新item时的闪烁
-        ((SimpleItemAnimator)recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
         //recyclerView.getItemAnimator().setChangeDuration(0);
         setXRecyclerView();
         recyclerView.refresh();
@@ -118,13 +129,12 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             @Override
             public void onRefresh() {
                 presenter.loadData(TYPE_PULLREFRESH);
-                recyclerView.refreshComplete();
             }
 
             @Override
             public void onLoadMore() {
-                presenter.loadData(TYPE_UPLOADREFRESH);
-                recyclerView.loadMoreComplete();
+                //presenter.loadData(TYPE_UPLOADREFRESH);
+                //recyclerView.loadMoreComplete();
             }
         });
     }
@@ -145,11 +155,11 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         return super.onOptionsItemSelected(item);
     }
 
-        public void onHiddenChanged(boolean hidden) {
+    public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (!hidden) {
             ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-            ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(false);
             setHasOptionsMenu(true);
         }
     }
@@ -170,13 +180,32 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     }
 
     @Override
-    public void update2DeleteCircle(String circleId) {
+    public void update2DeleteCircle(String momentId) {
         List<Moment> moments = momentAdapter.getDatas();
-        for(int i = 0; i< moments.size(); i++){
-            if(circleId.equals(moments.get(i).getObjectId())){
-                moments.remove(i);
-                momentAdapter.notifyDataSetChanged();
-                //momentAdapter.notifyItemRemoved(i+1);
+        for (int i = 0; i < moments.size(); i++) {
+            if (momentId.equals(moments.get(i).getObjectId())) {
+                Moment moment = moments.remove(i);
+                if (!TextUtils.isEmpty(moment.getPhotos())) {
+                    String[] urls = moment.getPhotos().split(",");
+                    BmobFile.deleteBatch(urls, new DeleteBatchListener() {
+
+                        @Override
+                        public void done(String[] failUrls, BmobException e) {
+                            if (e == null) {
+                                Log.i("删除moment关联图片：", "全部删除成功");
+                            } else {
+                                if (failUrls != null) {
+                                    Log.i("删除moment关联图片失败个数：", failUrls.length + "," + e.toString());
+                                } else {
+                                    Log.i("全部文件删除失败：", e.getErrorCode() + "," + e.toString());
+                                }
+                            }
+                        }
+                    });
+                }
+                //momentAdapter.notifyDataSetChanged();
+                momentAdapter.notifyItemRemoved(i + 2);
+                momentAdapter.notifyItemRangeChanged(i + 2, momentAdapter.getItemCount());
                 return;
             }
         }
@@ -184,15 +213,15 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     @Override
     public void update2AddFavorite(int dataPosition) {
-        User addItem = new User(App.currentUserProfile.getNickName(),App.currentUserProfile.getAvatar());
+        User addItem = new User(App.currentUserProfile.getNickName(), App.currentUserProfile.getAvatar());
         addItem.id = App.currentUserProfile.getObjectId();
-        if(addItem != null){
+        if (addItem != null) {
             Moment item = (Moment) momentAdapter.getDatas().get(dataPosition);
-            item.likes.add(0,addItem);
-            if(item.likes.size()==1){
+            item.likes.add(0, addItem);
+            if (item.likes.size() == 1) {
                 momentAdapter.notifyDataSetChanged();
-            }else{
-                momentAdapter.notifyItemChanged(dataPosition + 2,"praise");
+            } else {
+                momentAdapter.notifyItemChanged(dataPosition + 2, "praise");
             }
         }
     }
@@ -201,13 +230,13 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     public void update2DeleteFavort(int dataPosition) {
         String myProfileId = App.currentUserProfile.getObjectId();
         Moment item = (Moment) momentAdapter.getDatas().get(dataPosition);
-        for(int i=0; i<item.likes.size(); i++){
-            if(myProfileId.equals(item.likes.get(i).id)){
+        for (int i = 0; i < item.likes.size(); i++) {
+            if (myProfileId.equals(item.likes.get(i).id)) {
                 item.likes.remove(i);
-                if(item.likes.size()==0){
+                if (item.likes.size() == 0) {
                     momentAdapter.notifyDataSetChanged();
-                }else{
-                    momentAdapter.notifyItemChanged(dataPosition + 2,"praise");
+                } else {
+                    momentAdapter.notifyItemChanged(dataPosition + 2, "praise");
                 }
                 return;
             }
@@ -216,7 +245,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     @Override
     public void update2AddComment(int circlePosition, Comment addItem) {
-        if(addItem != null){
+        if (addItem != null) {
             Moment item = (Moment) momentAdapter.getDatas().get(circlePosition);
             item.getComments().add(addItem);
             momentAdapter.notifyDataSetChanged();
@@ -230,8 +259,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     public void update2DeleteComment(int circlePosition, String commentId) {
         Moment item = (Moment) momentAdapter.getDatas().get(circlePosition);
         List<Comment> items = item.getComments();
-        for(int i=0; i<items.size(); i++){
-            if(commentId.equals(items.get(i).getMomentId())){
+        for (int i = 0; i < items.size(); i++) {
+            if (commentId.equals(items.get(i).getMomentId())) {
                 items.remove(i);
                 momentAdapter.notifyDataSetChanged();
                 //momentAdapter.notifyItemChanged(circlePosition+1);
@@ -247,28 +276,35 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
         measureCircleItemHighAndCommentItemOffset(commentConfig);
 
-        if(View.VISIBLE==visibility){
+        if (View.VISIBLE == visibility) {
             editText.requestFocus();
             //弹出键盘
-            CommonUtils.showSoftInput( editText.getContext(),  editText);
+            CommonUtils.showSoftInput(editText.getContext(), editText);
 
-        }else if(View.GONE==visibility){
+        } else if (View.GONE == visibility) {
             //隐藏键盘
-            CommonUtils.hideSoftInput( editText.getContext(),  editText);
+            CommonUtils.hideSoftInput(editText.getContext(), editText);
         }
     }
 
     @Override
     public void update2loadData(int loadType, List<Moment> datas) {
-        if (loadType == TYPE_PULLREFRESH){
+        if (loadType == TYPE_PULLREFRESH) {
             momentAdapter.setDatas(datas);
-        }else if(loadType == TYPE_UPLOADREFRESH){
+        } else if (loadType == TYPE_UPLOADREFRESH) {
             momentAdapter.getDatas().addAll(datas);
         }
-        momentAdapter.notifyDataSetChanged();
-        recyclerView.refreshComplete();
-        if(momentAdapter.getDatas().size()== 0){
-            progressCombineView.showEmpty(null,"哎呀","没有获取到数据，认识更多朋友吧~");
+
+        if (momentAdapter.getDatas().size() == 0) {
+            progressCombineView.showEmpty(null, "哎呀", "没有获取到数据，认识更多朋友吧~");
+        }else{
+            momentAdapter.notifyDataSetChanged();
+            App.getHandler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    recyclerView.refreshComplete();
+                }
+            },888);
         }
 
 //        if(momentAdapter.getDatas().size()<45 + MomentAdapter.HEADVIEW_SIZE){
@@ -291,14 +327,15 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 //        }
 
     }
+
     @Override
     public void onPermissionsGranted(int requestCode, List<String> perms) {
-        Toast.makeText(getActivity(), "onPermissionsGranted  requestCode: " + requestCode , Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), "onPermissionsGranted  requestCode: " + requestCode, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onPermissionsDenied(int requestCode, List<String> perms) {
-        Toast.makeText(getActivity(), "您拒绝了相关权限，可能会导致相关功能不可用" , Toast.LENGTH_LONG).show();
+        Toast.makeText(getActivity(), "您拒绝了相关权限，可能会导致相关功能不可用", Toast.LENGTH_LONG).show();
         /*if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this, getString(R.string.rationale_ask_again))
                     .setTitle(getString(R.string.title_settings_dialog))
@@ -310,32 +347,32 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         }*/
     }
 
-    private void measureCircleItemHighAndCommentItemOffset(CommentConfig commentConfig){
-        if(commentConfig == null)
+    private void measureCircleItemHighAndCommentItemOffset(CommentConfig commentConfig) {
+        if (commentConfig == null)
             return;
 
         int firstPosition = layoutManager.findFirstVisibleItemPosition();
         //只能返回当前可见区域（列表可滚动）的子项
         View selectCircleItem = layoutManager.getChildAt(commentConfig.circlePosition + MomentAdapter.HEADVIEW_SIZE - firstPosition);
 
-        if(selectCircleItem != null){
+        if (selectCircleItem != null) {
             selectCircleItemH = selectCircleItem.getHeight();
         }
 
-        if(commentConfig.commentType == CommentConfig.Type.REPLY){
+        if (commentConfig.commentType == CommentConfig.Type.REPLY) {
             //回复评论的情况
             CommentListView commentLv = (CommentListView) selectCircleItem.findViewById(R.id.commentList);
-            if(commentLv!=null){
+            if (commentLv != null) {
                 //找到要回复的评论view,计算出该view距离所属动态底部的距离
                 View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);
-                if(selectCommentItem != null){
+                if (selectCommentItem != null) {
                     //选择的commentItem距选择的CircleItem底部的距离
                     selectCommentItemOffset = 0;
                     View parentView = selectCommentItem;
                     do {
                         int subItemBottom = parentView.getBottom();
                         parentView = (View) parentView.getParent();
-                        if(parentView != null){
+                        if (parentView != null) {
                             selectCommentItemOffset += (parentView.getHeight() - subItemBottom);
                         }
                     } while (parentView != null && parentView != selectCircleItem);
@@ -346,16 +383,17 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     /**
      * 测量偏移量
+     *
      * @param commentConfig
      * @return
      */
     private int getListviewOffset(CommentConfig commentConfig) {
-        if(commentConfig == null)
+        if (commentConfig == null)
             return 0;
         //这里如果你的listview上面还有其它占高度的控件，则需要减去该控件高度，listview的headview除外。
         //int listviewOffset = mScreenHeight - mSelectCircleItemH - mCurrentKeyboardH - mEditTextBodyHeight;
         int listviewOffset = screenHeight - selectCircleItemH - currentKeyboardH - editTextBodyHeight - titleBar.getHeight();
-        if(commentConfig.commentType == CommentConfig.Type.REPLY){
+        if (commentConfig.commentType == CommentConfig.Type.REPLY) {
             //回复评论的情况
             listviewOffset = listviewOffset + selectCommentItemOffset;
         }
@@ -372,16 +410,16 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
                 Rect r = new Rect();
                 bodyLayout.getWindowVisibleDisplayFrame(r);
-                int statusBarH =  Utils.getStatusBarHeight(getActivity());//状态栏高度
+                int statusBarH = Utils.getStatusBarHeight(getActivity());//状态栏高度
                 int screenH = bodyLayout.getRootView().getHeight();
-                if(r.top != statusBarH ){
+                if (r.top != statusBarH) {
                     //在这个demo中r.top代表的是状态栏高度，在沉浸式状态栏时r.top＝0，通过getStatusBarHeight获取状态栏高度
                     r.top = statusBarH;
                 }
                 int keyboardH = screenH - (r.bottom - r.top);
-                Log.d(TAG, "screenH＝ "+ screenH +" &keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
+                Log.d(TAG, "screenH＝ " + screenH + " &keyboardH = " + keyboardH + " &r.bottom=" + r.bottom + " &top=" + r.top + " &statusBarH=" + statusBarH);
 
-                if(keyboardH == currentKeyboardH){//有变化时才处理，否则会陷入死循环
+                if (keyboardH == currentKeyboardH) {//有变化时才处理，否则会陷入死循环
                     return;
                 }
 
@@ -389,12 +427,12 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 screenHeight = screenH;//应用屏幕的高度
                 editTextBodyHeight = edittextbody.getHeight();
 
-                if(keyboardH<150){//说明是隐藏键盘的情况
+                if (keyboardH < 150) {//说明是隐藏键盘的情况
                     updateEditTextBodyVisible(View.GONE, null);
                     return;
                 }
                 //偏移listview
-                if(layoutManager!=null && commentConfig != null){
+                if (layoutManager != null && commentConfig != null) {
                     layoutManager.scrollToPositionWithOffset(commentConfig.circlePosition + MomentAdapter.HEADVIEW_SIZE, getListviewOffset(commentConfig));
                 }
             }
@@ -415,7 +453,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMoment(PublishMomentEvent event) {
-        momentAdapter.getDatas().add(0,event.moment);
+        momentAdapter.getDatas().add(0, event.moment);
         momentAdapter.notifyItemInserted(1);
     }
 }

@@ -5,9 +5,9 @@ import cn.bmob.v3.BmobObject;
 /**
  * Created by suneee on 2016/11/17.
  */
-public class Photo extends BmobObject {
+public class Photo{
 
     public String url;
-    public Integer w = 0;
-    public Integer h;
+    public int w;
+    public int h;
 }

@@ -2,7 +2,10 @@ package top.wifistar.bean.demo;
 
 import android.text.TextUtils;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
@@ -35,6 +38,7 @@ public class Moment extends BmobObject {
 	private String videoUrl;
 	private String videoImgUrl;
 	public List<User> likes;
+	public ArrayList<Photo> photosData;
 
 	private boolean isExpand;
 
@@ -136,5 +140,21 @@ public class Moment extends BmobObject {
 			}
 		}
 		return false;
+	}
+
+	public List<Photo> getPhotosBean(){
+		if(photosData!=null){
+			return photosData;
+		}
+		if(!TextUtils.isEmpty(this.getPhotos())){
+			List<String> photoStrs = Arrays.asList(this.getPhotos().split(","));
+			photosData = new ArrayList<>();
+			for (String item : photoStrs) {
+				Photo photo = new Photo();
+				photo.url = item;
+				photosData.add(photo);
+			}
+		}
+		return photosData;
 	}
 }

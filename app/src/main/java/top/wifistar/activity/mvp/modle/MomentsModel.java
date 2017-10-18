@@ -13,98 +13,110 @@ import top.wifistar.bean.BUser;
 import top.wifistar.bean.demo.Moment;
 import top.wifistar.bean.demo.User;
 import top.wifistar.utils.ACache;
+import top.wifistar.utils.Utils;
 
 
 /**
- * 
-* @ClassName: MomentsModel
-* @Description: 因为逻辑简单，这里我就不写model的接口了
-* @author yiw
-* @date 2015-12-28 下午3:54:55 
+ * @author yiw
+ * @ClassName: MomentsModel
+ * @Description: 因为逻辑简单，这里我就不写model的接口了
+ * @date 2015-12-28 下午3:54:55
  */
 public class MomentsModel {
-	
-	
-	public MomentsModel(){
-		//
-	}
 
-	public void loadData(final IDataRequestListener listener){
-		requestServer(listener);
-	}
-	
-	public void deleteCircle( final IDataRequestListener listener) {
-		requestServer(listener);
-	}
 
-	public void addFavort(final String momentId,final IDataRequestListener listener) {
-		Moment moment = new Moment();
-		moment.setObjectId(momentId);
+    public MomentsModel() {
+        //
+    }
 
-		User user = new User(App.currentUserProfile.getNickName(),App.currentUserProfile.getAvatar());
-		user.id = App.currentUserProfile.getObjectId();
-		String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-		user.setObjectId(objId);
+    public void loadData(final IDataRequestListener listener) {
+        requestServer(listener);
+    }
 
-		BmobRelation relation = new BmobRelation();
-		relation.add(user);
-		moment.setFavors(relation);
-		moment.update(new UpdateListener() {
-			@Override
-			public void done(BmobException e) {
-				if(e==null){
-					Log.i("bmob","点赞成功");
-					listener.onSuccess();
-				}else{
-					Log.i("bmob","点赞失败："+e.getMessage());
-				}
-			}
+    public void deleteMoment(String momentId, final IDataRequestListener listener) {
+        Moment moment = new Moment();
+        moment.setObjectId(momentId);
+        moment.delete(new UpdateListener() {
 
-		});
-	}
+            @Override
+            public void done(BmobException e) {
+                if(e==null){
+                    Utils.showToast("删除动态成功");
+                    listener.onSuccess();
+                }else{
+                    Utils.showToast("删除动态失败");
+                }
+            }
+        });
+    }
 
-	public void deleteFavort(final String momentId,final IDataRequestListener listener) {
-		Moment moment = new Moment();
-		moment.setObjectId(momentId);
+    public void addFavort(final String momentId, final IDataRequestListener listener) {
+        Moment moment = new Moment();
+        moment.setObjectId(momentId);
 
-		User user = new User(App.currentUserProfile.getNickName(),App.currentUserProfile.getAvatar());
-		user.id = App.currentUserProfile.getObjectId();
-		String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-		user.setObjectId(objId);
+        User user = new User(App.currentUserProfile.getNickName(), App.currentUserProfile.getAvatar());
+        user.id = App.currentUserProfile.getObjectId();
+        String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+        user.setObjectId(objId);
 
-		BmobRelation relation = new BmobRelation();
-		relation.remove(user);
-		moment.setFavors(relation);
-		moment.update(new UpdateListener() {
-			@Override
-			public void done(BmobException e) {
-				if(e==null){
-					Log.i("bmob","取消赞成功");
-					listener.onSuccess();
-				}else{
-					Log.i("bmob","取消赞失败："+e.getMessage());
-				}
-			}
-		});
-	}
+        BmobRelation relation = new BmobRelation();
+        relation.add(user);
+        moment.setFavors(relation);
+        moment.update(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    Log.i("bmob", "点赞成功");
+                    listener.onSuccess();
+                } else {
+                    Log.i("bmob", "点赞失败：" + e.getMessage());
+                }
+            }
 
-	public void addComment( final IDataRequestListener listener) {
-		requestServer(listener);
-	}
+        });
+    }
 
-	public void deleteComment( final IDataRequestListener listener) {
-		requestServer(listener);
-	}
-	
-	/**
-	 * 
-	* @Title: requestServer 
-	* @Description: 与后台交互, 因为demo是本地数据，不做处理
-	* @param  listener    设定文件 
-	* @return void    返回类型 
-	* @throws
-	 */
-	private void requestServer(final IDataRequestListener listener) {
+    public void deleteFavort(final String momentId, final IDataRequestListener listener) {
+        Moment moment = new Moment();
+        moment.setObjectId(momentId);
+
+        User user = new User(App.currentUserProfile.getNickName(), App.currentUserProfile.getAvatar());
+        user.id = App.currentUserProfile.getObjectId();
+        String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+        user.setObjectId(objId);
+
+        BmobRelation relation = new BmobRelation();
+        relation.remove(user);
+        moment.setFavors(relation);
+        moment.update(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    Log.i("bmob", "取消赞成功");
+                    listener.onSuccess();
+                } else {
+                    Log.i("bmob", "取消赞失败：" + e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void addComment(final IDataRequestListener listener) {
+        requestServer(listener);
+    }
+
+    public void deleteComment(final IDataRequestListener listener) {
+        requestServer(listener);
+    }
+
+    /**
+     * @param listener 设定文件
+     * @return void    返回类型
+     * @throws
+     * @Title: requestServer
+     * @Description: 与后台交互, 因为demo是本地数据，不做处理
+     */
+    private void requestServer(final IDataRequestListener listener) {
 //		new AsyncTask<Object, Integer, Object>(){
 //			@Override
 //			protected Object doInBackground(Object... params) {
@@ -118,6 +130,6 @@ public class MomentsModel {
 //		}.execute();
 
 //		mMoment.getObjectId()
-	}
-	
+    }
+
 }

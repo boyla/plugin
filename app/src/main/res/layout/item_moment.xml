@@ -149,5 +149,5 @@
     <View
         android:background="@color/activity_bg"
         android:layout_width="match_parent"
-        android:layout_height="2.5dp"/>
+        android:layout_height="4.5dp"/>
 </LinearLayout>

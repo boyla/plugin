@@ -174,17 +174,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                         final List<String> photos = Arrays.asList(moment.getPhotos().split(","));
                         if (photos != null && photos.size() > 0) {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.VISIBLE);
-                            ((ImageViewHolder) holder).multiImageView.setList(photos);
+                            ((ImageViewHolder) holder).multiImageView.setList(moment.getPhotosBean());
                             ((ImageViewHolder) holder).multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(View view, int position) {
                                     //imagesize是作为loading时的图片size
                                     ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
-                                    List<String> photoUrls = new ArrayList<String>();
-                                    for (String photo : photos) {
-                                        photoUrls.add(photo);
-                                    }
-                                    ImagePagerActivity.startImagePagerActivity(context, photoUrls, position, imageSize);
+                                    ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
                                 }
                             });
                         } else {

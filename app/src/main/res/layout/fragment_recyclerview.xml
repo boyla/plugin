@@ -3,7 +3,6 @@
     android:id="@+id/rlContent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_bg"
     android:orientation="vertical">
 
     <top.wifistar.customview.ProgressCombineView xmlns:progressCombine="http://schemas.android.com/apk/res-auto"
@@ -25,15 +24,8 @@
         <com.jcodecraeer.xrecyclerview.XRecyclerView
             android:id="@+id/xRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/activity_bg"
-            android:scrollbars="none" />
-
-        <include
-            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            layout="@layout/layout_editview"/>
+            android:scrollbars="none" />
 
     </top.wifistar.customview.ProgressCombineView>
 </RelativeLayout>

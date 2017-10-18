@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -1009,7 +1010,52 @@ public class Utils {
         User user = null;
         if(profile!=null){
             user = new User(profile.getNickName(), profile.getAvatar(),profile.getObjectId());
+            String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+            user.setObjectId(id);
         }
         return user;
+    }
+
+    public static String friendlyTime(Date time) {
+        //获取time距离当前的秒数
+        int ct = (int)((System.currentTimeMillis() - time.getTime())/1000);
+
+        if(ct == 0) {
+            return "刚刚";
+        }
+
+        if(ct > 0 && ct < 60) {
+            return ct + "秒前";
+        }
+
+        if(ct >= 60 && ct < 3600) {
+            return Math.max(ct / 60,1) + "分钟前";
+        }
+        if(ct >= 3600 && ct < 86400)
+            return ct / 3600 + "小时前";
+        if(ct >= 86400 && ct < 2592000){ //86400 * 30
+            int day = ct / 86400 ;
+            return day + "天前";
+        }
+        if(ct >= 2592000 && ct < 31104000) { //86400 * 30
+            return ct / 2592000 + "月前";
+        }
+        return ct / 31104000 + "年前";
+    }
+
+    //在不加载图片的前提下获得图片的宽高
+    public static int[] getImageWidthHeight(String path){
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+        /**
+         * 最关键在此，把options.inJustDecodeBounds = true;
+         * 这里再decodeFile()，返回的bitmap为空，但此时调用options.outHeight时，已经包含了图片的高了
+         */
+        options.inJustDecodeBounds = true;
+        Bitmap bitmap = BitmapFactory.decodeFile(path, options); // 此时返回的bitmap为null
+        /**
+         *options.outHeight为原始图片的高
+         */
+        return new int[]{options.outWidth,options.outHeight};
     }
 }

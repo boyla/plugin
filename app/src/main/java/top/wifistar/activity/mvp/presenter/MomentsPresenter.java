@@ -10,7 +10,6 @@ import cn.bmob.v3.listener.FindListener;
 import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.activity.mvp.modle.MomentsModel;
-import top.wifistar.bean.demo.User;
 import top.wifistar.bean.demo.Moment;
 import top.wifistar.bean.demo.CommentConfig;
 import top.wifistar.bean.demo.Comment;
@@ -61,19 +60,19 @@ public class MomentsPresenter implements MomentsContract.Presenter {
 
 
     /**
-     * @param circleId
+     * @param momentId
      * @return void    返回类型
      * @throws
      * @Title: deleteMoment
      * @Description: 删除动态
      */
-    public void deleteMoment(final String circleId) {
-        momentsModel.deleteCircle(new IDataRequestListener() {
+    public void deleteMoment(final String momentId) {
+        momentsModel.deleteMoment(momentId, new IDataRequestListener() {
 
             @Override
             public void onSuccess() {
                 if (view != null) {
-                    view.update2DeleteCircle(circleId);
+                    view.update2DeleteCircle(momentId);
                 }
             }
         });
