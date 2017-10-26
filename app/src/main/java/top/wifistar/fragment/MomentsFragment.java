@@ -22,9 +22,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.jaeger.library.StatusBarUtil;
 import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
@@ -34,7 +34,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 import cn.bmob.v3.datatype.BmobFile;
-import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -51,12 +50,10 @@ import top.wifistar.bean.demo.CommentConfig;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.TitleBar;
-import top.wifistar.dialog.LoadingDialog;
 import top.wifistar.dialog.UpLoadDialog;
 import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.utils.CommonUtils;
 import top.wifistar.utils.EventUtils;
-import top.wifistar.utils.ProgressDialogUtil;
 import top.wifistar.utils.Utils;
 
 /**
@@ -87,8 +84,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     private LinearLayoutManager layoutManager;
     private TitleBar titleBar;
 
-    private final static int TYPE_PULLREFRESH = 1;
-    private final static int TYPE_UPLOADREFRESH = 2;
+    public final static int TYPE_PULLDOWNREFRESH = 1;
+    public final static int TYPE_PULLUPMORE = 2;
     private UpLoadDialog uploadDialog;
     private SwipeRefreshLayout.OnRefreshListener refreshListener;
 
@@ -109,7 +106,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         presenter = new MomentsPresenter(this);
         momentAdapter = new MomentAdapter(getActivity());
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
-        recyclerView.setBackgroundColor(Color.parseColor("#fa4d4d4d"));
+//        recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallBeat);
+        recyclerView.setBackgroundColor(Color.parseColor("#EBEBEB"));
         momentAdapter.setCirclePresenter(presenter);
         recyclerView.setAdapter(momentAdapter);
         //优化更新item时的闪烁
@@ -128,13 +126,12 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-                presenter.loadData(TYPE_PULLREFRESH);
+                presenter.loadData(TYPE_PULLDOWNREFRESH);
             }
 
             @Override
             public void onLoadMore() {
-                //presenter.loadData(TYPE_UPLOADREFRESH);
-                //recyclerView.loadMoreComplete();
+                presenter.loadData(TYPE_PULLUPMORE);
             }
         });
     }
@@ -289,43 +286,36 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     @Override
     public void update2loadData(int loadType, List<Moment> datas) {
-        if (loadType == TYPE_PULLREFRESH) {
+        if (loadType == TYPE_PULLDOWNREFRESH) {
             momentAdapter.setDatas(datas);
-        } else if (loadType == TYPE_UPLOADREFRESH) {
-            momentAdapter.getDatas().addAll(datas);
+            updateDataList(loadType);
+        } else if (loadType == TYPE_PULLUPMORE) {
+            if (datas == null || datas.size() == 0) {
+                Utils.showToast("所有动态已加载完毕");
+                recyclerView.loadMoreComplete();
+            } else {
+                momentAdapter.getDatas().addAll(momentAdapter.getDatas().size() - 1, datas);
+                updateDataList(loadType);
+            }
         }
+    }
 
+    private void updateDataList(int loadType) {
         if (momentAdapter.getDatas().size() == 0) {
             progressCombineView.showEmpty(null, "哎呀", "没有获取到数据，认识更多朋友吧~");
-        }else{
+        } else {
             momentAdapter.notifyDataSetChanged();
             App.getHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    recyclerView.refreshComplete();
+                    if (loadType == TYPE_PULLDOWNREFRESH) {
+                        recyclerView.refreshComplete();
+                    } else if (loadType == TYPE_PULLUPMORE) {
+                        recyclerView.loadMoreComplete();
+                    }
                 }
-            },888);
+            }, 888);
         }
-
-//        if(momentAdapter.getDatas().size()<45 + MomentAdapter.HEADVIEW_SIZE){
-//            recyclerView.setupMoreListener(new OnMoreListener() {
-//                @Override
-//                public void onMoreAsked(int overallItemsCount, int itemsBeforeMore, int maxLastVisiblePosition) {
-//
-//                    new Handler().postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            presenter.loadData(TYPE_UPLOADREFRESH);
-//                        }
-//                    }, 2000);
-//
-//                }
-//            }, 1);
-//        }else{
-//            recyclerView.removeMoreListener();
-//            recyclerView.hideMoreProgress();
-//        }
-
     }
 
     @Override

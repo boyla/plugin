@@ -6,7 +6,8 @@
     <string name="splash_word_2">From a place beyond time,and time beyond counting</string>
     <string name="splash_word_3">Better to run than curse the road</string>
     <string name="welcome">Welcome</string>
-    <string name="username">Username</string>
+    <string name="username">Account</string>
+    <string name="nick_name">Nickname</string>
     <string name="your_username">Your username</string>
     <string name="email">Email</string>
     <string name="your_email">Your email</string>

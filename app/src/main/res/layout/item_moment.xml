@@ -147,7 +147,7 @@
     </LinearLayout>
 
     <View
-        android:background="@color/activity_bg"
+        android:background="#EBEBEB"
         android:layout_width="match_parent"
         android:layout_height="4.5dp"/>
 </LinearLayout>

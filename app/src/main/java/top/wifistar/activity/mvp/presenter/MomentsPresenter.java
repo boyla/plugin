@@ -16,6 +16,8 @@ import top.wifistar.bean.demo.Comment;
 import top.wifistar.utils.DatasUtil;
 import top.wifistar.utils.Utils;
 
+import static top.wifistar.fragment.MomentsFragment.TYPE_PULLDOWNREFRESH;
+
 
 /**
  * @author yiw
@@ -37,6 +39,9 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     }
 
     public void loadData(int loadType) {
+        if(loadType == TYPE_PULLDOWNREFRESH){
+            SKIP = 0;
+        }
         BmobQuery<Moment> query = new BmobQuery<>();
         query.setLimit(PAGE_LIMIT);
         query.setSkip(SKIP);
@@ -45,8 +50,8 @@ public class MomentsPresenter implements MomentsContract.Presenter {
                     @Override
                     public void done(List<Moment> data, BmobException e) {
                         if (e == null) {
-                            if (data.size() > 0) {
-                                //SKIP += data.size();
+                            if (data != null) {
+                                SKIP += data.size();
                                 if (view != null) {
                                     view.update2loadData(loadType, data);
                                 }

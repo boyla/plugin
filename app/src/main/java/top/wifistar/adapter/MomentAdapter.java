@@ -133,6 +133,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             //todo 查询帖子关联的User,以及赞列表和评论列表
             Glide.with(context).load(R.drawable.default_avartar).transform(new GlideCircleTransform(context)).into(holder.headIv);
             queryUser(moment, holder);
+            holder.digCommentBody.setVisibility(View.GONE);
             queryLikes(moment, holder, dataPosition);
 
             final String content = moment.getContent();
@@ -226,7 +227,6 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     break;
                 case "praise":
                     refreshLike(item, momentViewHolder);
-                    //momentViewHolder.praiseListView.setUsers(item.likes);
                     refreshLikeListAndCommentList(item, (MomentViewHolder) holder, dataPosition, false);
                     break;
             }
@@ -394,7 +394,14 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
         String name = moment.getUser().getName();
         String headImg = moment.getUser().getHeadUrl();
-        Glide.with(context).load(headImg).diskCacheStrategy(DiskCacheStrategy.ALL).transform(new GlideCircleTransform(context)).into(holder.headIv);
+        if (!TextUtils.isEmpty(headImg))
+            Glide.with(context)
+                    .load(headImg)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .transform(new GlideCircleTransform(context))
+                    .placeholder(R.drawable.default_avartar)
+                    .transform(new GlideCircleTransform(context))
+                    .into(holder.headIv);
         holder.nameTv.setText(name);
         //加载完User后
         if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {

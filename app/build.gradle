@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'realm-android'
-apply plugin: 'me.tatarka.retrolambda'
+//apply plugin: 'me.tatarka.retrolambda'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 //    aaptOptions.cruncherEnabled = false
 //    aaptOptions.useNewCruncher = false
 
@@ -17,6 +17,11 @@ android {
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
     }
     buildTypes {
         release {
@@ -48,6 +53,7 @@ repositories {
         dirs 'libs'
     }
     mavenCentral()
+    google()
 }
 
 dependencies {
@@ -83,7 +89,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
-    provided 'org.parceler:parceler:1.1.6'
+    compile "org.parceler:parceler-api:1.1.6"
+    annotationProcessor 'org.parceler:parceler:1.1.6'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     compile('com.squareup.retrofit2:retrofit:2.0.0') { exclude group: 'com.squareup.okhttp3' }

@@ -88,8 +88,8 @@
     <color name="praise_item_default">#333333</color>
     <color name="praise_item_selector_default">#cccccc</color>
 
-
-
+    <color name="list_bg">#EBEBEB</color>
+    mContext.getResources().getColorStateList(R.drawable.big_btn_text_color)
 
 </resources>
 

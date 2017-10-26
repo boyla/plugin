@@ -5,7 +5,8 @@
     <string name="splash_word_3">与其感慨路难行，不如马上出发.</string>
 
     <string name="welcome">欢    迎</string>
-    <string name="username">用户名</string>
+    <string name="username">账号</string>
+    <string name="nick_name">昵称</string>
     <string name="your_username">用户名</string>
     <string name="email">电子邮箱</string>
     <string name="your_email">注册邮箱</string>

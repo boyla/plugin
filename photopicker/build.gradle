@@ -11,7 +11,7 @@ version = "1.0"
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
     resourcePrefix "android_" // 资源前缀
 
     defaultConfig {

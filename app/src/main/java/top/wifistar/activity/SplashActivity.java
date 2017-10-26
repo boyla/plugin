@@ -237,8 +237,14 @@ public class SplashActivity extends BaseActivity {
         initResetPassword(forgetPsw);
     }
 
-    private void register(String email, String username, String password) {
+    public String nickname;
+
+    private void register(String email, String username, String password, String nickname) {
         Utils.closeKeyboard(SplashActivity.this);
+        if (TextUtils.isEmpty(nickname)) {
+            Utils.showToast(topReminder, "昵称不能为空");
+            return;
+        }
         if (TextUtils.isEmpty(email)) {
             Utils.showToast(topReminder, getResources().getString(R.string.email_is_empty));
             return;
@@ -368,6 +374,8 @@ public class SplashActivity extends BaseActivity {
         final EditText etEmail = (EditText) llRegister.findViewById(R.id.etEmail);
         final EditText etUsername = (EditText) llRegister.findViewById(R.id.etUsername);
         final EditText etPassword = (EditText) llRegister.findViewById(R.id.etPassword);
+        final EditText eNickname = (EditText) llRegister.findViewById(R.id.eNickname);
+
         etPassword.setTransformationMethod(new PasswordTransformationMethod());
         Button btCancel = (Button) llRegister.findViewById(R.id.btCancel);
         Button btRegisterDone = (Button) llRegister.findViewById(R.id.btRegisterDone);
@@ -384,7 +392,8 @@ public class SplashActivity extends BaseActivity {
                 if (!isNetworkConnected(SplashActivity.this)) {
                     Utils.showToast(topReminder, "未连接网络");
                 }
-                register(etEmail.getText().toString().trim(), etUsername.getText().toString().trim(), etPassword.getText().toString().trim());
+                nickname = eNickname.getText().toString().trim();
+                register(etEmail.getText().toString().trim(), etUsername.getText().toString().trim(), etPassword.getText().toString().trim(), nickname);
             }
         });
     }
@@ -399,6 +408,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     volatile int count = 0;
+
     private void login(String username, String password) {
         if (TextUtils.isEmpty(username) || username.length() < 6) {
             Utils.showToast(topReminder, getResources().getString(R.string.username_too_short));
@@ -431,6 +441,7 @@ public class SplashActivity extends BaseActivity {
                 if (TextUtils.isEmpty(bmobUser.getProfileId())) {
                     final UserProfile profile = new UserProfile();
                     profile.setUserId(bmobUser.getObjectId());
+                    profile.setNickName(nickname);
                     profile.save(new SaveListener<String>() {
                         @Override
                         public void done(String profileId, BmobException e) {
@@ -481,7 +492,7 @@ public class SplashActivity extends BaseActivity {
                                 ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                                 count++;
                                 updateUser();
-                            }else{
+                            } else {
                                 generateNewUser(bmobUser.getProfileId());
                             }
                         }
@@ -492,7 +503,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void updateUser() {
-        if(count==2){
+        if (count == 2) {
             Utils.updateUser();
         }
     }
@@ -500,7 +511,7 @@ public class SplashActivity extends BaseActivity {
     private void generateNewUser(String profileId) {
         //generate a user and save, then cache the obj id
         String nickName = "";
-        if(App.currentUserProfile!=null && !TextUtils.isEmpty(App.currentUserProfile.getNickName())){
+        if (App.currentUserProfile != null && !TextUtils.isEmpty(App.currentUserProfile.getNickName())) {
             nickName = App.currentUserProfile.getNickName();
         }
         User user = new User(nickName, "");
