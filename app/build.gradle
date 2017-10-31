@@ -59,7 +59,7 @@ repositories {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile files('libs/flatbuffers-java-1.2.0-SNAPSHOT.jar')
-    compile project(':photopicker')
+    implementation project(':photopicker')
 //    compile project(':IMLib')
 //    compile project(':IMKit')
     //bmob-sdk：Bmob的android sdk包，包含了Bmob的数据存储、文件等服务，以下是最新的bmob-sdk:

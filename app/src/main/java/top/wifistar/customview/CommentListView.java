@@ -22,9 +22,9 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
 import top.wifistar.app.App;
-import top.wifistar.bean.demo.Comment;
+import top.wifistar.bean.bmob.Comment;
 import top.wifistar.R;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.utils.UrlUtils;
 import top.wifistar.utils.Utils;
 

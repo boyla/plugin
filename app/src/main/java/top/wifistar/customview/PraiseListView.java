@@ -14,7 +14,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 import top.wifistar.app.App;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.R;
 
 

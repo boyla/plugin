@@ -21,8 +21,9 @@ import cn.bmob.v3.Bmob;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import top.wifistar.R;
-import top.wifistar.bean.UserProfile;
+import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
+import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.CacheUtils;
 
@@ -75,6 +76,7 @@ public class App extends MultiDexApplication {
 //    public DbUtils countryDbUtils;
 
     public static final ExecutorService pool = Executors.newFixedThreadPool(5);
+    RealmConfiguration realmConfig;
 
 //    @Override
 //    protected void attachBaseContext(Context base) {
@@ -112,8 +114,9 @@ public class App extends MultiDexApplication {
 
         APP_INSTANCE = this;
         Realm.init(this);
-        RealmConfiguration realmConfig = new RealmConfiguration.Builder().build();
+        realmConfig = new RealmConfiguration.Builder().name("UserData.realm").build();
         Realm.setDefaultConfiguration(realmConfig);
+        BaseRealmDao.realm = getRealm();
 //        if (getApplicationInfo().packageName
 //                .equals(getCurProcessName(getApplicationContext()))
 //                || "io.rong.push"
@@ -413,5 +416,9 @@ public class App extends MultiDexApplication {
 
     public static App getApp() {
         return APP_INSTANCE;
+    }
+
+    public Realm getRealm() {
+        return Realm.getInstance(realmConfig);
     }
 }

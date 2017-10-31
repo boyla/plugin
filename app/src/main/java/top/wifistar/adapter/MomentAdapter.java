@@ -13,15 +13,16 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
+import io.realm.RealmResults;
 import top.wifistar.R;
 import top.wifistar.activity.ImagePagerActivity;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
@@ -32,19 +33,21 @@ import top.wifistar.adapter.viewholder.URLViewHolder;
 import top.wifistar.adapter.viewholder.VideoViewHolder;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
-import top.wifistar.bean.UserProfile;
-import top.wifistar.bean.demo.ActionItem;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.CommentConfig;
-import top.wifistar.bean.demo.Comment;
+import top.wifistar.bean.bmob.UserProfile;
+import top.wifistar.bean.bmob.ActionItem;
+import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.CommentConfig;
+import top.wifistar.bean.bmob.Comment;
 //import top.wifistar.bean.demo.Favor;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleVideoView;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.MultiImageView;
 import top.wifistar.customview.PraiseListView;
 import top.wifistar.customview.SnsPopupWindow;
 import top.wifistar.dialog.CommentDialog;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.UserRealm;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.UrlUtils;
 import top.wifistar.utils.Utils;
@@ -373,22 +376,36 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
-        if (moment.getUser().getName() != null) {
+        if (moment.getUser()==null || moment.getUser().getName() != null) {
             setUserToHolder(moment, holder);
             return;
         }
-        BmobQuery<User> query = new BmobQuery<User>();
-        query.getObject(moment.getUser().getObjectId(), new QueryListener<User>() {
-            @Override
-            public void done(User object, BmobException e) {
-                if (e == null) {
-                    moment.setUser(object);
-                    setUserToHolder(moment, holder);
-                } else {
-                    Utils.showToast("失败：" + e.getMessage() + "," + e.getErrorCode());
+        //TODO first query from db, if no data query Bmob
+        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId",moment.getUser().getObjectId()).findAll();
+        if(dbData.isEmpty()){
+            //query Bmob
+            BmobQuery<User> query = new BmobQuery<User>();
+            query.getObject(moment.getUser().getObjectId(), new QueryListener<User>() {
+                @Override
+                public void done(User object, BmobException e) {
+                    if (e == null) {
+                        moment.setUser(object);
+                        BaseRealmDao.insert(object.toRealmObject());
+                        setUserToHolder(moment, holder);
+                    } else {
+                        Utils.showToast("失败：" + e.getMessage() + "," + e.getErrorCode());
+                    }
                 }
-            }
-        });
+            });
+        }else{
+            UserRealm userRealm = dbData.first();
+            User user = (User) userRealm.toBmobObject();
+            moment.setUser(user);
+            setUserToHolder(moment, holder);
+        }
+
+
+
     }
 
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {

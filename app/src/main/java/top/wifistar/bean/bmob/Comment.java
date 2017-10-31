@@ -1,4 +1,4 @@
-package top.wifistar.bean.demo;
+package top.wifistar.bean.bmob;
 
 import cn.bmob.v3.BmobObject;
 
@@ -13,8 +13,8 @@ import cn.bmob.v3.BmobObject;
 public class Comment extends BmobObject {
 
 	private String momentId;
-	private top.wifistar.bean.demo.User user;
-	private top.wifistar.bean.demo.User toReplyUser;
+	private top.wifistar.bean.bmob.User user;
+	private top.wifistar.bean.bmob.User toReplyUser;
 	private String content;
 	public String getMomentId() {
 		return momentId;
@@ -28,16 +28,16 @@ public class Comment extends BmobObject {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public top.wifistar.bean.demo.User getUser() {
+	public top.wifistar.bean.bmob.User getUser() {
 		return user;
 	}
-	public void setUser(top.wifistar.bean.demo.User user) {
+	public void setUser(top.wifistar.bean.bmob.User user) {
 		this.user = user;
 	}
-	public top.wifistar.bean.demo.User getToReplyUser() {
+	public top.wifistar.bean.bmob.User getToReplyUser() {
 		return toReplyUser;
 	}
-	public void setToReplyUser(top.wifistar.bean.demo.User toReplyUser) {
+	public void setToReplyUser(top.wifistar.bean.bmob.User toReplyUser) {
 		this.toReplyUser = toReplyUser;
 	}
 	

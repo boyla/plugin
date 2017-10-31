@@ -22,7 +22,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jcodecraeer.xrecyclerview.ProgressStyle;
@@ -43,10 +42,10 @@ import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
 import top.wifistar.adapter.MomentAdapter;
 import top.wifistar.app.App;
-import top.wifistar.bean.demo.Comment;
-import top.wifistar.bean.demo.User;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.CommentConfig;
+import top.wifistar.bean.bmob.Comment;
+import top.wifistar.bean.bmob.User;
+import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.TitleBar;
@@ -55,6 +54,8 @@ import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.utils.CommonUtils;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
+
+import static top.wifistar.activity.mvp.presenter.MomentsPresenter.NO_MORE_DATA;
 
 /**
  * Created by hasee on 2017/4/8.
@@ -290,7 +291,10 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             momentAdapter.setDatas(datas);
             updateDataList(loadType);
         } else if (loadType == TYPE_PULLUPMORE) {
-            if (datas == null || datas.size() == 0) {
+            if (NO_MORE_DATA) {
+                recyclerView.loadMoreComplete();
+            } else if (datas == null || datas.size() == 0) {
+                NO_MORE_DATA = true;
                 Utils.showToast("所有动态已加载完毕");
                 recyclerView.loadMoreComplete();
             } else {

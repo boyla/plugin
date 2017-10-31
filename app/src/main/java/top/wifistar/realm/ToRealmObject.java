@@ -1,4 +1,4 @@
-package top.wifistar.bean;
+package top.wifistar.realm;
 
 import io.realm.RealmObject;
 

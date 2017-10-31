@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import top.wifistar.R;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
-import top.wifistar.bean.demo.Comment;
+import top.wifistar.bean.bmob.Comment;
 import top.wifistar.utils.DatasUtil;
 
 

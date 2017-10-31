@@ -4,7 +4,7 @@ import android.util.Log;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.User;
 
 /**
  * Created by boyla on 2017/9/29.

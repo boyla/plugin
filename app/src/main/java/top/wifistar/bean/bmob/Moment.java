@@ -1,18 +1,14 @@
-package top.wifistar.bean.demo;
+package top.wifistar.bean.bmob;
 
 import android.text.TextUtils;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import cn.bmob.v3.BmobObject;
-import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.datatype.BmobRelation;
 import top.wifistar.app.App;
-import top.wifistar.bean.BUser;
 
 
 public class Moment extends BmobObject {

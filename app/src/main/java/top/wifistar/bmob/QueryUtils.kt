@@ -3,7 +3,7 @@ package top.wifistar.bmob
 import cn.bmob.v3.BmobQuery
 import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.QueryListener
-import top.wifistar.bean.demo.User
+import top.wifistar.bean.bmob.User
 import top.wifistar.utils.Utils
 
 /**

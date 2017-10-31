@@ -1,6 +1,7 @@
 package top.wifistar.bean;
 
 import cn.bmob.v3.BmobUser;
+import top.wifistar.bean.bmob.UserProfile;
 
 /**
  * Created by hasee on 2017/1/10.

@@ -1,22 +1,20 @@
-package top.wifistar.bean.demo;
+package top.wifistar.bean.bmob;
 
 import cn.bmob.v3.BmobObject;
+import io.realm.RealmObject;
+import top.wifistar.realm.ToRealmObject;
+import top.wifistar.realm.UserRealm;
 
-/**
- * 
-* @ClassName: User 
-* @Description: TODO(这里用一句话描述这个类的作用) 
-* @author yiw
-* @date 2015-12-28 下午3:45:04 
-*
- */
-public class User extends BmobObject {
+
+
+public class User extends BmobObject implements ToRealmObject {
 	//nick name, from profile
-	private String name;
-	private String headUrl;
+	public String name;
+	public String headUrl;
 	public String id;
-	public User(){
-	}
+
+	public User(){}
+
 	public User(String name, String headUrl){
 		this.name = name;
 		this.headUrl = headUrl;
@@ -46,5 +44,15 @@ public class User extends BmobObject {
 		return "objectId = " + getObjectId()
 				+ "; name = " + name
 				+ "; headUrl = " + headUrl;
+	}
+
+	@Override
+	public RealmObject toRealmObject() {
+		UserRealm realm = new UserRealm();
+		realm.name = name;
+		realm.headUrl = headUrl;
+		realm.id = id;
+		realm.objectId = getObjectId();
+		return realm;
 	}
 }

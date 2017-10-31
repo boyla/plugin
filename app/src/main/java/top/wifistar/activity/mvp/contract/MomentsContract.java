@@ -5,10 +5,9 @@ import java.util.List;
 
 import top.wifistar.activity.mvp.BasePresenter;
 import top.wifistar.activity.mvp.BaseView;
-import top.wifistar.bean.demo.Comment;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.CommentConfig;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.Comment;
+import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.CommentConfig;
 
 /**
  * Created by suneee on 2016/7/15.

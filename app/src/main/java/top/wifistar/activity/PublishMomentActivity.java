@@ -40,12 +40,9 @@ import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
-import top.wifistar.bean.BUser;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.Moment;
 import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.manager.FileUploadManager;
-import top.wifistar.utils.ACache;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 

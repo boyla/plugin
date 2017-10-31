@@ -1,6 +1,4 @@
-package top.wifistar.bean.demo;
-
-import cn.bmob.v3.BmobObject;
+package top.wifistar.bean.bmob;
 
 /**
  * Created by suneee on 2016/11/17.

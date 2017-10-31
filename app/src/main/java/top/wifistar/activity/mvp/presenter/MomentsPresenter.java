@@ -10,13 +10,14 @@ import cn.bmob.v3.listener.FindListener;
 import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.activity.mvp.modle.MomentsModel;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.CommentConfig;
-import top.wifistar.bean.demo.Comment;
+import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.CommentConfig;
+import top.wifistar.bean.bmob.Comment;
 import top.wifistar.utils.DatasUtil;
 import top.wifistar.utils.Utils;
 
 import static top.wifistar.fragment.MomentsFragment.TYPE_PULLDOWNREFRESH;
+import static top.wifistar.fragment.MomentsFragment.TYPE_PULLUPMORE;
 
 
 /**
@@ -31,6 +32,7 @@ public class MomentsPresenter implements MomentsContract.Presenter {
 
     public static int SKIP = 0;
     public static int PAGE_LIMIT = 10;
+    public static boolean NO_MORE_DATA = false;
 
 
     public MomentsPresenter(MomentsContract.View view) {
@@ -40,6 +42,10 @@ public class MomentsPresenter implements MomentsContract.Presenter {
 
     public void loadData(int loadType) {
         if(loadType == TYPE_PULLDOWNREFRESH){
+            NO_MORE_DATA = false;
+            SKIP = 0;
+        }
+        if(loadType == TYPE_PULLUPMORE){
             SKIP = 0;
         }
         BmobQuery<Moment> query = new BmobQuery<>();

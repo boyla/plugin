@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Random;
 
 import cn.bmob.v3.datatype.BmobRelation;
-import top.wifistar.bean.demo.Comment;
+import top.wifistar.bean.bmob.Comment;
 //import top.wifistar.bean.demo.Favor;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.Photo;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.Photo;
+import top.wifistar.bean.bmob.User;
 
 /**
  * 

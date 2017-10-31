@@ -1,8 +1,6 @@
 package top.wifistar.activity.mvp.modle;
 
-import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
@@ -10,8 +8,8 @@ import cn.bmob.v3.listener.UpdateListener;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
-import top.wifistar.bean.demo.Moment;
-import top.wifistar.bean.demo.User;
+import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.Utils;
 

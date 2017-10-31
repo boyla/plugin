@@ -1,7 +1,6 @@
 package top.wifistar.customview;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import top.wifistar.R;
-import top.wifistar.bean.demo.ActionItem;
+import top.wifistar.bean.bmob.ActionItem;
 import top.wifistar.utils.DensityUtil;
 
 /**

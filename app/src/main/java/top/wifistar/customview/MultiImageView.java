@@ -13,11 +13,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import top.wifistar.R;
-import top.wifistar.bean.demo.Photo;
+import top.wifistar.bean.bmob.Photo;
 import top.wifistar.utils.DensityUtil;
 
 /**

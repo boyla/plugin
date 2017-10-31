@@ -1,6 +1,6 @@
 package top.wifistar.event;
 
-import top.wifistar.bean.demo.Moment;
+import top.wifistar.bean.bmob.Moment;
 
 /**
  * Created by boyla on 2017/10/17.

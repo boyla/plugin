@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.1.2-5'
+    ext.kotlin_version = '1.1.51'
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         jcenter()
@@ -14,7 +14,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'com.jakewharton:butterknife-gradle-plugin:8.4.0'
-        classpath "io.realm:realm-gradle-plugin:3.1.1"
+//        classpath "io.realm:realm-gradle-plugin:3.1.1"
+        classpath "io.realm:realm-gradle-plugin:4.1.1"
 //        classpath 'me.tatarka:gradle-retrolambda:3.2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }

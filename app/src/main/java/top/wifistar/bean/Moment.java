@@ -1,8 +1,8 @@
 package top.wifistar.bean;
 
 import cn.bmob.v3.BmobObject;
-import cn.bmob.v3.datatype.BmobDate;
 import io.realm.RealmObject;
+import top.wifistar.realm.ToRealmObject;
 
 /**
  * Created by hasee on 2017/4/5.

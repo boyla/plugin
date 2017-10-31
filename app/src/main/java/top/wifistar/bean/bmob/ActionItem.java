@@ -1,4 +1,4 @@
-package top.wifistar.bean.demo;
+package top.wifistar.bean.bmob;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
