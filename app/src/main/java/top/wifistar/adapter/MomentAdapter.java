@@ -390,7 +390,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 public void done(User object, BmobException e) {
                     if (e == null) {
                         moment.setUser(object);
-                        BaseRealmDao.insert(object.toRealmObject());
+                        BaseRealmDao.insertOrUpdate(object.toRealmObject());
                         setUserToHolder(moment, holder);
                     } else {
                         Utils.showToast("失败：" + e.getMessage() + "," + e.getErrorCode());

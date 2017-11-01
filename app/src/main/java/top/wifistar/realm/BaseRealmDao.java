@@ -60,7 +60,7 @@ public class BaseRealmDao {
      * @param object
      * @return 保存或者修改是否成功
      */
-    public boolean insertOrUpdate(RealmObject object) {
+    public static boolean insertOrUpdate(RealmObject object) {
         try {
             realm.beginTransaction();
             realm.insertOrUpdate(object);

@@ -30,7 +30,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	}
 
 	@Override
-	public BmobObject toBmobObject() {
+	public User toBmobObject() {
 		User user = new User();
 		user.name = name;
 		user.headUrl = headUrl;

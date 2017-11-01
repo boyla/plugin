@@ -1,6 +1,8 @@
 package top.wifistar.bean.bmob;
 
 import cn.bmob.v3.BmobObject;
+import top.wifistar.realm.CommentRealm;
+import top.wifistar.realm.ToRealmObject;
 
 /**
  * 
@@ -10,12 +12,13 @@ import cn.bmob.v3.BmobObject;
 * @date 2015-12-28 下午3:44:38 
 *
  */
-public class Comment extends BmobObject {
+public class Comment extends BmobObject implements ToRealmObject{
 
-	private String momentId;
-	private top.wifistar.bean.bmob.User user;
-	private top.wifistar.bean.bmob.User toReplyUser;
-	private String content;
+	public String momentId;
+	public top.wifistar.bean.bmob.User user;
+	public top.wifistar.bean.bmob.User toReplyUser;
+	public String content;
+
 	public String getMomentId() {
 		return momentId;
 	}
@@ -40,5 +43,15 @@ public class Comment extends BmobObject {
 	public void setToReplyUser(top.wifistar.bean.bmob.User toReplyUser) {
 		this.toReplyUser = toReplyUser;
 	}
-	
+
+	@Override
+	public CommentRealm toRealmObject() {
+		CommentRealm commentRealm = new CommentRealm();
+		commentRealm.objectId = getObjectId();
+		commentRealm.content = content;
+		commentRealm.momentId = momentId;
+		commentRealm.user = user.toRealmObject();
+		commentRealm.toReplyUser = toReplyUser.toRealmObject();
+		return commentRealm;
+	}
 }

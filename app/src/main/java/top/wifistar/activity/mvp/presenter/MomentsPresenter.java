@@ -31,7 +31,7 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     private MomentsContract.View view;
 
     public static int SKIP = 0;
-    public static int PAGE_LIMIT = 10;
+    public static final int PAGE_LIMIT = 10;
     public static boolean NO_MORE_DATA = false;
 
 
@@ -43,9 +43,6 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     public void loadData(int loadType) {
         if(loadType == TYPE_PULLDOWNREFRESH){
             NO_MORE_DATA = false;
-            SKIP = 0;
-        }
-        if(loadType == TYPE_PULLUPMORE){
             SKIP = 0;
         }
         BmobQuery<Moment> query = new BmobQuery<>();

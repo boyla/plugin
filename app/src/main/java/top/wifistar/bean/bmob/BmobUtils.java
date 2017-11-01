@@ -1,4 +1,4 @@
-package top.wifistar.bmob;
+package top.wifistar.bean.bmob;
 
 import android.util.Log;
 

@@ -45,7 +45,7 @@ import top.wifistar.bean.BUser;
 import top.wifistar.bean.IMUserRealm;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.User;
-import top.wifistar.bmob.BmobUtils;
+import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.TopReminder;
 

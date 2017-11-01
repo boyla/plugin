@@ -47,7 +47,7 @@ public class User extends BmobObject implements ToRealmObject {
 	}
 
 	@Override
-	public RealmObject toRealmObject() {
+	public UserRealm toRealmObject() {
 		UserRealm realm = new UserRealm();
 		realm.name = name;
 		realm.headUrl = headUrl;

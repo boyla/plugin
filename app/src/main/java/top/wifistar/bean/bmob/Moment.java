@@ -8,10 +8,14 @@ import java.util.List;
 
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobRelation;
+import io.realm.RealmList;
+import io.realm.RealmObject;
 import top.wifistar.app.App;
+import top.wifistar.realm.MomentRealm;
+import top.wifistar.realm.ToRealmObject;
 
 
-public class Moment extends BmobObject {
+public class Moment extends BmobObject implements ToRealmObject{
 
 	public final static String TYPE_TEXT = "4";
 	public final static String TYPE_URL = "1";
@@ -23,16 +27,16 @@ public class Moment extends BmobObject {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String content;
-	private String type;//4:文字 1:链接  2:图片 3:视频
-	private String linkImg;
-	private String linkTitle;
-	private String photos;
+	public String content;
+	public String type;//4:文字 1:链接  2:图片 3:视频
+	public String linkImg;
+	public String linkTitle;
+	public String photos;
 	private BmobRelation favors;
-	private List<Comment> comments;
-	private User user;
-	private String videoUrl;
-	private String videoImgUrl;
+	public List<Comment> comments;
+	public User user;
+	public String videoUrl;
+	public String videoImgUrl;
 	public List<User> likes;
 	public ArrayList<Photo> photosData;
 
@@ -152,5 +156,25 @@ public class Moment extends BmobObject {
 			}
 		}
 		return photosData;
+	}
+
+	@Override
+	public MomentRealm toRealmObject() {
+		MomentRealm momentRealm = new MomentRealm();
+		momentRealm.comments = new RealmList(comments);
+		momentRealm.content = content;
+		momentRealm.isExpand = isExpand;
+		momentRealm.likes =  new RealmList(likes);
+		momentRealm.linkImg = linkImg;
+		momentRealm.linkTitle = linkTitle;
+		momentRealm.objectId = getObjectId();
+		momentRealm.photos = photos;
+		momentRealm.photosData =  new RealmList(photosData);
+		momentRealm.type = type;
+		momentRealm.user = user.toRealmObject();
+		momentRealm.videoImgUrl = videoImgUrl;
+		momentRealm.videoUrl = videoUrl;
+
+		return momentRealm;
 	}
 }

@@ -1,16 +1,21 @@
 package top.wifistar.realm;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.datatype.BmobDate;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
+import top.wifistar.bean.bmob.UserProfile;
 
 /**
  * Created by hasee on 2017/4/5.
  */
 
-public class UserProfileRealm extends RealmObject {
-    @PrimaryKey
+public class UserProfileRealm extends RealmObject implements ToBmobObject{
     String userId;
-    String userName;
+    String nickName;
     String birthday;
     String sex;
     String language;
@@ -27,6 +32,8 @@ public class UserProfileRealm extends RealmObject {
     String mass;
     String updatedAt;
     String momentsNum;
+    @PrimaryKey
+    public String objectId;
 
     public String getUserId() {
         return userId;
@@ -36,12 +43,12 @@ public class UserProfileRealm extends RealmObject {
         this.userId = userId;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getNickName() {
+        return nickName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 
     public String getBirthday() {
@@ -178,5 +185,35 @@ public class UserProfileRealm extends RealmObject {
 
     public void setMomentsNum(String momentsNum) {
         this.momentsNum = momentsNum;
+    }
+
+    @Override
+    public BmobObject toBmobObject() {
+        UserProfile userProfile = new UserProfile();
+        userProfile.setObjectId(objectId);
+        userProfile.userId = userId;
+        userProfile.nickName = nickName;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            userProfile.birthday = new BmobDate(sdf.parse(birthday));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        userProfile.sex = sex;
+        userProfile.language = language;
+        userProfile.moblie = moblie;
+        userProfile.email = email;
+        userProfile.description = description;
+        userProfile.country = country;
+        userProfile.state = state;
+        userProfile.city = city;
+        userProfile.avatar = avatar;
+        userProfile.pictures = pictures;
+        userProfile.invisible = invisible;
+        userProfile.blocks = blocks;
+        userProfile.mass = mass;
+        userProfile.momentsNum = momentsNum;
+        userProfile.userId = userId;
+        return userProfile;
     }
 }

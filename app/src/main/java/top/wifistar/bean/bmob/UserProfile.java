@@ -11,23 +11,23 @@ import top.wifistar.realm.UserProfileRealm;
  */
 
 public class UserProfile extends BmobObject implements ToRealmObject {
-    String userId;
-    String nickName;
-    BmobDate birthday;
-    String sex;
-    String language;
-    String moblie;
-    String email;
-    String description;
-    String country;
-    String state;
-    String city;
-    String avatar;
-    String pictures;
-    Boolean invisible;
-    String blocks;
-    String mass;
-    String momentsNum;
+    public String userId;
+    public String nickName;
+    public BmobDate birthday;
+    public String sex;
+    public String language;
+    public String moblie;
+    public String email;
+    public String description;
+    public String country;
+    public String state;
+    public String city;
+    public String avatar;
+    public String pictures;
+    public Boolean invisible;
+    public String blocks;
+    public String mass;
+    public String momentsNum;
 
     public String getUserId() {
         return userId;
@@ -169,7 +169,7 @@ public class UserProfile extends BmobObject implements ToRealmObject {
     public RealmObject toRealmObject() {
         UserProfileRealm obj = new UserProfileRealm();
         obj.setUserId(this.getUserId());
-        obj.setUserName(this.getNickName());
+        obj.setNickName(this.getNickName());
         obj.setBirthday(this.getBirthday().toString());
         obj.setSex(this.getSex());
         obj.setLanguage(this.getLanguage());
@@ -185,6 +185,7 @@ public class UserProfile extends BmobObject implements ToRealmObject {
         obj.setBlocks(this.getBlocks());
         obj.setMomentsNum(this.getMomentsNum());
         obj.setUpdatedAt(this.getUpdatedAt());
+        obj.objectId = getObjectId();
         return obj;
     }
 }

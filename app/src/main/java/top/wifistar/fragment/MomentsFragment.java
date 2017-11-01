@@ -132,7 +132,11 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
             @Override
             public void onLoadMore() {
-                presenter.loadData(TYPE_PULLUPMORE);
+                if (NO_MORE_DATA) {
+                    recyclerView.loadMoreComplete();
+                } else {
+                    presenter.loadData(TYPE_PULLUPMORE);
+                }
             }
         });
     }
@@ -291,9 +295,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             momentAdapter.setDatas(datas);
             updateDataList(loadType);
         } else if (loadType == TYPE_PULLUPMORE) {
-            if (NO_MORE_DATA) {
-                recyclerView.loadMoreComplete();
-            } else if (datas == null || datas.size() == 0) {
+            if (datas == null || datas.size() == 0) {
                 NO_MORE_DATA = true;
                 Utils.showToast("所有动态已加载完毕");
                 recyclerView.loadMoreComplete();
