@@ -622,11 +622,11 @@ public class Utils {
 //        });
 //    }
 
-    public static void cancelDialog(Dialog d){
-        try{
+    public static void cancelDialog(Dialog d) {
+        try {
             if (d != null && d.isShowing())
                 d.cancel();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -819,7 +819,7 @@ public class Utils {
         String result = "";
         try {
             result = AESCrypt.decrypt(Utils.getUniqueID(), decryptedStr);
-        }catch (GeneralSecurityException e){
+        } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
         return result;
@@ -831,19 +831,19 @@ public class Utils {
         String result = "";
         try {
             result = AESCrypt.decrypt(psw, decryptedStr);
-        }catch (GeneralSecurityException e){
+        } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
         return result;
     }
 
-    public static void showToast(String str){
-        Toast.makeText(App.mContext,str,Toast.LENGTH_LONG).show();
+    public static void showToast(String str) {
+        Toast.makeText(App.mContext, str, Toast.LENGTH_LONG).show();
     }
 
-    public static void closeKeyboard(Activity context){
-        InputMethodManager imm =  (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-        if(imm != null) {
+    public static void closeKeyboard(Activity context) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) {
             imm.hideSoftInputFromWindow(context.getWindow().getDecorView().getWindowToken(),
                     0);
         }
@@ -854,46 +854,46 @@ public class Utils {
         topReminder.show(string, false, true);
     }
 
-    public static void showToast(TopReminder topReminder, String string,int themeType) {
+    public static void showToast(TopReminder topReminder, String string, int themeType) {
         topReminder.setTheme(themeType);
         topReminder.show(string, false, true);
     }
 
-    public static int getLevelColor(Context mContext){
+    public static int getLevelColor(Context mContext) {
         int color;
 //        SharedPreferences sp = mContext.getSharedPreferences("cache_data",MODE_PRIVATE);
 //        sp.edit().putInt("CURRENT_LEVEL",++lv).commit();
-        SharedPreferences sp = mContext.getSharedPreferences("cache_data",MODE_PRIVATE);
-        int level = sp.getInt("CURRENT_LEVEL",1);
-        switch (level){
+        SharedPreferences sp = mContext.getSharedPreferences("cache_data", MODE_PRIVATE);
+        int level = sp.getInt("CURRENT_LEVEL", 1);
+        switch (level) {
             case 1:
-                color  = mContext.getResources().getColor(R.color.level_1);
+                color = mContext.getResources().getColor(R.color.level_1);
                 break;
             case 2:
-                color  = mContext.getResources().getColor(R.color.level_2);
+                color = mContext.getResources().getColor(R.color.level_2);
                 break;
             case 3:
-                color  = mContext.getResources().getColor(R.color.level_3);
+                color = mContext.getResources().getColor(R.color.level_3);
                 break;
             case 4:
-                color  = mContext.getResources().getColor(R.color.level_4);
+                color = mContext.getResources().getColor(R.color.level_4);
                 break;
             case 5:
-                color  = mContext.getResources().getColor(R.color.level_5);
+                color = mContext.getResources().getColor(R.color.level_5);
                 break;
             case 6:
-                color  = mContext.getResources().getColor(R.color.level_6);
+                color = mContext.getResources().getColor(R.color.level_6);
                 break;
             default:
-                color  = mContext.getResources().getColor(R.color.level_1);
+                color = mContext.getResources().getColor(R.color.level_1);
         }
         return color;
     }
 
-    public static int getLevelColorID(Context mContext){
-        SharedPreferences sp = mContext.getSharedPreferences("cache_data",MODE_PRIVATE);
-        int level = sp.getInt("CURRENT_LEVEL",1);
-        switch (level){
+    public static int getLevelColorID(Context mContext) {
+        SharedPreferences sp = mContext.getSharedPreferences("cache_data", MODE_PRIVATE);
+        int level = sp.getInt("CURRENT_LEVEL", 1);
+        switch (level) {
             case 1:
                 return R.color.level_1;
             case 2:
@@ -912,29 +912,29 @@ public class Utils {
     }
 
     public static void setUserAvatar(Context context, CircleImageView mCustomLogo) {
-        UserProfile profile = (UserProfile) ACache.get(context).getAsObject("CURRENT_USER_PROFILE_"+BUser.getCurrentUser().getObjectId());
-        if ( profile == null) {
-           return;
-        }else if(!TextUtils.isEmpty(profile.getAvatar())){
+        UserProfile profile = (UserProfile) ACache.get(context).getAsObject("CURRENT_USER_PROFILE_" + BUser.getCurrentUser().getObjectId());
+        if (profile == null) {
+            return;
+        } else if (!TextUtils.isEmpty(profile.getAvatar())) {
             Glide.with(context).load(profile.getAvatar()).into(mCustomLogo);
-        }else if("0".equals(profile.getSex())){
+        } else if ("0".equals(profile.getSex())) {
             Glide.with(context).load(R.drawable.default_avartar_female).into(mCustomLogo);
-        }else if("1".equals(profile.getSex()) || TextUtils.isEmpty(profile.getSex())){
+        } else if ("1".equals(profile.getSex()) || TextUtils.isEmpty(profile.getSex())) {
             Glide.with(context).load(R.drawable.default_avartar_male).into(mCustomLogo);
         }
 
     }
 
     public static void setUserAvatar(Context context, UserProfile profile, ImageView imageView) {
-        if ( profile == null || TextUtils.isEmpty(profile.getSex())) {
+        if (profile == null || TextUtils.isEmpty(profile.getSex())) {
             return;
-        }else if(!TextUtils.isEmpty(profile.getAvatar())){
+        } else if (!TextUtils.isEmpty(profile.getAvatar())) {
             Glide.with(context).load(profile.getAvatar())
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
-        }else if("0".equals(profile.getSex())){
+        } else if ("0".equals(profile.getSex())) {
             Glide.with(context).load(R.drawable.default_avartar_female).into(imageView);
-        }else if("1".equals(profile.getSex())){
+        } else if ("1".equals(profile.getSex())) {
             Glide.with(context).load(R.drawable.default_avartar_male).into(imageView);
         }
 
@@ -942,17 +942,17 @@ public class Utils {
 
 
     public static void setUserAvatar(Context context, IMUserRealm profile, ImageView imageView) {
-        if ( profile == null || TextUtils.isEmpty(profile.getSex())) {
+        if (profile == null || TextUtils.isEmpty(profile.getSex())) {
             return;
-        }else if(!TextUtils.isEmpty(profile.getPhoto())){
+        } else if (!TextUtils.isEmpty(profile.getPhoto())) {
             Glide.with(context).load(profile.getPhoto())
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
-        }else if("0".equals(profile.getSex())){
+        } else if ("0".equals(profile.getSex())) {
             Glide.with(context).load(R.drawable.default_avartar_female)
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
-        }else if("1".equals(profile.getSex())){
+        } else if ("1".equals(profile.getSex())) {
             Glide.with(context).load(R.drawable.default_avartar_male)
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
@@ -986,6 +986,7 @@ public class Utils {
 
     /**
      * 获取状态栏高度
+     *
      * @return
      */
     public static int getStatusBarHeight(Context context) {
@@ -998,18 +999,18 @@ public class Utils {
     }
 
     public static void updateUser() {
-            String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-            App.getHandler().postDelayed(() -> {
-                UserProfile profile = App.currentUserProfile;
-                BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar());
-            }, 1111);
+        String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+        App.getHandler().postDelayed(() -> {
+            UserProfile profile = App.currentUserProfile;
+            BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar());
+        }, 1111);
     }
 
-    public static User getShortUser(){
+    public static User getShortUser() {
         UserProfile profile = App.currentUserProfile;
         User user = null;
-        if(profile!=null){
-            user = new User(profile.getNickName(), profile.getAvatar(),profile.getObjectId());
+        if (profile != null) {
+            user = new User(profile.getNickName(), profile.getAvatar(), profile.getObjectId());
             String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
             user.setObjectId(id);
         }
@@ -1018,33 +1019,33 @@ public class Utils {
 
     public static String friendlyTime(Date time) {
         //获取time距离当前的秒数
-        int ct = (int)((System.currentTimeMillis() - time.getTime())/1000);
+        int ct = (int) ((System.currentTimeMillis() - time.getTime()) / 1000);
 
-        if(ct == 0) {
+        if (ct == 0) {
             return "刚刚";
         }
 
-        if(ct > 0 && ct < 60) {
+        if (ct > 0 && ct < 60) {
             return ct + "秒前";
         }
 
-        if(ct >= 60 && ct < 3600) {
-            return Math.max(ct / 60,1) + "分钟前";
+        if (ct >= 60 && ct < 3600) {
+            return Math.max(ct / 60, 1) + "分钟前";
         }
-        if(ct >= 3600 && ct < 86400)
+        if (ct >= 3600 && ct < 86400)
             return ct / 3600 + "小时前";
-        if(ct >= 86400 && ct < 2592000){ //86400 * 30
-            int day = ct / 86400 ;
+        if (ct >= 86400 && ct < 2592000) { //86400 * 30
+            int day = ct / 86400;
             return day + "天前";
         }
-        if(ct >= 2592000 && ct < 31104000) { //86400 * 30
+        if (ct >= 2592000 && ct < 31104000) { //86400 * 30
             return ct / 2592000 + "月前";
         }
         return ct / 31104000 + "年前";
     }
 
     //在不加载图片的前提下获得图片的宽高
-    public static int[] getImageWidthHeight(String path){
+    public static int[] getImageWidthHeight(String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();
 
         /**
@@ -1056,6 +1057,74 @@ public class Utils {
         /**
          *options.outHeight为原始图片的高
          */
-        return new int[]{options.outWidth,options.outHeight};
+        return new int[]{options.outWidth, options.outHeight};
+    }
+
+    public static boolean isWifiConnected() {
+        Context context = App.getApp();
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWiFiNetworkInfo = mConnectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (mWiFiNetworkInfo != null) {
+                return mWiFiNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isInWifi() {
+        Context context = App.getApp();
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mWiFiNetworkInfo = mConnectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (mWiFiNetworkInfo != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int getConnectedType() {
+        Context context = App.getApp();
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null && mNetworkInfo.isAvailable()) {
+                return mNetworkInfo.getType();
+            }
+        }
+        return -1;
+    }
+
+    public static boolean isMobileConnected() {
+        Context context = App.getApp();
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mMobileNetworkInfo = mConnectivityManager
+                    .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if (mMobileNetworkInfo != null) {
+                return mMobileNetworkInfo.isAvailable();
+            }
+        }
+        return false;
+    }
+
+    public static boolean isNetworkConnected(){
+        Context context = App.getApp();
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
     }
 }

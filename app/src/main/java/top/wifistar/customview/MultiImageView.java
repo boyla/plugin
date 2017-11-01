@@ -15,8 +15,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.List;
 
+import io.realm.RealmResults;
 import top.wifistar.R;
 import top.wifistar.bean.bmob.Photo;
+import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.DensityUtil;
 
 /**
@@ -190,18 +192,26 @@ public class MultiImageView extends LinearLayout {
 
             if (photo.w == 0 || photo.h == 0) {
                 //get real w and h of pic
-                Glide.with(getContext())
-                        .load(photo.url)
-                        .asBitmap()//强制Glide返回一个Bitmap对象
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(new SimpleTarget<Bitmap>() {
-                            @Override
-                            public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
-                                photo.w = bitmap.getWidth();
-                                photo.h = bitmap.getHeight();
-                                setWh(photo, imageView);
-                            }
-                        });
+                RealmResults<Photo> dbData = BaseRealmDao.realm.where(Photo.class).equalTo("url",photo.url).findAll();
+                if(dbData.isEmpty()){
+                    Glide.with(getContext())
+                            .load(photo.url)
+                            .asBitmap()//强制Glide返回一个Bitmap对象
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .into(new SimpleTarget<Bitmap>() {
+                                @Override
+                                public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                                    photo.w = bitmap.getWidth();
+                                    photo.h = bitmap.getHeight();
+                                    setWh(photo, imageView);
+                                    BaseRealmDao.insertOrUpdate(photo);
+                                }
+                            });
+                }else{
+                    photo.w = dbData.first().w;
+                    photo.h = dbData.first().h;
+                    setWh(photo, imageView);
+                }
             } else {
                 setWh(photo, imageView);
             }

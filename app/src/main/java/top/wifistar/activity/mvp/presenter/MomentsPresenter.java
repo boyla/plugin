@@ -2,17 +2,22 @@ package top.wifistar.activity.mvp.presenter;
 
 import android.view.View;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.activity.mvp.modle.MomentsModel;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.bean.bmob.Comment;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.MomentRealm;
 import top.wifistar.utils.DatasUtil;
 import top.wifistar.utils.Utils;
 
@@ -45,25 +50,43 @@ public class MomentsPresenter implements MomentsContract.Presenter {
             NO_MORE_DATA = false;
             SKIP = 0;
         }
-        BmobQuery<Moment> query = new BmobQuery<>();
-        query.setLimit(PAGE_LIMIT);
-        query.setSkip(SKIP);
-        query.order("-createdAt")
-                .findObjects(new FindListener<Moment>() {
-                    @Override
-                    public void done(List<Moment> data, BmobException e) {
-                        if (e == null) {
-                            if (data != null) {
-                                SKIP += data.size();
-                                if (view != null) {
-                                    view.update2loadData(loadType, data);
+        if(Utils.isNetworkConnected()){
+            //TODO 有待优化，根据订阅的时间节点请求Bmob
+            BmobQuery<Moment> query = new BmobQuery<>();
+            query.setLimit(PAGE_LIMIT);
+            query.setSkip(SKIP);
+            query.order("-createdAt")
+                    .findObjects(new FindListener<Moment>() {
+                        @Override
+                        public void done(List<Moment> data, BmobException e) {
+                            if (e == null) {
+                                if (data != null) {
+                                    SKIP += data.size();
+                                    if (view != null) {
+                                        view.update2loadData(loadType, data);
+                                    }
                                 }
+                            } else {
+                                Utils.showToast(e.getMessage());
                             }
-                        } else {
-                            Utils.showToast(e.getMessage());
                         }
+                    });
+        }else{
+            //load from realm
+            RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class);
+            if(!dbData.isEmpty()){
+                if (dbData.isLoaded()) {
+                    // 完成查询
+                    List<Moment> data = new ArrayList<>();
+                    for(MomentRealm momentRealm:dbData){
+                        data.add(momentRealm.toBmobObject());
                     }
-                });
+                    view.update2loadData(loadType, data);
+                }
+            }
+
+        }
+
     }
 
 
@@ -182,7 +205,6 @@ public class MomentsPresenter implements MomentsContract.Presenter {
             view.updateEditTextBodyVisible(View.VISIBLE, commentConfig);
         }
     }
-
 
     /**
      * 清除对外部对象的引用，反正内存泄露。

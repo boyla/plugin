@@ -161,15 +161,15 @@ public class Moment extends BmobObject implements ToRealmObject{
 	@Override
 	public MomentRealm toRealmObject() {
 		MomentRealm momentRealm = new MomentRealm();
-		momentRealm.comments = new RealmList(comments);
+		momentRealm.comments = new RealmList(comments.toArray());
 		momentRealm.content = content;
 		momentRealm.isExpand = isExpand;
-		momentRealm.likes =  new RealmList(likes);
+		momentRealm.likes =  new RealmList(likes.toArray());
 		momentRealm.linkImg = linkImg;
 		momentRealm.linkTitle = linkTitle;
 		momentRealm.objectId = getObjectId();
 		momentRealm.photos = photos;
-		momentRealm.photosData =  new RealmList(photosData);
+		momentRealm.photosData =  new RealmList(photosData.toArray());
 		momentRealm.type = type;
 		momentRealm.user = user.toRealmObject();
 		momentRealm.videoImgUrl = videoImgUrl;

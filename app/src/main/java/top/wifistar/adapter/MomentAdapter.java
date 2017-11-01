@@ -314,6 +314,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             public void done(List<Comment> object, BmobException e) {
                 if (e == null) {
                     moment.setComments(object);
+                    BaseRealmDao.insertOrUpdate(moment.toRealmObject());
                 } else {
                     Log.i("bmob", "获取评论失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
@@ -403,9 +404,6 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             moment.setUser(user);
             setUserToHolder(moment, holder);
         }
-
-
-
     }
 
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
