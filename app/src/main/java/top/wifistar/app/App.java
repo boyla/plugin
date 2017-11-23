@@ -418,6 +418,12 @@ public class App extends MultiDexApplication {
         return APP_INSTANCE;
     }
 
+    @Override
+    public void onTerminate() {
+        getRealm().close();
+        super.onTerminate();
+    }
+
     public Realm getRealm() {
         return Realm.getInstance(realmConfig);
     }

@@ -1,5 +1,6 @@
 package top.wifistar.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -409,11 +410,11 @@ public class SplashActivity extends BaseActivity {
 
     private void login(String username, String password) {
         if (TextUtils.isEmpty(username) || username.length() < 6) {
-            Utils.showToast(topReminder, getResources().getString(R.string.username_too_short));
+            Utils.makeToast(SplashActivity.this, getResources().getString(R.string.username_too_short));
             return;
         }
         if (TextUtils.isEmpty(password) || password.length() < 6) {
-            Utils.showToast(topReminder, getResources().getString(R.string.psw_too_short));
+            Utils.makeToast(SplashActivity.this, getResources().getString(R.string.psw_too_short));
             return;
         }
 
@@ -430,7 +431,7 @@ public class SplashActivity extends BaseActivity {
             @Override
             public void onError(Throwable throwable) {
                 loadingDialog.dismiss();
-                Utils.showToast(topReminder, throwable.getMessage());
+                Utils.makeToast(SplashActivity.this, throwable.getMessage());
             }
 
             @Override
@@ -451,7 +452,7 @@ public class SplashActivity extends BaseActivity {
                                     @Override
                                     public void done(BmobException e) {
                                         if (e != null) {
-                                            Utils.showToast(e.getMessage());
+                                            Utils.makeToast(SplashActivity.this, e.getMessage());
                                         }
                                     }
                                 });

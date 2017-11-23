@@ -41,6 +41,7 @@ import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.Moment;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.manager.FileUploadManager;
 import top.wifistar.utils.EventUtils;
@@ -250,7 +251,12 @@ public class PublishMomentActivity extends ToolbarActivity {
             momentToPost.setPhotos(TextUtils.join(",", urls));
         }
         //set user
-        momentToPost.setUser(Utils.getShortUser());
+        User user = Utils.getShortUser();
+        if(user == null){
+            Utils.showToast("登陆用户失效，请重新登陆");
+            return;
+        }
+        momentToPost.setUser(user);
         momentToPost.save(new SaveListener<String>() {
 
             @Override

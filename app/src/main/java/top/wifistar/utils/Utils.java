@@ -13,8 +13,15 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 //import com.alibaba.fastjson.JSON;
@@ -1115,7 +1122,7 @@ public class Utils {
         return false;
     }
 
-    public static boolean isNetworkConnected(){
+    public static boolean isNetworkConnected() {
         Context context = App.getApp();
         if (context != null) {
             ConnectivityManager mConnectivityManager = (ConnectivityManager) context
@@ -1126,5 +1133,69 @@ public class Utils {
             }
         }
         return false;
+    }
+
+    public static int STATUS_BAR_HEIGHT;
+
+    private static View flTop;
+
+    public static void makeToast(Activity context, String content) {
+        makeToast(context, content, 1, false);
+    }
+
+    public static void makeToast(Activity context, String content, int time, boolean isBottom) {
+        FrameLayout flContent = (FrameLayout) context.getWindow().getDecorView().findViewById(android.R.id.content);
+        flTop = flContent.findViewById(R.id.fl_top);
+        boolean firstUse = false;
+        if (flTop == null) {
+            flTop = context.getLayoutInflater().inflate(R.layout.top_reminder, null);
+            firstUse = true;
+        }
+        View status_bar = flTop.findViewById(R.id.status_bar);
+        TextView tvReminder = (TextView) flTop.findViewById(R.id.tvReminder);
+        //LinearLayout llReminder = (LinearLayout) flTop.findViewById(R.id.llReminder);
+        View card_view = flTop.findViewById(R.id.card_view);
+        //set margin top to status bar
+        if (STATUS_BAR_HEIGHT == 0) {
+            int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+            STATUS_BAR_HEIGHT = context.getResources().getDimensionPixelSize(resourceId);
+        }
+        status_bar.setLayoutParams(
+                new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        STATUS_BAR_HEIGHT));
+        tvReminder.setText(content);
+        if (firstUse) {
+            card_view.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_in));
+            flContent.addView(flTop);
+            if (isBottom) {
+                flTop.post(() -> {
+                    FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                    layoutParams.gravity = Gravity.BOTTOM;
+                    layoutParams.setMargins(0, 0, 0, DensityUtil.dp2px(context, 50));
+                    flTop.setLayoutParams(layoutParams);
+                });
+            }
+        } else {
+            flTop.setVisibility(View.VISIBLE);
+        }
+        if (time > 0) {
+            flTop.postDelayed(() -> cancelToast(context), 3500);
+        }
+    }
+
+    public static void cancelToast(Activity context) {
+        FrameLayout flContent = (FrameLayout) context.getWindow().getDecorView().findViewById(android.R.id.content);
+        flTop = flContent.findViewById(R.id.fl_top);
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
+        alphaAnimation.setDuration(400);
+        if (flTop != null) {
+            flTop.startAnimation(alphaAnimation);
+            flTop.setVisibility(View.GONE);
+        }
+    }
+
+    public static void makeSysToast(String str) {
+        Toast.makeText(App.getApp(), str, Toast.LENGTH_LONG).show();
     }
 }

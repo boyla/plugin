@@ -38,7 +38,7 @@ public class MultiImageView extends LinearLayout {
      **/
     private int pxOneMaxWandH;  // 单张图最大允许宽高
     private int pxMoreWandH = 0;// 多张图的宽高
-    private int pxImagePadding = DensityUtil.dip2px(getContext(), 3);// 图片间的间距
+    private int pxImagePadding = DensityUtil.dp2px(getContext(), 3);// 图片间的间距
 
     private int MAX_PER_ROW_COUNT = 3;// 每行显示最大数
 

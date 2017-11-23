@@ -45,12 +45,21 @@
         android:largeHeap="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity android:name=".activity.HomeActivity"></activity>
-        <activity android:name=".activity.SplashActivity">
+        <activity
+            android:name=".activity.LaunchActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".activity.SplashActivity">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
         <!--<activity-->
             <!--android:name="io.rong.imkit.MainActivity"-->

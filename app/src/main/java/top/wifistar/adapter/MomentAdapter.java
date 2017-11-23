@@ -377,13 +377,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
-        if (moment.getUser()==null || moment.getUser().getName() != null) {
+        if (moment.getUser() != null && moment.getUser().getName() != null) {
             setUserToHolder(moment, holder);
             return;
         }
         //TODO first query from db, if no data query Bmob
-        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId",moment.getUser().getObjectId()).findAll();
-        if(dbData.isEmpty()){
+        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", moment.getUser().getObjectId()).findAll();
+        if (dbData.isEmpty()) {
             //query Bmob
             BmobQuery<User> query = new BmobQuery<User>();
             query.getObject(moment.getUser().getObjectId(), new QueryListener<User>() {
@@ -398,7 +398,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     }
                 }
             });
-        }else{
+        } else {
             UserRealm userRealm = dbData.first();
             User user = (User) userRealm.toBmobObject();
             moment.setUser(user);
