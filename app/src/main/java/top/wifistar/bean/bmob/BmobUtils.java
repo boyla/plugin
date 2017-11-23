@@ -11,11 +11,12 @@ import top.wifistar.bean.bmob.User;
  */
 
 public class BmobUtils {
-    public static void updateUser(String objId, String profileId, String nickName, String avatar) {
+    public static void updateUser(String objId, String profileId, String nickName, String avatar, Integer sex) {
         User user = new User();
         user.setValue("name",""+nickName);
         user.setValue("id",""+profileId);
-        user.setValue("headUrl",""+avatar);
+        user.setValue("headUrl",avatar);
+        user.sex = sex;
 
         user.update(objId, new UpdateListener() {
             @Override

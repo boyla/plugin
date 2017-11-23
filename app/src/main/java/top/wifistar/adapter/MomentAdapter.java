@@ -134,7 +134,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             final MomentViewHolder holder = (MomentViewHolder) viewHolder;
             final Moment moment = (Moment) datas.get(dataPosition);
             //todo 查询帖子关联的User,以及赞列表和评论列表
-            Glide.with(context).load(R.drawable.default_avartar).transform(new GlideCircleTransform(context)).into(holder.headIv);
+            holder.headIv.setImageDrawable(null);
             queryUser(moment, holder);
             holder.digCommentBody.setVisibility(View.GONE);
             queryLikes(moment, holder, dataPosition);
@@ -409,14 +409,25 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
         String name = moment.getUser().getName();
         String headImg = moment.getUser().getHeadUrl();
-        if (!TextUtils.isEmpty(headImg))
+        if (!TextUtils.isEmpty(headImg)){
             Glide.with(context)
                     .load(headImg)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .transform(new GlideCircleTransform(context))
-                    .placeholder(R.drawable.default_avartar)
-                    .transform(new GlideCircleTransform(context))
+                    .bitmapTransform(new GlideCircleTransform(context))
                     .into(holder.headIv);
+        }else{
+            int img;
+            if(moment.getUser().sex == 0){
+                img = R.drawable.default_avartar_female;
+            }else{
+                img = R.drawable.default_avartar_male;
+            }
+            Glide.with(context)
+                    .load(img)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .bitmapTransform(new GlideCircleTransform(context))
+                    .into(holder.headIv);
+        }
         holder.nameTv.setText(name);
         //加载完User后
         if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {

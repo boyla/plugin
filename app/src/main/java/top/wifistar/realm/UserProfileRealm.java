@@ -17,7 +17,7 @@ public class UserProfileRealm extends RealmObject implements ToBmobObject{
     String userId;
     String nickName;
     String birthday;
-    String sex;
+    int sex;
     String language;
     String moblie;
     String email;
@@ -59,11 +59,11 @@ public class UserProfileRealm extends RealmObject implements ToBmobObject{
         this.birthday = birthday;
     }
 
-    public String getSex() {
+    public int getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(int sex) {
         this.sex = sex;
     }
 

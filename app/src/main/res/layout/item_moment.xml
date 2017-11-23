@@ -18,8 +18,7 @@
             android:layout_height="48dp"
             android:layout_marginRight="10dip"
             android:scaleType="fitCenter"
-            android:visibility="invisible"
-            android:src="@drawable/default_avartar" />
+            android:visibility="invisible" />
 
         <LinearLayout
             android:layout_width="match_parent"

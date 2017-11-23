@@ -38,10 +38,10 @@ public class MomentsModel {
 
             @Override
             public void done(BmobException e) {
-                if(e==null){
+                if (e == null) {
                     Utils.showToast("删除动态成功");
                     listener.onSuccess();
-                }else{
+                } else {
                     Utils.showToast("删除动态失败");
                 }
             }
@@ -52,7 +52,7 @@ public class MomentsModel {
         Moment moment = new Moment();
         moment.setObjectId(momentId);
 
-        User user = new User(App.currentUserProfile.getNickName(), App.currentUserProfile.getAvatar());
+        User user = new User(App.currentUserProfile.getNickName(), App.currentUserProfile.getAvatar() + "");
         user.id = App.currentUserProfile.getObjectId();
         String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
         user.setObjectId(objId);

@@ -14,7 +14,7 @@ public class UserProfile extends BmobObject implements ToRealmObject {
     public String userId;
     public String nickName;
     public BmobDate birthday;
-    public String sex;
+    public Integer sex = 0;
     public String language;
     public String moblie;
     public String email;
@@ -53,11 +53,11 @@ public class UserProfile extends BmobObject implements ToRealmObject {
         this.birthday = birthday;
     }
 
-    public String getSex() {
+    public Integer getSex() {
         return sex;
     }
 
-    public void setSex(String sex) {
+    public void setSex(int sex) {
         this.sex = sex;
     }
 

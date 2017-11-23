@@ -924,16 +924,15 @@ public class Utils {
             return;
         } else if (!TextUtils.isEmpty(profile.getAvatar())) {
             Glide.with(context).load(profile.getAvatar()).into(mCustomLogo);
-        } else if ("0".equals(profile.getSex())) {
-            Glide.with(context).load(R.drawable.default_avartar_female).into(mCustomLogo);
-        } else if ("1".equals(profile.getSex()) || TextUtils.isEmpty(profile.getSex())) {
+        } else if (profile.getSex() == null || 1 == profile.getSex()) {
             Glide.with(context).load(R.drawable.default_avartar_male).into(mCustomLogo);
+        } else if (0 == profile.getSex()) {
+            Glide.with(context).load(R.drawable.default_avartar_female).into(mCustomLogo);
         }
-
     }
 
     public static void setUserAvatar(Context context, UserProfile profile, ImageView imageView) {
-        if (profile == null || TextUtils.isEmpty(profile.getSex())) {
+        if (profile == null || profile.getSex() == null) {
             return;
         } else if (!TextUtils.isEmpty(profile.getAvatar())) {
             Glide.with(context).load(profile.getAvatar())
@@ -1009,7 +1008,7 @@ public class Utils {
         String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
         App.getHandler().postDelayed(() -> {
             UserProfile profile = App.currentUserProfile;
-            BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar());
+            BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
         }, 1111);
     }
 

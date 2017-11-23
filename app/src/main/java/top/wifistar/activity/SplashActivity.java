@@ -513,7 +513,7 @@ public class SplashActivity extends BaseActivity {
         if (App.currentUserProfile != null && !TextUtils.isEmpty(App.currentUserProfile.getNickName())) {
             nickName = App.currentUserProfile.getNickName();
         }
-        User user = new User(nickName, "");
+        User user = new User(nickName, App.currentUserProfile.getAvatar() + "");
         user.id = profileId;
         user.save(new SaveListener<String>() {
             @Override

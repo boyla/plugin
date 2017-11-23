@@ -12,6 +12,7 @@ public class User extends BmobObject implements ToRealmObject {
 	public String name;
 	public String headUrl;
 	public String id;
+	public Integer sex = 1;
 
 	public User(){}
 
