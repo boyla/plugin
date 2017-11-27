@@ -3,6 +3,7 @@ package top.wifistar.utils;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -1196,5 +1198,13 @@ public class Utils {
 
     public static void makeSysToast(String str) {
         Toast.makeText(App.getApp(), str, Toast.LENGTH_LONG).show();
+    }
+
+    public static void showSimpleDialog(Context context, String title, DialogInterface.OnClickListener listener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.DialogTheme);
+        builder.setTitle(title)
+                .setNegativeButton("取消", null)
+        .setPositiveButton("确定",listener);
+        builder.show();
     }
 }

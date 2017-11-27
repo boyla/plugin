@@ -1,6 +1,7 @@
 package top.wifistar.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -149,7 +150,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 holder.contentTv.setText(UrlUtils.formatUrlString(content));
             }
             holder.contentTv.setVisibility(TextUtils.isEmpty(content) ? View.GONE : View.VISIBLE);
-
+            //comment or praise dialog
             final SnsPopupWindow snsPopupWindow = holder.snsPopupWindow;
             snsPopupWindow.update();
             snsPopupWindow.setmItemClickListener(new PopupItemClickListener(dataPosition, moment, BUser.getCurrentUser().getObjectId()));
@@ -432,14 +433,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         //加载完User后
         if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {
             holder.deleteBtn.setVisibility(View.VISIBLE);
-            holder.deleteBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            holder.deleteBtn.setOnClickListener(v -> {
+                Utils.showSimpleDialog(context,"确定删除该动态？", (dialog, which) -> {
                     //删除
                     if (presenter != null) {
                         presenter.deleteMoment(moment.getObjectId());
                     }
-                }
+                });
             });
         } else {
             holder.deleteBtn.setVisibility(View.GONE);
