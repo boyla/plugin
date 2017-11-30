@@ -122,10 +122,6 @@
         <!--<item name="android:windowBackground">@drawable/splash</item>-->
     </style>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="alertDialogTheme">@style/DialogTheme</item>
-    </style>
-
     <style name="DialogTheme" parent="Base.V7.Theme.AppCompat.Dialog">
         <item name="android:windowBackground">@drawable/dialog_background</item>
         <item name="android:windowTitleStyle">@style/appalertdialogwindowTitleStyle</item>
@@ -139,5 +135,10 @@
     <!--标题字体颜色-->
     <style name="appalertdialogwindowTitletext" parent="Base.TextAppearance.AppCompat.Title">
         <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@null</item>
+        <item name="alertDialogTheme">@style/DialogTheme</item>
     </style>
 </resources>

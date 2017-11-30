@@ -9,7 +9,6 @@
         android:id="@+id/progressCombineView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/activity_bg"
         progressCombine:customLayout="@layout/empty_message_list"
         progressCombine:emptyBackgroundColor="@color/activity_bg"
         progressCombine:errorBackgroundColor="@color/activity_bg"
