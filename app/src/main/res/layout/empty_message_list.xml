@@ -3,7 +3,6 @@
     android:id="@+id/no_item_tips"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/activity_bg"
     android:gravity="center_vertical"
     android:orientation="vertical">
 
