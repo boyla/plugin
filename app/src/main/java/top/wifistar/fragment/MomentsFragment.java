@@ -106,9 +106,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         edittextbody = (LinearLayout) getActivity().findViewById(R.id.editTextBodyLl);
         presenter = new MomentsPresenter(this);
         momentAdapter = new MomentAdapter(getActivity());
-        recyclerView.setRefreshProgressStyle(ProgressStyle.BallSpinFadeLoader);
-//        recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallBeat);
-        recyclerView.setBackgroundColor(Color.parseColor("#EBEBEB"));
+        recyclerView.setRefreshProgressStyle(ProgressStyle.LineSpinFadeLoader);
+        recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallBeat);
+        recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         momentAdapter.setCirclePresenter(presenter);
         recyclerView.setAdapter(momentAdapter);
         //优化更新item时的闪烁
