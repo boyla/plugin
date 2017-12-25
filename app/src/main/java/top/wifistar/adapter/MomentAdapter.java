@@ -282,7 +282,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         //判断是否已点赞,加载完likes后
         SnsPopupWindow snsPopupWindow = holder.snsPopupWindow;
         if (moment.isCurUserLike()) {
-            snsPopupWindow.getmActionItems().get(0).mTitle = "取消赞";
+            snsPopupWindow.getmActionItems().get(0).mTitle = "取消";
         } else {
             snsPopupWindow.getmActionItems().get(0).mTitle = "赞";
         }

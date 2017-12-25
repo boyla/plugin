@@ -175,7 +175,7 @@ public class ImagePagerActivity extends YWActivity{
                 loading.setLayoutParams(loadingLayoutParams);
                 ((FrameLayout)view).addView(loading);
 
-                final String imgurl = datas.get(position);
+                final String imgurl = datas.get(position).split("_")[0];
 
                 Glide.with(context)
                         .load(imgurl)
