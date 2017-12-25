@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/editTextBodyLl"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="match_parent"
     android:padding="8dp"
     android:gravity="center_vertical"
     android:background="#f6f6f6"
     android:orientation="horizontal"
-    android:visibility="gone"
+    android:visibility="visible"
     >
     <EditText
         android:id="@+id/circleEt"

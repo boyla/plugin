@@ -20,7 +20,7 @@
         progressCombine:loadingStateDotPlay="true"
         progressCombine:loadingStateText="@string/loading...">
 
-        <com.jcodecraeer.xrecyclerview.XRecyclerView
+        <top.wifistar.customview.OnTouchXRecyclerView
             android:id="@+id/xRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,5 +1,6 @@
 package top.wifistar.activity.mvp.presenter;
 
+import android.text.TextUtils;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import top.wifistar.activity.mvp.modle.MomentsModel;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.bean.bmob.Comment;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.MomentRealm;
 import top.wifistar.utils.DatasUtil;
@@ -46,11 +48,11 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     }
 
     public void loadData(int loadType) {
-        if(loadType == TYPE_PULLDOWNREFRESH){
+        if (loadType == TYPE_PULLDOWNREFRESH) {
             NO_MORE_DATA = false;
             SKIP = 0;
         }
-        if(Utils.isNetworkConnected()){
+        if (Utils.isNetworkConnected()) {
             //TODO 有待优化，根据订阅的时间节点请求Bmob
             BmobQuery<Moment> query = new BmobQuery<>();
             query.setLimit(PAGE_LIMIT);
@@ -71,14 +73,14 @@ public class MomentsPresenter implements MomentsContract.Presenter {
                             }
                         }
                     });
-        }else{
+        } else {
             //load from realm
             RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class);
-            if(!dbData.isEmpty()){
+            if (!dbData.isEmpty()) {
                 if (dbData.isLoaded()) {
                     // 完成查询
                     List<Moment> data = new ArrayList<>();
-                    for(MomentRealm momentRealm:dbData){
+                    for (MomentRealm momentRealm : dbData) {
                         data.add(momentRealm.toBmobObject());
                     }
                     view.update2loadData(loadType, data);
@@ -148,31 +150,21 @@ public class MomentsPresenter implements MomentsContract.Presenter {
 
     /**
      * @param content
-     * @param config  CommentConfig
      * @return void    返回类型
      * @throws
      * @Title: addComment
      * @Description: 增加评论
      */
-    public void addComment(final String content, final CommentConfig config) {
-        if (config == null) {
-            return;
-        }
-        momentsModel.addComment(new IDataRequestListener() {
+    public void addComment(final String content, final String momentId, final User toReplyUser) {
+
+        momentsModel.addComment(content, momentId, toReplyUser, new IDataRequestListener() {
 
             @Override
             public void onSuccess() {
-                Comment newItem = null;
-                if (config.commentType == CommentConfig.Type.PUBLIC) {
-                    newItem = DatasUtil.createPublicComment(content);
-                } else if (config.commentType == CommentConfig.Type.REPLY) {
-                    newItem = DatasUtil.createReplyComment(config.replyUser, content);
-                }
                 if (view != null) {
-                    view.update2AddComment(config.circlePosition, newItem);
+                    view.update2AddComment(content, momentId, toReplyUser);
                 }
             }
-
         });
     }
 
@@ -211,5 +203,9 @@ public class MomentsPresenter implements MomentsContract.Presenter {
      */
     public void recycle() {
         this.view = null;
+    }
+
+    public void setCurrentMomentId(String momentId, User replyUser) {
+        view.setCurrentMomentId(momentId, replyUser);
     }
 }

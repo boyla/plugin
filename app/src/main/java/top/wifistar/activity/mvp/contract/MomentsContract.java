@@ -8,6 +8,7 @@ import top.wifistar.activity.mvp.BaseView;
 import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
+import top.wifistar.bean.bmob.User;
 
 /**
  * Created by suneee on 2016/7/15.
@@ -18,10 +19,12 @@ public interface MomentsContract {
         void update2DeleteCircle(String circleId);
         void update2AddFavorite(int circlePosition);
         void update2DeleteFavort(int dataPosition);
-        void update2AddComment(int circlePosition, Comment addItem);
+        void update2AddComment(String content, String momentId, User toReplyUserId);
         void update2DeleteComment(int circlePosition, String commentId);
         void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig);
         void update2loadData(int loadType, List<Moment> datas);
+
+        void setCurrentMomentId(String momentId,User replyUserId);
     }
 
     interface Presenter extends BasePresenter {

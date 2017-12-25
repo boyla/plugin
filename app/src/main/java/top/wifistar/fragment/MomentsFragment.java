@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -30,6 +29,7 @@ import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.datatype.BmobFile;
@@ -37,6 +37,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
 import pub.devrel.easypermissions.EasyPermissions;
 import top.wifistar.R;
+import top.wifistar.activity.HomeActivity;
 import top.wifistar.activity.PublishMomentActivity;
 import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
@@ -47,6 +48,7 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.customview.CommentListView;
+import top.wifistar.customview.OnTouchXRecyclerView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.TitleBar;
 import top.wifistar.dialog.UpLoadDialog;
@@ -69,7 +71,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     protected static final String TAG = "Moments:  ";
 
-    private LinearLayout edittextbody;
+    private View edittextbody;
     private EditText editText;
     private ImageView sendIv;
 
@@ -84,14 +86,17 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     private RelativeLayout bodyLayout;
     private LinearLayoutManager layoutManager;
     private TitleBar titleBar;
+    private HomeActivity homeActivity;
 
     public final static int TYPE_PULLDOWNREFRESH = 1;
     public final static int TYPE_PULLUPMORE = 2;
     private UpLoadDialog uploadDialog;
     private SwipeRefreshLayout.OnRefreshListener refreshListener;
 
-    private XRecyclerView recyclerView;
+    private OnTouchXRecyclerView recyclerView;
     ProgressCombineView progressCombineView;
+    public String selectMomentId;
+    public User replyUser;
 
     @Override
     protected View createView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -103,12 +108,16 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         //tvNoData = bindViewById(R.id.tvNoData);
         recyclerView = bindViewById(R.id.xRecyclerView);
         progressCombineView = bindViewById(R.id.progressCombineView);
-        edittextbody = (LinearLayout) getActivity().findViewById(R.id.editTextBodyLl);
+        edittextbody = getActivity().findViewById(R.id.editTextBodyLl);
+        homeActivity = (HomeActivity) getActivity();
+        editText = homeActivity.getBottomEditText();
+        sendIv = homeActivity.getBottomImageView();
         presenter = new MomentsPresenter(this);
         momentAdapter = new MomentAdapter(getActivity());
         recyclerView.setRefreshProgressStyle(ProgressStyle.LineSpinFadeLoader);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallBeat);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        recyclerView.listener = () -> homeActivity.showBottomInput(View.GONE);
         momentAdapter.setCirclePresenter(presenter);
         recyclerView.setAdapter(momentAdapter);
         //优化更新item时的闪烁
@@ -116,12 +125,32 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         //recyclerView.getItemAnimator().setChangeDuration(0);
         setXRecyclerView();
         recyclerView.refresh();
+
+        sendIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (presenter != null) {
+                    //发布评论
+                    String content = editText.getText().toString().trim();
+                    if (TextUtils.isEmpty(content)) {
+                        Utils.makeSysToast("评论内容不能为空...");
+                        return;
+                    }
+                    homeActivity.showBottomInput(View.GONE);
+                    if (TextUtils.isEmpty(selectMomentId)) {
+                        return;
+                    }
+                    presenter.addComment(content, selectMomentId, replyUser);
+                }
+                updateEditTextBodyVisible(View.GONE, null);
+            }
+        });
     }
 
     private void setXRecyclerView() {
         progressCombineView.showContent();
         recyclerView.setPullRefreshEnabled(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
@@ -246,11 +275,24 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     }
 
     @Override
-    public void update2AddComment(int circlePosition, Comment addItem) {
-        if (addItem != null) {
-            Moment item = (Moment) momentAdapter.getDatas().get(circlePosition);
-            item.getComments().add(addItem);
-            momentAdapter.notifyDataSetChanged();
+    public void update2AddComment(String content, String momentId, User replyUser) {
+        if (!TextUtils.isEmpty(momentId)) {
+            for (Moment item : ((List<Moment>) momentAdapter.getDatas())) {
+                if (momentId.equals(item.getObjectId())) {
+                    Comment comment = new Comment();
+                    comment.setContent(content);
+                    comment.setMomentId(momentId);
+                    comment.setUser(Utils.getShortUser());
+                    if (replyUser != null) {
+                        comment.setToReplyUser(replyUser);
+                    }
+                    item.getComments().add(comment);
+                    momentAdapter.notifyDataSetChanged();
+                    break;
+                }
+            }
+//            Moment item = (Moment) momentAdapter.getDatas().get(circlePosition);
+//            item.getComments().add(addItem);
             //momentAdapter.notifyItemChanged(circlePosition+1);
         }
         //清空评论文本
@@ -274,15 +316,13 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     @Override
     public void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig) {
         this.commentConfig = commentConfig;
-        edittextbody.setVisibility(visibility);
-
+        homeActivity.showBottomInput(visibility);
         measureCircleItemHighAndCommentItemOffset(commentConfig);
 
         if (View.VISIBLE == visibility) {
             editText.requestFocus();
             //弹出键盘
             CommonUtils.showSoftInput(editText.getContext(), editText);
-
         } else if (View.GONE == visibility) {
             //隐藏键盘
             CommonUtils.hideSoftInput(editText.getContext(), editText);
@@ -304,6 +344,12 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 updateDataList(loadType);
             }
         }
+    }
+
+    @Override
+    public void setCurrentMomentId(String momentId, User replyUserId) {
+        selectMomentId = momentId;
+        this.replyUser = replyUserId;
     }
 
     private void updateDataList(int loadType) {
@@ -452,4 +498,6 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         momentAdapter.getDatas().add(0, event.moment);
         momentAdapter.notifyItemInserted(1);
     }
+
+
 }

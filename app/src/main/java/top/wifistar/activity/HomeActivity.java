@@ -3,8 +3,13 @@ package top.wifistar.activity;
 
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.customview.LoadingView;
 import top.wifistar.R;
@@ -24,6 +29,7 @@ public class HomeActivity extends ToolbarActivity {
     LoadingView loadingView;
     TopReminder topReminder;
     BottomMenuView bottomMenuView;
+    View editTextBodyLl;
     int lastBottomItem = BottomMenuView.Item_None;
     protected String currentPageStr = null;
     boolean isFirstIn = true;
@@ -33,6 +39,7 @@ public class HomeActivity extends ToolbarActivity {
         super.setContentView(R.layout.activity_main);
         topReminder = (TopReminder) findViewById(R.id.topReminder);
         bottomMenuView = (BottomMenuView) findViewById(R.id.bottomMenuView);
+        editTextBodyLl =  findViewById(R.id.editTextBodyLl);
         setToolbarTitle();
         EventUtils.registerEventBus(this);
         refreshPage();
@@ -50,7 +57,7 @@ public class HomeActivity extends ToolbarActivity {
         tool_bar_frame.setVisibility(View.VISIBLE);
         mCustomLogo.setVisibility(View.VISIBLE);
         updateTitle();
-        Utils.setUserAvatar(this,mCustomLogo);
+        Utils.setUserAvatar(this, mCustomLogo);
         invalidateOptionsMenu();
     }
 
@@ -65,8 +72,8 @@ public class HomeActivity extends ToolbarActivity {
         refreshPage();
     }
 
-    public void changePage(){
-        if(lastBottomItem == bottomMenuView.currentItem){
+    public void changePage() {
+        if (lastBottomItem == bottomMenuView.currentItem) {
             return;
         }
 
@@ -91,7 +98,7 @@ public class HomeActivity extends ToolbarActivity {
         }
     }
 
-    public void updateTitle(){
+    public void updateTitle() {
         String title;
         switch (bottomMenuView.currentItem) {
             case BottomMenuView.Item_Chats:
@@ -123,14 +130,27 @@ public class HomeActivity extends ToolbarActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void refreshPage(){
-        if(isFirstIn){
+    private void refreshPage() {
+        if (isFirstIn) {
             gotoPage(R.id.flContent, FRAGMENT_PAGE_CHATS, currentPageStr);
             currentPageStr = FRAGMENT_PAGE_CHATS;
             isFirstIn = false;
-        }else{
+        } else {
             changePage();
             updateTitle();
         }
     }
+
+    public void showBottomInput(int visibility) {
+        editTextBodyLl.setVisibility(visibility);
+    }
+
+    public EditText getBottomEditText() {
+        return (EditText) editTextBodyLl.findViewById(R.id.circleEt);
+    }
+
+    public ImageView getBottomImageView() {
+        return (ImageView) editTextBodyLl.findViewById(R.id.sendIv);
+    }
+
 }

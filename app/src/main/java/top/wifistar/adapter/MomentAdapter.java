@@ -258,7 +258,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 } else {
                     Log.i("bmob", "失败：" + e.getMessage());
                 }
-                queryComments(moment, holder, dataPosition);
+                App.getHandler().post(() -> queryComments(moment, holder, dataPosition));
             }
         });
     }
@@ -401,7 +401,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             });
         } else {
             UserRealm userRealm = dbData.first();
-            User user = (User) userRealm.toBmobObject();
+            User user = userRealm.toBmobObject();
             moment.setUser(user);
             setUserToHolder(moment, holder);
         }
@@ -496,6 +496,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                         config.circlePosition = dataPosition;
                         config.commentType = CommentConfig.Type.PUBLIC;
                         presenter.showEditTextBody(config);
+                        presenter.setCurrentMomentId(mMoment.getObjectId(),null);
                     }
                     break;
                 default:

@@ -19,8 +19,7 @@
     	android:layout_height="match_parent"
     	android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
-        android:background="#707070"
-        />
+        android:background="#707070" />
     <TextView 
         android:id="@+id/commentBtn"
         android:layout_width="0dp"

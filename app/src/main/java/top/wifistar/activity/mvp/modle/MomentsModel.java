@@ -1,13 +1,16 @@
 package top.wifistar.activity.mvp.modle;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
+import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.utils.ACache;
@@ -99,8 +102,20 @@ public class MomentsModel {
         });
     }
 
-    public void addComment(final IDataRequestListener listener) {
-        requestServer(listener);
+    public void addComment(String content, final String momentId, final User toReplyUser, final IDataRequestListener listener) {
+        Comment comment = new Comment();
+        comment.setUser(Utils.getShortUser());
+        comment.setMomentId(momentId);
+        comment.setContent(content);
+        if (toReplyUser!=null) {
+            comment.setToReplyUser(toReplyUser);
+        }
+        comment.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                listener.onSuccess();
+            }
+        });
     }
 
     public void deleteComment(final IDataRequestListener listener) {
