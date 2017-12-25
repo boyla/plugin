@@ -1053,7 +1053,7 @@ public class Utils {
     }
 
     //在不加载图片的前提下获得图片的宽高
-    public static int[] getImageWidthHeight(String path) {
+    public static String getImageUrlWithWidthHeight(String path) {
         BitmapFactory.Options options = new BitmapFactory.Options();
 
         /**
@@ -1065,7 +1065,7 @@ public class Utils {
         /**
          *options.outHeight为原始图片的高
          */
-        return new int[]{options.outWidth, options.outHeight};
+        return "_" + options.outWidth + "&" + options.outHeight;
     }
 
     public static boolean isWifiConnected() {
@@ -1201,10 +1201,10 @@ public class Utils {
     }
 
     public static void showSimpleDialog(Context context, String title, DialogInterface.OnClickListener listener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.DialogTheme);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.DialogTheme);
         builder.setTitle(title)
                 .setNegativeButton("取消", null)
-        .setPositiveButton("确定",listener);
+                .setPositiveButton("确定", listener);
         builder.show();
     }
 }

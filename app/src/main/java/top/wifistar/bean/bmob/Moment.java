@@ -151,7 +151,12 @@ public class Moment extends BmobObject implements ToRealmObject{
 			photosData = new ArrayList<>();
 			for (String item : photoStrs) {
 				Photo photo = new Photo();
-				photo.url = item;
+				String[] strs = item.split("_");
+				photo.url = strs[0];
+				if(strs.length>1){
+					photo.w = Integer.valueOf(strs[1].split("&")[0]);
+					photo.h =Integer.valueOf(strs[1].split("&")[1]);
+				}
 				photosData.add(photo);
 			}
 		}

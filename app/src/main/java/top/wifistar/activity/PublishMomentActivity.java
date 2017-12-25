@@ -218,6 +218,10 @@ public class PublishMomentActivity extends ToolbarActivity {
                 //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
                 //2、urls-上传文件的完整url地址
                 if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
+                    //获取图片宽高，并保存
+                    for (int i = 0; i < urls.size(); i++) {
+                        urls.set(i, urls.get(i) + Utils.getImageUrlWithWidthHeight(filePaths[i]));
+                    }
                     saveMoment(urls);
                 }
             }
@@ -252,7 +256,7 @@ public class PublishMomentActivity extends ToolbarActivity {
         }
         //set user
         User user = Utils.getShortUser();
-        if(user == null){
+        if (user == null) {
             Utils.showToast("登陆用户失效，请重新登陆");
             return;
         }

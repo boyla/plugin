@@ -6,10 +6,6 @@ package top.wifistar.app;
  * Automatically generated file. DO NOT MODIFY
  */
 
-/**
- * Automatically generated file. DO NOT MODIFY
- */
-
 import android.os.Handler;
 import android.os.Message;
 
