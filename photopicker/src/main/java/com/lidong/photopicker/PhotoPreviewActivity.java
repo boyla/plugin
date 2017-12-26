@@ -92,8 +92,14 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPage
     }
 
     public void updateActionBarTitle() {
+        int size;
+        if (paths.contains("000000")) {
+            size = paths.size() - 1;
+        } else {
+            size = paths.size();
+        }
         getSupportActionBar().setTitle(
-                getString(R.string.image_index, mViewPager.getCurrentItem() + 1, paths.size()));
+                getString(R.string.image_index, mViewPager.getCurrentItem() + 1, size));
     }
 
     @Override

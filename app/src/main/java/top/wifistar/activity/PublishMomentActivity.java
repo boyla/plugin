@@ -57,8 +57,6 @@ public class PublishMomentActivity extends ToolbarActivity {
 
     private GridView gridView;
     private GridAdapter gridAdapter;
-    private Button mButton;
-    private String depp;
     private EditText textView;
     private String TAG = PublishMomentActivity.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 1;
@@ -73,12 +71,11 @@ public class PublishMomentActivity extends ToolbarActivity {
         super.setContentView(R.layout.activity_publish_moment);
         setToolbarTitle();
         gridView = (GridView) findViewById(R.id.gridView);
-        mButton = (Button) findViewById(R.id.button);
         textView = (EditText) findViewById(R.id.et_context);
 
         int cols = getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().densityDpi;
         cols = cols < 3 ? 3 : cols;
-        gridView.setNumColumns(cols);
+//        gridView.setNumColumns(cols);
 
         // preview
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -110,22 +107,6 @@ public class PublishMomentActivity extends ToolbarActivity {
         imagePaths.add("000000");
         gridAdapter = new GridAdapter(imagePaths);
         gridView.setAdapter(gridAdapter);
-        mButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                depp = textView.getText().toString().trim() != null ? textView.getText().toString().trim() : "woowoeo";
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        FileUploadManager.uploadMany(imagePaths, depp);
-//                        FileUploadManager.upload(imagePaths,depp);
-                    }
-                }.start();
-            }
-        });
-//        EventUtils.registerEventBus(this);
-
     }
 
     private void jumpToPicSelectPage() {
@@ -185,6 +166,9 @@ public class PublishMomentActivity extends ToolbarActivity {
             //first get moment type
             if (imagePaths.size() > 1) {
                 momentType = "2";//pic type
+            }else if(TextUtils.isEmpty(textView.getText().toString())){
+                Utils.makeSysToast("还没有添加动态内容");
+                return super.onOptionsItemSelected(item);
             }
 
             //post moment
@@ -364,6 +348,7 @@ public class PublishMomentActivity extends ToolbarActivity {
             final String path = listUrls.get(position);
             if (path.equals("000000")) {
                 holder.image.setImageResource(R.drawable.add_pic);
+                holder.image.setScaleType(ImageView.ScaleType.FIT_XY);
             } else {
                 Glide.with(PublishMomentActivity.this)
                         .load(path)
