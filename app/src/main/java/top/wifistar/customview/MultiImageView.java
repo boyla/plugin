@@ -187,7 +187,7 @@ public class MultiImageView extends LinearLayout {
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
         } else {
             imageView.setAdjustViewBounds(true);
-            imageView.setScaleType(ScaleType.CENTER_INSIDE);
+            imageView.setScaleType(ScaleType.FIT_XY);
             //imageView.setMaxHeight(pxOneMaxWandH);
 
             if (photo.w == 0 || photo.h == 0) {
