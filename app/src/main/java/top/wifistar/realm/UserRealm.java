@@ -21,6 +21,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	@PrimaryKey
 	public String id;
 	public String objectId;
+	public String favorMoments = "";
 
 	@Override
 	public String toString() {
@@ -35,6 +36,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 		user.name = name;
 		user.headUrl = headUrl;
 		user.id = id;
+		user.favorMoments = favorMoments;
 		user.setObjectId(objectId);
 		return user;
 	}

@@ -114,7 +114,7 @@ public class App extends MultiDexApplication {
 
         APP_INSTANCE = this;
         Realm.init(this);
-        realmConfig = new RealmConfiguration.Builder().name("UserData.realm").build();
+        realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
         Realm.setDefaultConfiguration(realmConfig);
         BaseRealmDao.realm = getRealm();
 //        if (getApplicationInfo().packageName

@@ -75,7 +75,7 @@ public class MomentsPresenter implements MomentsContract.Presenter {
                     });
         } else {
             //load from realm
-            RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class);
+            RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class,"createAt");
             if (!dbData.isEmpty()) {
                 if (dbData.isLoaded()) {
                     // 完成查询

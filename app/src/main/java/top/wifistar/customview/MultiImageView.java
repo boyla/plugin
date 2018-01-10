@@ -68,7 +68,7 @@ public class MultiImageView extends LinearLayout {
 
         if (MAX_WIDTH > 0) {
             pxMoreWandH = (MAX_WIDTH - pxImagePadding * 2) / 3; //解决右侧图片和内容对不齐问题
-            pxOneMaxWandH = MAX_WIDTH * 2 / 3;
+            pxOneMaxWandH = MAX_WIDTH * 4 / 5;
             initImageLayoutParams();
         }
 

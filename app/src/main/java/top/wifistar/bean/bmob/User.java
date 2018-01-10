@@ -13,6 +13,7 @@ public class User extends BmobObject implements ToRealmObject {
 	public String headUrl;
 	public String id;
 	public Integer sex = 1;
+	public String favorMoments = "";
 
 	public User(){}
 
@@ -54,6 +55,7 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.headUrl = headUrl;
 		realm.id = id;
 		realm.objectId = getObjectId();
+		realm.favorMoments = favorMoments;
 		return realm;
 	}
 }

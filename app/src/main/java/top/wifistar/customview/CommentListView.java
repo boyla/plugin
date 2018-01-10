@@ -121,54 +121,58 @@ public class CommentListView extends LinearLayout {
         TextView commentTv = (TextView) convertView.findViewById(R.id.commentTv);
         final CircleMovementMethod circleMovementMethod = new CircleMovementMethod(itemSelectorColor, itemSelectorColor);
         final Comment bean = mDatas.get(position);
-        BmobQuery query = new BmobQuery<User>();
         String userId = bean.getUser().getObjectId().trim();
-        query.getObject(userId, new QueryListener<User>() {
+        Utils.QueryUsesrCallBack queryUsesrCallBack = new Utils.QueryUsesrCallBack() {
+            @Override
+            public void onSuccess(User user) {
+                bean.setUser(user);
+                String name = bean.getUser().getName();
+                String toReplyName = "";
+                if (bean.getToReplyUser() != null) {
+                    toReplyName = bean.getToReplyUser().getName();
+                }
+
+                SpannableStringBuilder builder = new SpannableStringBuilder();
+                builder.append(setClickableSpan(name, bean.getUser().getObjectId()));
+
+                if (!TextUtils.isEmpty(toReplyName)) {
+                    builder.append(" 回复 ");
+                    builder.append(setClickableSpan(toReplyName, bean.getToReplyUser().getObjectId()));
+                }
+                builder.append(": ");
+                //转换表情字符
+                String contentBodyStr = bean.getContent();
+                builder.append(UrlUtils.formatUrlString(contentBodyStr));
+                commentTv.setText(builder);
+                commentTv.setMovementMethod(circleMovementMethod);
+                commentTv.setOnClickListener(v -> {
+                    if (circleMovementMethod.isPassToTv()) {
+                        if (onItemClickListener != null) {
+                            onItemClickListener.onItemClick(position);
+                        }
+                    }
+                });
+                commentTv.setOnLongClickListener(v -> {
+                    if (circleMovementMethod.isPassToTv()) {
+                        if (onItemLongClickListener != null) {
+                            onItemLongClickListener.onItemLongClick(position);
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+            }
 
             @Override
-            public void done(User user, BmobException e) {
-                if (e == null) {
-                    bean.setUser(user);
-                    String name = bean.getUser().getName();
-                    String toReplyName = "";
-                    if (bean.getToReplyUser() != null) {
-                        toReplyName = bean.getToReplyUser().getName();
-                    }
-
-                    SpannableStringBuilder builder = new SpannableStringBuilder();
-                    builder.append(setClickableSpan(name, bean.getUser().getObjectId()));
-
-                    if (!TextUtils.isEmpty(toReplyName)) {
-                        builder.append(" 回复 ");
-                        builder.append(setClickableSpan(toReplyName, bean.getToReplyUser().getObjectId()));
-                    }
-                    builder.append(": ");
-                    //转换表情字符
-                    String contentBodyStr = bean.getContent();
-                    builder.append(UrlUtils.formatUrlString(contentBodyStr));
-                    commentTv.setText(builder);
-                    commentTv.setMovementMethod(circleMovementMethod);
-                    commentTv.setOnClickListener(v -> {
-                        if (circleMovementMethod.isPassToTv()) {
-                            if (onItemClickListener != null) {
-                                onItemClickListener.onItemClick(position);
-                            }
-                        }
-                    });
-                    commentTv.setOnLongClickListener(v -> {
-                        if (circleMovementMethod.isPassToTv()) {
-                            if (onItemLongClickListener != null) {
-                                onItemLongClickListener.onItemLongClick(position);
-                            }
-                            return true;
-                        }
-                        return false;
-                    });
-                } else {
-                    Utils.showToast("获取评论用户失败");
-                }
+            public void onFailure(Exception e) {
+                Utils.showToast("获取用户失败");
             }
-        });
+        };
+        if(TextUtils.isEmpty(bean.user.getName())){
+            Utils.queryShortUser(userId,queryUsesrCallBack);
+        }else{
+            queryUsesrCallBack.onSuccess(bean.user);
+        }
         return convertView;
     }
 

@@ -340,7 +340,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 Utils.showToast("所有动态已加载完毕");
                 recyclerView.loadMoreComplete();
             } else {
-                momentAdapter.getDatas().addAll(momentAdapter.getDatas().size() - 1, datas);
+                momentAdapter.getDatas().addAll(datas);
                 updateDataList(loadType);
             }
         }
@@ -498,6 +498,4 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         momentAdapter.getDatas().add(0, event.moment);
         momentAdapter.notifyItemInserted(1);
     }
-
-
 }

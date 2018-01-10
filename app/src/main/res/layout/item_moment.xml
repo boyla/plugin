@@ -98,8 +98,8 @@
 
                 <ImageView 
                     android:id="@+id/snsBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="35dp"
+                    android:layout_height="15dp"
                     android:src="@drawable/im_snsimg"/>
             </LinearLayout>
 

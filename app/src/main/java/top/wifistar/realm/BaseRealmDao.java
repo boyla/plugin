@@ -1,5 +1,7 @@
 package top.wifistar.realm;
 
+import android.text.TextUtils;
+
 import org.json.JSONArray;
 
 import java.util.List;
@@ -7,6 +9,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
  * Created by boyla on 2017/10/31.
@@ -219,7 +222,15 @@ public class BaseRealmDao {
      * @return 返回结果集合
      */
     public static RealmResults<? extends RealmObject> findAll(Class<? extends RealmObject> clazz) {
-        return realm.where(clazz).findAll();
+        return findAll(clazz,null);
+    }
+
+    public static RealmResults<? extends RealmObject> findAll(Class<? extends RealmObject> clazz,String filedName) {
+        if(TextUtils.isEmpty(filedName)){
+            return realm.where(clazz).findAll();
+        }else{
+            return realm.where(clazz).findAll().sort(filedName, Sort.DESCENDING);
+        }
     }
 
     /**

@@ -47,6 +47,10 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.scottyab.aescrypt.AESCrypt;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
+import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
 import top.wifistar.app.App;
@@ -57,6 +61,8 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.TopReminder;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.UserRealm;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -1206,5 +1212,33 @@ public class Utils {
                 .setNegativeButton("取消", null)
                 .setPositiveButton("确定", listener);
         builder.show();
+    }
+
+    public interface QueryUsesrCallBack {
+        void onSuccess(User user);
+        void onFailure(Exception e);
+    }
+
+    public static void queryShortUser(String shortUserObjId, QueryUsesrCallBack callBack) {
+        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", shortUserObjId).findAll();
+        if (dbData.isEmpty()) {
+            //query Bmob
+            BmobQuery<User> query = new BmobQuery<User>();
+            query.getObject(shortUserObjId, new QueryListener<User>() {
+                @Override
+                public void done(User user, BmobException e) {
+                    if (e == null) {
+                        BaseRealmDao.insertOrUpdate(user.toRealmObject());
+                        callBack.onSuccess(user);
+                    } else {
+                        callBack.onFailure(e);
+                    }
+                }
+            });
+        } else {
+            UserRealm userRealm = dbData.first();
+            User user = userRealm.toBmobObject();
+            callBack.onSuccess(user);
+        }
     }
 }

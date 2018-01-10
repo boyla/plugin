@@ -15,7 +15,7 @@ public class BmobUtils {
         User user = new User();
         user.setValue("name",""+nickName);
         user.setValue("id",""+profileId);
-        user.setValue("headUrl",avatar);
+        user.setValue("headUrl",""+avatar);
         user.sex = sex;
 
         user.update(objId, new UpdateListener() {

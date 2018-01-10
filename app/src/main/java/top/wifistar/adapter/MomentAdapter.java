@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -48,6 +49,7 @@ import top.wifistar.customview.PraiseListView;
 import top.wifistar.customview.SnsPopupWindow;
 import top.wifistar.dialog.CommentDialog;
 import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.MomentRealm;
 import top.wifistar.realm.UserRealm;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.UrlUtils;
@@ -244,23 +246,46 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             return;
         }
         // 查询喜欢这个帖子的所有用户，因此查询的是用户表
-        BmobQuery<User> query = new BmobQuery<User>();
-        Moment post = new Moment();
-        post.setObjectId(moment.getObjectId());
-        //likes是Post表中的字段，用来存储所有喜欢该帖子的用户
-        query.addWhereRelatedTo("favors", new BmobPointer(post));
-        query.findObjects(new FindListener<User>() {
-            @Override
-            public void done(List<User> object, BmobException e) {
-                if (e == null) {
-                    moment.likes = object;
-                    refreshLike(moment, holder);
-                } else {
-                    Log.i("bmob", "失败：" + e.getMessage());
+        if(Utils.isNetworkConnected()){
+            BmobQuery<User> query = new BmobQuery<User>();
+            Moment post = new Moment();
+            post.setObjectId(moment.getObjectId());
+            //likes是Post表中的字段，用来存储所有喜欢该帖子的用户
+            query.addWhereRelatedTo("favors", new BmobPointer(post));
+            query.findObjects(new FindListener<User>() {
+                @Override
+                public void done(List<User> userList, BmobException e) {
+                    if (e == null) {
+                        for(User item:userList){
+                            item.favorMoments += "," + moment.getObjectId();
+                        }
+                        moment.likes = userList;
+                        refreshLike(moment, holder);
+                    } else {
+                        Log.i("bmob", "失败：" + e.getMessage());
+                    }
+                    App.getHandler().post(() -> queryComments(moment, holder, dataPosition));
                 }
-                App.getHandler().post(() -> queryComments(moment, holder, dataPosition));
+            });
+        }else{
+            // query from db
+            RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).contains("favorMoments", moment.getObjectId()).findAll();
+            List<User> data = new ArrayList<>();
+            if (dbData.isLoaded()) {
+                // 完成查询
+                if (!dbData.isEmpty()){
+                    for (UserRealm item : dbData) {
+                        data.add(item.toBmobObject());
+                    }
+                }
             }
-        });
+            moment.likes = data;
+            refreshLike(moment, holder);
+            App.getHandler().post(() -> queryComments(moment, holder, dataPosition));
+
+        }
+
+
     }
 
     private void refreshLike(Moment moment, MomentViewHolder holder) {
@@ -315,10 +340,11 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             public void done(List<Comment> object, BmobException e) {
                 if (e == null) {
                     moment.setComments(object);
-                    BaseRealmDao.insertOrUpdate(moment.toRealmObject());
                 } else {
                     Log.i("bmob", "获取评论失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
+                MomentRealm momentRealm = moment.toRealmObject();
+                BaseRealmDao.insertOrUpdate(momentRealm);
                 refreshLikeListAndCommentList(moment, holder, dataPosition);
             }
         });
@@ -383,40 +409,25 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             return;
         }
         //TODO first query from db, if no data query Bmob
-        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", moment.getUser().getObjectId()).findAll();
-        if (dbData.isEmpty()) {
-            //query Bmob
-            BmobQuery<User> query = new BmobQuery<User>();
-            query.getObject(moment.getUser().getObjectId(), new QueryListener<User>() {
-                @Override
-                public void done(User object, BmobException e) {
-                    if (e == null) {
-                        moment.setUser(object);
-                        BaseRealmDao.insertOrUpdate(object.toRealmObject());
-                        setUserToHolder(moment, holder);
-                    } else {
-                        Utils.showToast("失败：" + e.getMessage() + "," + e.getErrorCode());
-                    }
-                }
-            });
-        } else {
-            UserRealm userRealm = dbData.first();
-            User user = userRealm.toBmobObject();
-            moment.setUser(user);
-            setUserToHolder(moment, holder);
-        }
+        Utils.queryShortUser(moment.getUser().getObjectId(),new Utils.QueryUsesrCallBack(){
+
+            @Override
+            public void onSuccess(User user) {
+                moment.setUser(user);
+                setUserToHolder(moment, holder);
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Utils.showToast("获取用户失败：" + e.getMessage());
+            }
+        });
     }
 
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
         String name = moment.getUser().getName();
         String headImg = moment.getUser().getHeadUrl();
-        if (!TextUtils.isEmpty(headImg)){
-            Glide.with(context)
-                    .load(headImg)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .bitmapTransform(new GlideCircleTransform(context))
-                    .into(holder.headIv);
-        }else{
+        if (TextUtils.isEmpty(headImg) || "null".equals(headImg)){
             int img;
             if(moment.getUser().sex == 0){
                 img = R.drawable.default_avartar_female;
@@ -425,6 +436,12 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             }
             Glide.with(context)
                     .load(img)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .bitmapTransform(new GlideCircleTransform(context))
+                    .into(holder.headIv);
+        }else{
+            Glide.with(context)
+                    .load(headImg)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .bitmapTransform(new GlideCircleTransform(context))
                     .into(holder.headIv);

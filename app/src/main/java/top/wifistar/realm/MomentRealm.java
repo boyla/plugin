@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.Photo;
 
@@ -22,6 +23,8 @@ public class MomentRealm extends RealmObject implements ToBmobObject{
 	public String videoImgUrl;
 	public RealmList<UserRealm> likes;
 	public RealmList<Photo> photosData;
+	public String createAt;
+	@PrimaryKey
 	public String objectId;
 
 	public boolean isExpand;
