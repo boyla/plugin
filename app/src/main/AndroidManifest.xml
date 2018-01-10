@@ -79,9 +79,11 @@
 
         <service android:name=".service.WiFiNetworkService" />
 
-        <activity android:name=".activity.Main2Activity"></activity>
+        <activity android:name=".activity.Main2Activity"/>
 
-        <activity android:name=".activity.ImagePagerActivity"></activity>
+        <activity android:name=".activity.ImagePagerActivity"/>
+
+        <activity android:name=".activity.UserProfileActivity"/>
 
         <activity android:name=".activity.PublishMomentActivity"/>
 

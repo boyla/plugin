@@ -46,6 +46,7 @@ import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.dialog.LoadingDialog;
+import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.ProgressDialogUtil;
 import top.wifistar.utils.Utils;
@@ -515,13 +516,16 @@ public class SplashActivity extends BaseActivity {
         }
         User user = new User(nickName, App.currentUserProfile.getAvatar() + "");
         user.id = profileId;
+        user.sex = App.currentUserProfile.getSex();
         user.save(new SaveListener<String>() {
             @Override
-            public void done(String s, BmobException e) {
+            public void done(String objId, BmobException e) {
                 if (e != null) {
                     Utils.showToast(e.getMessage());
                 } else {
-                    ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), s);
+                    user.setObjectId(objId);
+                    BaseRealmDao.insertOrUpdate(user.toRealmObject());
+                    ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                 }
             }
         });

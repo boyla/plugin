@@ -29,7 +29,6 @@ import com.jcodecraeer.xrecyclerview.XRecyclerView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.datatype.BmobFile;
@@ -282,7 +281,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                     Comment comment = new Comment();
                     comment.setContent(content);
                     comment.setMomentId(momentId);
-                    comment.setUser(Utils.getShortUser());
+                    comment.setUser(Utils.getCurrentShortUser());
                     if (replyUser != null) {
                         comment.setToReplyUser(replyUser);
                     }

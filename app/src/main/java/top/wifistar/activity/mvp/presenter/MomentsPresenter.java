@@ -41,7 +41,6 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     public static final int PAGE_LIMIT = 10;
     public static boolean NO_MORE_DATA = false;
 
-
     public MomentsPresenter(MomentsContract.View view) {
         momentsModel = new MomentsModel();
         this.view = view;
@@ -74,11 +73,11 @@ public class MomentsPresenter implements MomentsContract.Presenter {
                         }
                     });
         } else {
-            //load from realm
             RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class,"createAt");
             if (!dbData.isEmpty()) {
                 if (dbData.isLoaded()) {
                     // 完成查询
+                    NO_MORE_DATA = true;
                     List<Moment> data = new ArrayList<>();
                     for (MomentRealm momentRealm : dbData) {
                         data.add(momentRealm.toBmobObject());

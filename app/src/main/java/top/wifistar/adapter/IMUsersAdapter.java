@@ -2,10 +2,6 @@ package top.wifistar.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,8 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 
 import io.realm.RealmResults;
 import top.wifistar.R;
@@ -76,7 +70,7 @@ public class IMUsersAdapter extends BaseRealmAdapter<IMUserRealm> {
             //Glide 加载公众号头像
             textViewHolder.mUserName.setText("Subscription");
         } else {
-            Utils.setUserAvatar(context, imUser, textViewHolder.mHeadImg);
+            Utils.setUserSelfAvatar(context, imUser, textViewHolder.mHeadImg);
             textViewHolder.mUserName.setText(imUser.getUserName());
         }
 

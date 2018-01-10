@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
@@ -53,6 +54,7 @@ import cn.bmob.v3.listener.QueryListener;
 import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
+import top.wifistar.activity.UserProfileActivity;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.IMUserRealm;
@@ -926,7 +928,8 @@ public class Utils {
         }
     }
 
-    public static void setUserAvatar(Context context, CircleImageView mCustomLogo) {
+    public static void setUserSelfAvatar(CircleImageView mCustomLogo) {
+        Context context = mCustomLogo.getContext();
         UserProfile profile = (UserProfile) ACache.get(context).getAsObject("CURRENT_USER_PROFILE_" + BUser.getCurrentUser().getObjectId());
         if (profile == null) {
             return;
@@ -937,25 +940,33 @@ public class Utils {
         } else if (0 == profile.getSex()) {
             Glide.with(context).load(R.drawable.default_avartar_female).into(mCustomLogo);
         }
+        mCustomLogo.setOnClickListener(v -> {
+            Intent intent = new Intent(context, UserProfileActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("ShortUser",Utils.getCurrentShortUser());
+            intent.putExtras(bundle);
+            mCustomLogo.getContext().startActivity(intent);
+        });
     }
 
-    public static void setUserAvatar(Context context, UserProfile profile, ImageView imageView) {
-        if (profile == null || profile.getSex() == null) {
+    public static void setUserAvatar(User shortProfile, ImageView imageView) {
+        Context context = imageView.getContext();
+        if (shortProfile == null || shortProfile.sex == null) {
             return;
-        } else if (!TextUtils.isEmpty(profile.getAvatar())) {
-            Glide.with(context).load(profile.getAvatar())
+        } else if (!TextUtils.isEmpty(shortProfile.getHeadUrl())) {
+            Glide.with(context).load(shortProfile.getHeadUrl())
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
-        } else if ("0".equals(profile.getSex())) {
+        } else if (shortProfile.sex == 0) {
             Glide.with(context).load(R.drawable.default_avartar_female).into(imageView);
-        } else if ("1".equals(profile.getSex())) {
+        } else if (shortProfile.sex == 1) {
             Glide.with(context).load(R.drawable.default_avartar_male).into(imageView);
         }
 
     }
 
 
-    public static void setUserAvatar(Context context, IMUserRealm profile, ImageView imageView) {
+    public static void setUserSelfAvatar(Context context, IMUserRealm profile, ImageView imageView) {
         if (profile == null || TextUtils.isEmpty(profile.getSex())) {
             return;
         } else if (!TextUtils.isEmpty(profile.getPhoto())) {
@@ -1017,18 +1028,21 @@ public class Utils {
         App.getHandler().postDelayed(() -> {
             UserProfile profile = App.currentUserProfile;
             BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
-        }, 1111);
+        }, 111);
     }
 
-    public static User getShortUser() {
-        UserProfile profile = App.currentUserProfile;
-        User user = null;
-        if (profile != null) {
-            user = new User(profile.getNickName(), profile.getAvatar(), profile.getObjectId());
-            String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-            user.setObjectId(id);
+    public static User getCurrentShortUser() {
+        String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId",id).findAll();
+        List<User> data = new ArrayList<>();
+        if (dbData.isLoaded()) {
+            // 完成查询
+            if (!dbData.isEmpty()){
+                UserRealm userRealm = dbData.first();
+                return userRealm.toBmobObject();
+            }
         }
-        return user;
+        return null;
     }
 
     public static String friendlyTime(Date time) {
@@ -1216,6 +1230,7 @@ public class Utils {
 
     public interface QueryUsesrCallBack {
         void onSuccess(User user);
+
         void onFailure(Exception e);
     }
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.realm.BaseRealmDao;
 
 /**
  * Created by boyla on 2017/9/29.
@@ -13,18 +14,20 @@ import top.wifistar.bean.bmob.User;
 public class BmobUtils {
     public static void updateUser(String objId, String profileId, String nickName, String avatar, Integer sex) {
         User user = new User();
-        user.setValue("name",""+nickName);
-        user.setValue("id",""+profileId);
-        user.setValue("headUrl",""+avatar);
+        user.name = nickName;
+        user.id = profileId;
+        user.headUrl = avatar;
         user.sex = sex;
 
         user.update(objId, new UpdateListener() {
             @Override
             public void done(BmobException e) {
                 if(e==null){
-                    Log.i("BmobUtils:","更新成功");
+                    Log.i("ShortUser:","更新成功");
+                    user.setObjectId(objId);
+                    BaseRealmDao.insertOrUpdate(user.toRealmObject());
                 }else{
-                    Log.i("BmobUtils:","更新失败："+e.getMessage()+","+e.getErrorCode());
+                    Log.i("ShortUser:","更新失败："+e.getMessage()+","+e.getErrorCode());
                 }
             }
         });

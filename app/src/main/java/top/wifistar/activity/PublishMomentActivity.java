@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -43,7 +42,6 @@ import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.event.PublishMomentEvent;
-import top.wifistar.manager.FileUploadManager;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
@@ -239,7 +237,7 @@ public class PublishMomentActivity extends ToolbarActivity {
             momentToPost.setPhotos(TextUtils.join(",", urls));
         }
         //set user
-        User user = Utils.getShortUser();
+        User user = Utils.getCurrentShortUser();
         if (user == null) {
             Utils.showToast("登陆用户失效，请重新登陆");
             return;

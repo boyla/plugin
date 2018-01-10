@@ -1,6 +1,5 @@
 package top.wifistar.activity.mvp.modle;
 
-import android.text.TextUtils;
 import android.util.Log;
 
 import cn.bmob.v3.datatype.BmobRelation;
@@ -104,7 +103,7 @@ public class MomentsModel {
 
     public void addComment(String content, final String momentId, final User toReplyUser, final IDataRequestListener listener) {
         Comment comment = new Comment();
-        comment.setUser(Utils.getShortUser());
+        comment.setUser(Utils.getCurrentShortUser());
         comment.setMomentId(momentId);
         comment.setContent(content);
         if (toReplyUser!=null) {

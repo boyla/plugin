@@ -5,7 +5,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -57,7 +56,7 @@ public class HomeActivity extends ToolbarActivity {
         tool_bar_frame.setVisibility(View.VISIBLE);
         mCustomLogo.setVisibility(View.VISIBLE);
         updateTitle();
-        Utils.setUserAvatar(this, mCustomLogo);
+        Utils.setUserSelfAvatar(mCustomLogo);
         invalidateOptionsMenu();
     }
 
