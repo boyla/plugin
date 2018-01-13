@@ -1,6 +1,7 @@
 package top.wifistar.activity;
 
 
+import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import top.wifistar.app.App;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.customview.LoadingView;
 import top.wifistar.R;
@@ -54,9 +56,8 @@ public class HomeActivity extends ToolbarActivity {
         mToolbar.setNavigationIcon(null);
         mToolbar.setTitle("");
         tool_bar_frame.setVisibility(View.VISIBLE);
-        mCustomLogo.setVisibility(View.VISIBLE);
         updateTitle();
-        Utils.setUserSelfAvatar(mCustomLogo);
+        App.getHandler().postDelayed(() -> Utils.setUserSelfAvatar(mCustomLogo),1234);
         invalidateOptionsMenu();
     }
 
@@ -152,4 +153,9 @@ public class HomeActivity extends ToolbarActivity {
         return (ImageView) editTextBodyLl.findViewById(R.id.sendIv);
     }
 
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+//        setEnterSharedElementCallback();
+    }
 }

@@ -16,7 +16,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginRight="10dip"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:visibility="invisible" />
 
         <LinearLayout

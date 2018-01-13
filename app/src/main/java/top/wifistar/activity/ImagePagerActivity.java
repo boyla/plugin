@@ -1,10 +1,14 @@
 package top.wifistar.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
@@ -28,11 +32,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import top.wifistar.R;
+import top.wifistar.app.App;
 
 /**
  * Created by yiw on 2016/1/6.
  */
-public class ImagePagerActivity extends YWActivity{
+public class ImagePagerActivity extends YWActivity {
     public static final String INTENT_IMGURLS = "imgurls";
     public static final String INTENT_POSITION = "position";
     public static final String INTENT_IMAGESIZE = "imagesize";
@@ -40,17 +45,22 @@ public class ImagePagerActivity extends YWActivity{
     private List<View> guideViewList = new ArrayList<View>();
     private LinearLayout guideGroup;
     public ImageSize imageSize;
-    private int startPos;
+    public static int startPos;
     private ArrayList<String> imgUrls;
 
 
-    public static void startImagePagerActivity(Context context, List<String> imgUrls, int position, ImageSize imageSize){
+    public static void startImagePagerActivity(View startView, Context context, List<String> imgUrls, int position, ImageSize imageSize) {
         Intent intent = new Intent(context, ImagePagerActivity.class);
         intent.putStringArrayListExtra(INTENT_IMGURLS, new ArrayList<String>(imgUrls));
         intent.putExtra(INTENT_POSITION, position);
         intent.putExtra(INTENT_IMAGESIZE, imageSize);
-        context.startActivity(intent);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, startView, imgUrls.get(position)).toBundle();
+            ActivityCompat.startActivity(context, intent, options);
+        } else {
+            context.startActivity(intent);
+        }
     }
 
     @Override
@@ -75,8 +85,8 @@ public class ImagePagerActivity extends YWActivity{
 
             @Override
             public void onPageSelected(int position) {
-                for(int i=0; i<guideViewList.size(); i++){
-                    guideViewList.get(i).setSelected(i==position ? true : false);
+                for (int i = 0; i < guideViewList.size(); i++) {
+                    guideViewList.get(i).setSelected(i == position ? true : false);
                 }
             }
 
@@ -98,12 +108,12 @@ public class ImagePagerActivity extends YWActivity{
     }
 
     private void addGuideView(LinearLayout guideGroup, int startPos, ArrayList<String> imgUrls) {
-        if(imgUrls!=null && imgUrls.size()>0){
+        if (imgUrls != null && imgUrls.size() > 0) {
             guideViewList.clear();
-            for (int i=0; i<imgUrls.size(); i++){
+            for (int i = 0; i < imgUrls.size(); i++) {
                 View view = new View(this);
                 view.setBackgroundResource(R.drawable.selector_guide_bg);
-                view.setSelected(i==startPos ? true : false);
+                view.setSelected(i == startPos ? true : false);
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.gudieview_width),
                         getResources().getDimensionPixelSize(R.dimen.gudieview_heigh));
                 layoutParams.setMargins(10, 0, 0, 0);
@@ -115,9 +125,9 @@ public class ImagePagerActivity extends YWActivity{
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        try{
+        try {
             return super.dispatchTouchEvent(ev);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -132,21 +142,22 @@ public class ImagePagerActivity extends YWActivity{
         private ImageView smallImageView = null;
 
         public void setDatas(List<String> datas) {
-            if(datas != null )
+            if (datas != null)
                 this.datas = datas;
         }
-        public void setImageSize(ImageSize imageSize){
+
+        public void setImageSize(ImageSize imageSize) {
             this.imageSize = imageSize;
         }
 
-        public ImageAdapter(Context context){
+        public ImageAdapter(Context context) {
             this.context = context;
             this.inflater = LayoutInflater.from(context);
         }
 
         @Override
         public int getCount() {
-            if(datas == null) return 0;
+            if (datas == null) return 0;
             return datas.size();
         }
 
@@ -154,17 +165,16 @@ public class ImagePagerActivity extends YWActivity{
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
-            if(view != null){
+            if (view != null) {
                 final ImageView imageView = (ImageView) view.findViewById(R.id.image);
-
-                if(imageSize!=null){
+                if (imageSize != null) {
                     //预览imageView
                     smallImageView = new ImageView(context);
                     FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(imageSize.getWidth(), imageSize.getHeight());
                     layoutParams.gravity = Gravity.CENTER;
                     smallImageView.setLayoutParams(layoutParams);
                     smallImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    ((FrameLayout)view).addView(smallImageView);
+                    ((FrameLayout) view).addView(smallImageView);
                 }
 
                 //loading
@@ -173,16 +183,21 @@ public class ImagePagerActivity extends YWActivity{
                         ViewGroup.LayoutParams.WRAP_CONTENT);
                 loadingLayoutParams.gravity = Gravity.CENTER;
                 loading.setLayoutParams(loadingLayoutParams);
-                ((FrameLayout)view).addView(loading);
+                ((FrameLayout) view).addView(loading);
 
                 final String imgurl = datas.get(position).split("_")[0];
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (position == startPos) {
+                        imageView.setTransitionName(imgurl);
+                    }
+                }
 
                 Glide.with(context)
                         .load(imgurl)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存多个尺寸
                         .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
                         .error(R.drawable.loading)
-                        .into(new GlideDrawableImageViewTarget(imageView){
+                        .into(new GlideDrawableImageViewTarget(imageView) {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
                                 super.onLoadStarted(placeholder);
@@ -245,12 +260,12 @@ public class ImagePagerActivity extends YWActivity{
         super.onDestroy();
     }
 
-    public static class ImageSize implements Serializable{
+    public static class ImageSize implements Serializable {
 
         private int width;
         private int height;
 
-        public ImageSize(int width, int height){
+        public ImageSize(int width, int height) {
             this.width = width;
             this.height = height;
         }
@@ -271,4 +286,5 @@ public class ImagePagerActivity extends YWActivity{
             this.width = width;
         }
     }
+
 }

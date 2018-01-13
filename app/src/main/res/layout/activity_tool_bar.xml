@@ -44,10 +44,10 @@
                     android:id="@+id/mCustomLogo"
                     android:layout_width="43dp"
                     android:layout_height="43dp"
-                    android:src="@drawable/default_avartar"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="10dp"
                     app:civ_border_width="2dp"
+                    android:transitionName="@string/transition_name_head_img"
                     android:visibility="gone" />
 
                 <LinearLayout

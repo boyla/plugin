@@ -276,18 +276,19 @@ public class App extends MultiDexApplication {
     }
 
     private void initHandler() {
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                for (int i = 0; i < activityStack.size(); i++) {
-                    Activity activity = activityStack.get(i);
-                    if (activity instanceof BaseActivity) {
-                        ((BaseActivity) activity).dispatcherMessage(msg);
-                    }
-                }
-            }
-
-        };
+        mHandler = new Handler();
+//        mHandler = new Handler() {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                for (int i = 0; i < activityStack.size(); i++) {
+//                    Activity activity = activityStack.get(i);
+//                    if (activity instanceof BaseActivity) {
+//                        ((BaseActivity) activity).dispatcherMessage(msg);
+//                    }
+//                }
+//            }
+//
+//        };
     }
 
     public static App getInstance() {

@@ -51,7 +51,12 @@
     <string name="discover">Discover</string>
 
     <!-- ProgressCombineView -->
-    <string name="network_failed_title">Oops! Something goes wrong</string>
+    <string name="network_failed_title">Oops! Something goes wrong.</string>
     <string name="Oops_Loading_failed">Oops! Loading failed, please try again!</string>
     <string name="network_offline">The internet connection appears to be offline.</string>
+
+    <string name="transition_name_head_img">head_image</string>
+    <string name="transition_name_bg_img">bg_image</string>
+    <string name="transition_name_user_name">user_name</string>
+    <string name="transition_name_pic_full_screen">pic_full_screen</string>
 </resources>

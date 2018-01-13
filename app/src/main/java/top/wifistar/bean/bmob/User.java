@@ -55,6 +55,7 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.headUrl = headUrl;
 		realm.id = id;
 		realm.objectId = getObjectId();
+		realm.sex = sex;
 		realm.favorMoments = favorMoments;
 		return realm;
 	}

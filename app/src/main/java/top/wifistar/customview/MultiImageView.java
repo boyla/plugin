@@ -2,6 +2,7 @@ package top.wifistar.customview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -182,6 +183,9 @@ public class MultiImageView extends LinearLayout {
     private ImageView createImageView(int position, final boolean isMultiImage) {
         Photo photo = imagesList.get(position);
         ImageView imageView = new ColorFilterImageView(getContext());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            imageView.setTransitionName(photo.url);
+        }
         if (isMultiImage) {
             imageView.setScaleType(ScaleType.CENTER_CROP);
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
@@ -265,6 +269,6 @@ public class MultiImageView extends LinearLayout {
     }
 
     public interface OnItemClickListener {
-        public void onItemClick(View view, int position);
+         void onItemClick(View view, int position);
     }
 }

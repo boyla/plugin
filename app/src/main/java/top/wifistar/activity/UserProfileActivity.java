@@ -1,5 +1,6 @@
 package top.wifistar.activity;
 
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -27,14 +28,17 @@ public class UserProfileActivity extends ToolbarActivity {
         super.setContentView(R.layout.activity_user_profile);
         ivHead = (ImageView) findViewById(R.id.ivHead);
         setToolbarTitle();
-        Utils.setUserAvatar(shortUser,ivHead);
+        Utils.setUserAvatar(shortUser,ivHead,false);
     }
 
     protected void setToolbarTitle() {
         mToolbar.setNavigationIcon(R.drawable.back);
         tool_bar_frame.setVisibility(View.GONE);
         setTitle("");
-        setCenterTitle("title");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTitleCenter.setTransitionName(getString(R.string.transition_name_user_name));
+        }
+        setCenterTitle(shortUser.getName());
         invalidateOptionsMenu();
     }
 

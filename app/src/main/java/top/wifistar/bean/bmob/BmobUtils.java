@@ -18,14 +18,14 @@ public class BmobUtils {
         user.id = profileId;
         user.headUrl = avatar;
         user.sex = sex;
+        user.setObjectId(objId);
+        BaseRealmDao.insertOrUpdate(user.toRealmObject());
 
         user.update(objId, new UpdateListener() {
             @Override
             public void done(BmobException e) {
                 if(e==null){
                     Log.i("ShortUser:","更新成功");
-                    user.setObjectId(objId);
-                    BaseRealmDao.insertOrUpdate(user.toRealmObject());
                 }else{
                     Log.i("ShortUser:","更新失败："+e.getMessage()+","+e.getErrorCode());
                 }

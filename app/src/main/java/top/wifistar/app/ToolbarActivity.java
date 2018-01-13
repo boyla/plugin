@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -11,10 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
+import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.jaeger.library.StatusBarUtil;
 import com.shizhefei.view.indicator.FixedIndicatorView;
 import top.wifistar.R;
@@ -142,7 +142,11 @@ public abstract class ToolbarActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             super.closeKeyBoard();
-            finish();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                ActivityCompat.finishAfterTransition(this);
+            }else{
+                finish();
+            }
             return true;
         }
 
@@ -161,6 +165,9 @@ public abstract class ToolbarActivity extends BaseActivity {
 
     @Override
     public void setContentView(int layoutResID) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        }
         View contentView = LayoutInflater.from(this).inflate(layoutResID, null, false);
         super.setContentView(setToolbarContent(contentView));
     }

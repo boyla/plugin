@@ -1,7 +1,6 @@
 package top.wifistar.adapter;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,18 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.QueryListener;
 import io.realm.RealmResults;
 import top.wifistar.R;
 import top.wifistar.activity.ImagePagerActivity;
@@ -44,7 +40,6 @@ import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleVideoView;
 import top.wifistar.customview.CommentListView;
-import top.wifistar.customview.MultiImageView;
 import top.wifistar.customview.PraiseListView;
 import top.wifistar.customview.SnsPopupWindow;
 import top.wifistar.dialog.CommentDialog;
@@ -109,6 +104,8 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             UserProfile profile = App.currentUserProfile;
             if (profile != null && !TextUtils.isEmpty(profile.getNickName())) {
                 tvName.setText(profile.getNickName());
+                //TODO
+//                Utils.setUserHeadClick(Utils.getCurrentShortUser(), tvName);
             }
             // TODO: change moment title background
         } else {
@@ -182,13 +179,10 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                         if (photos != null && photos.size() > 0) {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.VISIBLE);
                             ((ImageViewHolder) holder).multiImageView.setList(moment.getPhotosBean());
-                            ((ImageViewHolder) holder).multiImageView.setOnItemClickListener(new MultiImageView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(View view, int position) {
-                                    //imagesize是作为loading时的图片size
-                                    ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
-                                    ImagePagerActivity.startImagePagerActivity(context, photos, position, imageSize);
-                                }
+                            ((ImageViewHolder) holder).multiImageView.setOnItemClickListener((view, position1) -> {
+                                //imagesize是作为loading时的图片size
+                                ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
+                                ImagePagerActivity.startImagePagerActivity(view, context, photos, position1, imageSize);
                             });
                         } else {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.GONE);
@@ -246,7 +240,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             return;
         }
         // 查询喜欢这个帖子的所有用户，因此查询的是用户表
-        if(Utils.isNetworkConnected()){
+        if (Utils.isNetworkConnected()) {
             BmobQuery<User> query = new BmobQuery<User>();
             Moment post = new Moment();
             post.setObjectId(moment.getObjectId());
@@ -256,7 +250,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 @Override
                 public void done(List<User> userList, BmobException e) {
                     if (e == null) {
-                        for(User item:userList){
+                        for (User item : userList) {
                             item.favorMoments += "," + moment.getObjectId();
                         }
                         moment.likes = userList;
@@ -267,13 +261,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     App.getHandler().post(() -> queryComments(moment, holder, dataPosition));
                 }
             });
-        }else{
+        } else {
             // query from db
             RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).contains("favorMoments", moment.getObjectId()).findAll();
             List<User> data = new ArrayList<>();
             if (dbData.isLoaded()) {
                 // 完成查询
-                if (!dbData.isEmpty()){
+                if (!dbData.isEmpty()) {
                     for (UserRealm item : dbData) {
                         data.add(item.toBmobObject());
                     }
@@ -282,10 +276,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             moment.likes = data;
             refreshLike(moment, holder);
             App.getHandler().post(() -> queryComments(moment, holder, dataPosition));
-
         }
-
-
     }
 
     private void refreshLike(Moment moment, MomentViewHolder holder) {
@@ -409,7 +400,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             return;
         }
         //TODO first query from db, if no data query Bmob
-        Utils.queryShortUser(moment.getUser().getObjectId(),new Utils.QueryUsesrCallBack(){
+        Utils.queryShortUser(moment.getUser().getObjectId(), new Utils.QueryUsesrCallBack() {
 
             @Override
             public void onSuccess(User user) {
@@ -425,33 +416,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
-        String name = moment.getUser().getName();
-        String headImg = moment.getUser().getHeadUrl();
-        if (TextUtils.isEmpty(headImg) || "null".equals(headImg)){
-            int img;
-            if(moment.getUser().sex == 0){
-                img = R.drawable.default_avartar_female;
-            }else{
-                img = R.drawable.default_avartar_male;
-            }
-            Glide.with(context)
-                    .load(img)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .bitmapTransform(new GlideCircleTransform(context))
-                    .into(holder.headIv);
-        }else{
-            Glide.with(context)
-                    .load(headImg)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .bitmapTransform(new GlideCircleTransform(context))
-                    .into(holder.headIv);
-        }
-        holder.nameTv.setText(name);
+        holder.nameTv.setText( moment.getUser().getName());
+        Utils.setUserAvatar(moment.getUser(), holder.headIv);
         //加载完User后
         if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {
             holder.deleteBtn.setVisibility(View.VISIBLE);
             holder.deleteBtn.setOnClickListener(v -> {
-                Utils.showSimpleDialog(context,"确定删除该动态？", (dialog, which) -> {
+                Utils.showSimpleDialog(context, "确定删除该动态？", (dialog, which) -> {
                     //删除
                     if (presenter != null) {
                         presenter.deleteMoment(moment.getObjectId());
@@ -513,7 +484,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                         config.circlePosition = dataPosition;
                         config.commentType = CommentConfig.Type.PUBLIC;
                         presenter.showEditTextBody(config);
-                        presenter.setCurrentMomentId(mMoment.getObjectId(),null);
+                        presenter.setCurrentMomentId(mMoment.getObjectId(), null);
                     }
                     break;
                 default:

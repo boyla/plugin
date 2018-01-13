@@ -14,6 +14,8 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -46,6 +48,7 @@ import android.widget.Toast;
 //import com.mason.sociality.lib.manager.LocationCustomManager;
 //import com.mason.sociality.lib.xmpp.XMPPManager;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.scottyab.aescrypt.AESCrypt;
 
 import cn.bmob.v3.BmobQuery;
@@ -929,40 +932,71 @@ public class Utils {
     }
 
     public static void setUserSelfAvatar(CircleImageView mCustomLogo) {
-        Context context = mCustomLogo.getContext();
-        UserProfile profile = (UserProfile) ACache.get(context).getAsObject("CURRENT_USER_PROFILE_" + BUser.getCurrentUser().getObjectId());
-        if (profile == null) {
-            return;
-        } else if (!TextUtils.isEmpty(profile.getAvatar())) {
-            Glide.with(context).load(profile.getAvatar()).into(mCustomLogo);
-        } else if (profile.getSex() == null || 1 == profile.getSex()) {
-            Glide.with(context).load(R.drawable.default_avartar_male).into(mCustomLogo);
-        } else if (0 == profile.getSex()) {
-            Glide.with(context).load(R.drawable.default_avartar_female).into(mCustomLogo);
+        User user = Utils.getCurrentShortUser();
+        if (user != null) {
+            mCustomLogo.setVisibility(View.INVISIBLE);
+            setUserAvatar(user, mCustomLogo);
+            mCustomLogo.setVisibility(View.VISIBLE);
         }
-        mCustomLogo.setOnClickListener(v -> {
-            Intent intent = new Intent(context, UserProfileActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("ShortUser",Utils.getCurrentShortUser());
-            intent.putExtras(bundle);
-            mCustomLogo.getContext().startActivity(intent);
-        });
     }
 
     public static void setUserAvatar(User shortProfile, ImageView imageView) {
+        setUserAvatar(shortProfile, imageView, true);
+    }
+
+    public static void setUserAvatar(User shortProfile, ImageView imageView, boolean needJumpPage) {
         Context context = imageView.getContext();
-        if (shortProfile == null || shortProfile.sex == null) {
-            return;
-        } else if (!TextUtils.isEmpty(shortProfile.getHeadUrl())) {
-            Glide.with(context).load(shortProfile.getHeadUrl())
-                    .bitmapTransform(new CropCircleTransformation(context))
+        String headImg = shortProfile.getHeadUrl();
+        if (TextUtils.isEmpty(headImg) || "null".equals(headImg)) {
+            int img;
+            if (shortProfile.sex == 0) {
+                img = R.drawable.default_avartar_female;
+            } else {
+                img = R.drawable.default_avartar_male;
+            }
+            Glide.with(context)
+                    .load(img)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .bitmapTransform(new GlideCircleTransform(context))
                     .into(imageView);
-        } else if (shortProfile.sex == 0) {
-            Glide.with(context).load(R.drawable.default_avartar_female).into(imageView);
-        } else if (shortProfile.sex == 1) {
-            Glide.with(context).load(R.drawable.default_avartar_male).into(imageView);
+        } else {
+            Glide.with(context)
+                    .load(headImg)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .bitmapTransform(new GlideCircleTransform(context))
+                    .into(imageView);
         }
 
+//        if (shortProfile == null || shortProfile.sex == null) {
+//            Glide.with(context).load(R.drawable.default_avartar_male).into(imageView);
+//            return;
+//        } else if (!TextUtils.isEmpty(shortProfile.getHeadUrl())) {
+//            Glide.with(context).load(shortProfile.getHeadUrl())
+//                    .placeholder(null)
+//                    .bitmapTransform(new CropCircleTransformation(context))
+//                    .into(imageView);
+//        } else if (shortProfile.sex == 0) {
+//            Glide.with(context).load(R.drawable.default_avartar_female).into(imageView);
+//        } else if (shortProfile.sex == 1) {
+//            Glide.with(context).load(R.drawable.default_avartar_male).into(imageView);
+//        }
+
+        if (needJumpPage){
+            imageView.setOnClickListener(v -> {
+                Intent intent = new Intent(context, UserProfileActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("ShortUser", shortProfile);
+                intent.putExtras(bundle);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    // 创建一个包含过渡动画信息的 ActivityOptions 对象
+                    Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, imageView, App.getApp().getString(R.string.transition_name_head_img)).toBundle();
+                    // 使用 Intent 跳转界面，并传递共享对象信息
+                    ActivityCompat.startActivity(context, intent, options);
+                } else {
+                    context.startActivity(intent);
+                }
+            });
+        }
     }
 
 
@@ -994,7 +1028,7 @@ public class Utils {
     }
 
     public static int stringToInt(String str) {
-        int i = 0;
+        int i;
         if (str == null || str.trim().length() == 0) {
             str = "0";
         }
@@ -1033,13 +1067,13 @@ public class Utils {
 
     public static User getCurrentShortUser() {
         String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
-        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId",id).findAll();
-        List<User> data = new ArrayList<>();
+        RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", id).findAll();
         if (dbData.isLoaded()) {
             // 完成查询
-            if (!dbData.isEmpty()){
+            if (!dbData.isEmpty()) {
                 UserRealm userRealm = dbData.first();
-                return userRealm.toBmobObject();
+                if (userRealm != null)
+                    return userRealm.toBmobObject();
             }
         }
         return null;

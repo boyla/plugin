@@ -6,9 +6,12 @@
     android:layout_height="match_parent"
     tools:context="top.wifistar.activity.Main2Activity">
 
-    <ImageView
+    <top.wifistar.customview.CircleImageView
         android:id="@+id/ivHead"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
-        android:layout_gravity="center"/>
+        android:transitionName="@string/transition_name_head_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:civ_border_width="2.5dp"
+        android:layout_marginTop="15dp"
+        android:layout_gravity="center_horizontal"/>
 </FrameLayout>
