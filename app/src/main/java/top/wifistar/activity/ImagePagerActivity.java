@@ -1,21 +1,25 @@
 package top.wifistar.activity;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.SharedElementCallback;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.ActivityCompat;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,38 +30,46 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import top.wifistar.R;
-import top.wifistar.app.App;
+import top.wifistar.customview.MultiImageView;
 
 /**
  * Created by yiw on 2016/1/6.
  */
 public class ImagePagerActivity extends YWActivity {
     public static final String INTENT_IMGURLS = "imgurls";
-    public static final String INTENT_POSITION = "position";
     public static final String INTENT_IMAGESIZE = "imagesize";
+    public volatile static int current;
 
     private List<View> guideViewList = new ArrayList<View>();
     private LinearLayout guideGroup;
     public ImageSize imageSize;
-    public static int startPos;
     private ArrayList<String> imgUrls;
+    private ViewPager viewPager;
+    private ImageAdapter mAdapter;
+    private int adapterPosition;
 
 
-    public static void startImagePagerActivity(View startView, Context context, List<String> imgUrls, int position, ImageSize imageSize) {
+    public static void startImagePagerActivity(MultiImageView startView, Context context, List<String> imgUrls, int adapterPosition, int picPosition, ImageSize imageSize) {
         Intent intent = new Intent(context, ImagePagerActivity.class);
-        intent.putStringArrayListExtra(INTENT_IMGURLS, new ArrayList<String>(imgUrls));
-        intent.putExtra(INTENT_POSITION, position);
+        intent.putStringArrayListExtra(INTENT_IMGURLS, new ArrayList<>(imgUrls));
         intent.putExtra(INTENT_IMAGESIZE, imageSize);
 
+        intent.putExtra("adapter_position", adapterPosition);
+        intent.putExtra("current", picPosition);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, startView, imgUrls.get(position)).toBundle();
-            ActivityCompat.startActivity(context, intent, options);
+            View view = startView.getSharedViews()[picPosition];
+            String str = view.getTransitionName();
+            Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, view, str).toBundle();
+            ((AppCompatActivity) context).startActivityForResult(intent, 0, options);
         } else {
             context.startActivity(intent);
         }
@@ -67,55 +79,57 @@ public class ImagePagerActivity extends YWActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_imagepager);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+
+        Intent intent = getIntent();
+        adapterPosition = intent.getIntExtra("adapter_position", 0);
+        current = intent.getIntExtra("current", 0);
+
+        viewPager = (ViewPager) findViewById(R.id.pager);
         guideGroup = (LinearLayout) findViewById(R.id.guideGroup);
 
         getIntentData();
 
-        ImageAdapter mAdapter = new ImageAdapter(this);
+        mAdapter = new ImageAdapter(this);
         mAdapter.setDatas(imgUrls);
         mAdapter.setImageSize(imageSize);
         viewPager.setAdapter(mAdapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
             @Override
             public void onPageSelected(int position) {
+                View current = getItemViewByTag(viewPager.getCurrentItem());
+                if (current != null) {
+                    setSharedElementCallback(current.findViewById(R.id.image));
+                }
                 for (int i = 0; i < guideViewList.size(); i++) {
                     guideViewList.get(i).setSelected(i == position ? true : false);
                 }
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
-        viewPager.setCurrentItem(startPos);
-
-        addGuideView(guideGroup, startPos, imgUrls);
+        viewPager.setCurrentItem(current);
+        addGuideView(guideGroup, current, imgUrls);
 
     }
 
     private void getIntentData() {
-        startPos = getIntent().getIntExtra(INTENT_POSITION, 0);
         imgUrls = getIntent().getStringArrayListExtra(INTENT_IMGURLS);
         imageSize = (ImageSize) getIntent().getSerializableExtra(INTENT_IMAGESIZE);
     }
 
-    private void addGuideView(LinearLayout guideGroup, int startPos, ArrayList<String> imgUrls) {
+    private void addGuideView(LinearLayout guideGroup, int current, ArrayList<String> imgUrls) {
         if (imgUrls != null && imgUrls.size() > 0) {
             guideViewList.clear();
             for (int i = 0; i < imgUrls.size(); i++) {
                 View view = new View(this);
                 view.setBackgroundResource(R.drawable.selector_guide_bg);
-                view.setSelected(i == startPos ? true : false);
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.gudieview_width),
-                        getResources().getDimensionPixelSize(R.dimen.gudieview_heigh));
+                view.setSelected(i == current ? true : false);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.gudieview_width), getResources().getDimensionPixelSize(R.dimen.gudieview_heigh));
                 layoutParams.setMargins(10, 0, 0, 0);
                 guideGroup.addView(view, layoutParams);
                 guideViewList.add(view);
@@ -133,7 +147,20 @@ public class ImagePagerActivity extends YWActivity {
         return false;
     }
 
-    private static class ImageAdapter extends PagerAdapter {
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void setStartPostTransition(final View sharedView) {
+        sharedView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    // @Override
+                    public boolean onPreDraw() {
+                        sharedView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        startPostponedEnterTransition();
+                        return false;
+                    }
+                });
+    }
+
+    private class ImageAdapter extends PagerAdapter {
 
         private List<String> datas = new ArrayList<String>();
         private LayoutInflater inflater;
@@ -161,12 +188,22 @@ public class ImagePagerActivity extends YWActivity {
             return datas.size();
         }
 
-
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
+            final String imgurl = datas.get(position).split("_")[0];
+            final String transitionName = container.getContext()
+                    .getString(R.string.transition_name, adapterPosition, position);
             if (view != null) {
-                final ImageView imageView = (ImageView) view.findViewById(R.id.image);
+                PhotoView imageView = (PhotoView) view.findViewById(R.id.image);
+//                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    imageView.setTransitionName(transitionName);
+                    if (position == current) {
+                        setStartPostTransition(imageView);
+                    }
+                }
+
                 if (imageSize != null) {
                     //预览imageView
                     smallImageView = new ImageView(context);
@@ -174,6 +211,7 @@ public class ImagePagerActivity extends YWActivity {
                     layoutParams.gravity = Gravity.CENTER;
                     smallImageView.setLayoutParams(layoutParams);
                     smallImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    smallImageView.setVisibility(View.GONE);
                     ((FrameLayout) view).addView(smallImageView);
                 }
 
@@ -185,45 +223,35 @@ public class ImagePagerActivity extends YWActivity {
                 loading.setLayoutParams(loadingLayoutParams);
                 ((FrameLayout) view).addView(loading);
 
-                final String imgurl = datas.get(position).split("_")[0];
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (position == startPos) {
-                        imageView.setTransitionName(imgurl);
-                    }
-                }
-
                 Glide.with(context)
                         .load(imgurl)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存多个尺寸
-                        .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
-                        .error(R.drawable.loading)
+                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
+//                        .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
+                        .error(R.drawable.loading_failed)
                         .into(new GlideDrawableImageViewTarget(imageView) {
                             @Override
                             public void onLoadStarted(Drawable placeholder) {
                                 super.onLoadStarted(placeholder);
-                               /* if(smallImageView!=null){
-                                    smallImageView.setVisibility(View.VISIBLE);
-                                    Glide.with(context).load(imgurl).into(smallImageView);
-                                }*/
                                 loading.setVisibility(View.VISIBLE);
                             }
 
                             @Override
                             public void onLoadFailed(Exception e, Drawable errorDrawable) {
                                 super.onLoadFailed(e, errorDrawable);
-                                /*if(smallImageView!=null){
-                                    smallImageView.setVisibility(View.GONE);
-                                }*/
+                                if (smallImageView != null) {
+                                    smallImageView.setVisibility(View.VISIBLE);
+                                }
                                 loading.setVisibility(View.GONE);
                             }
 
                             @Override
                             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                                 super.onResourceReady(resource, animation);
+                                imageView.setTag(transitionName);
                                 loading.setVisibility(View.GONE);
-                                /*if(smallImageView!=null){
+                                if (smallImageView != null) {
                                     smallImageView.setVisibility(View.GONE);
-                                }*/
+                                }
                             }
                         });
 
@@ -287,4 +315,39 @@ public class ImagePagerActivity extends YWActivity {
         }
     }
 
+    View getItemViewByTag(int tag) {
+        View view = viewPager.findViewWithTag(tag);
+        return view;
+    }
+
+    @Override
+    public void finishAfterTransition() {
+        int pos = viewPager.getCurrentItem();
+        Intent intent = new Intent();
+        intent.putExtra("exit_position", pos);
+        setResult(RESULT_OK, intent);
+        if (current != pos) {
+            View view = viewPager.findViewWithTag(
+                    getString(R.string.transition_name, adapterPosition, pos));
+            setSharedElementCallback(view);
+        }
+        super.finishAfterTransition();
+    }
+
+    //只有在ViewPager左右滑动后才需要在关闭时设置callback
+    //view 为转场对象 ImageView
+    @TargetApi(21)
+    private void setSharedElementCallback(final View view) {
+        setEnterSharedElementCallback(new SharedElementCallback() {
+            //  @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                names.clear();
+                sharedElements.clear();
+                if(view!=null){
+                    names.add(view.getTransitionName());
+                    sharedElements.put(view.getTransitionName(), view);
+                }
+            }
+        });
+    }
 }

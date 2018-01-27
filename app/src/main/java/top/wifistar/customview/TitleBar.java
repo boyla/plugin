@@ -280,7 +280,7 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
     /**
      * Adds a new {@link Action} at the specified index.
      * @param action the action to add
-     * @param index the position at which to add the action
+     * @param index the picPosition at which to add the action
      */
     public View addAction(Action action, int index) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
@@ -299,7 +299,7 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
 
     /**
      * Remove a action from the action bar.
-     * @param index position of action to remove
+     * @param index picPosition of action to remove
      */
     public void removeActionAt(int index) {
         mRightLayout.removeViewAt(index);

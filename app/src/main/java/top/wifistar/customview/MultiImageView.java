@@ -2,7 +2,7 @@ package top.wifistar.customview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -48,6 +48,14 @@ public class MultiImageView extends LinearLayout {
     private LayoutParams rowPara;
 
     private OnItemClickListener mOnItemClickListener;
+    private ColorFilterImageView[] views;
+
+    public void setAdapterPosition(int adapterPosition) {
+        this.adapterPosition = adapterPosition;
+    }
+
+    public int adapterPosition;
+
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
         mOnItemClickListener = onItemClickListener;
@@ -144,6 +152,7 @@ public class MultiImageView extends LinearLayout {
             return;
         }
 
+        views = new ColorFilterImageView[imagesList.size()];
         if (imagesList.size() == 1) {
             addView(createImageView(0, false));
         } else {
@@ -180,24 +189,32 @@ public class MultiImageView extends LinearLayout {
         }
     }
 
+    public ColorFilterImageView[] getSharedViews() {
+        return views;
+    }
+
     private ImageView createImageView(int position, final boolean isMultiImage) {
         Photo photo = imagesList.get(position);
-        ImageView imageView = new ColorFilterImageView(getContext());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            imageView.setTransitionName(photo.url);
-        }
+        ColorFilterImageView imageView = new ColorFilterImageView(getContext());
+        String transitionName = getContext().getString(R.string.transition_name, adapterPosition + 1, position);
+        ViewCompat.setTransitionName(imageView,transitionName);
+
+        imageView.url = photo.url;
+        imageView.adapterPosition = adapterPosition;
+        imageView.picPosition = position;
+        views[position] = imageView;
         if (isMultiImage) {
             imageView.setScaleType(ScaleType.CENTER_CROP);
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
         } else {
             imageView.setAdjustViewBounds(true);
-            imageView.setScaleType(ScaleType.FIT_XY);
+            imageView.setScaleType(ScaleType.FIT_CENTER);
             //imageView.setMaxHeight(pxOneMaxWandH);
 
             if (photo.w == 0 || photo.h == 0) {
                 //get real w and h of pic
-                RealmResults<Photo> dbData = BaseRealmDao.realm.where(Photo.class).equalTo("url",photo.url).findAll();
-                if(dbData.isEmpty()){
+                RealmResults<Photo> dbData = BaseRealmDao.realm.where(Photo.class).equalTo("url", photo.url).findAll();
+                if (dbData.isEmpty()) {
                     Glide.with(getContext())
                             .load(photo.url)
                             .asBitmap()//强制Glide返回一个Bitmap对象
@@ -211,7 +228,7 @@ public class MultiImageView extends LinearLayout {
                                     BaseRealmDao.insertOrUpdate(photo);
                                 }
                             });
-                }else{
+                } else {
                     photo.w = dbData.first().w;
                     photo.h = dbData.first().h;
                     setWh(photo, imageView);
@@ -224,7 +241,11 @@ public class MultiImageView extends LinearLayout {
         imageView.setId(photo.url.hashCode());
         imageView.setOnClickListener(new ImageOnClickListener(position));
         imageView.setBackgroundColor(getResources().getColor(R.color.im_font_color_text_hint));
-        Glide.with(getContext()).load(photo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+        if(photo.url.contains(".gif") || photo.url.contains(".GIF")){
+            Glide.with(getContext()).load(photo.url).asGif().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
+        }else{
+            Glide.with(getContext()).load(photo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+        }
 
         return imageView;
     }
@@ -269,6 +290,6 @@ public class MultiImageView extends LinearLayout {
     }
 
     public interface OnItemClickListener {
-         void onItemClick(View view, int position);
+        void onItemClick(View view, int picPosition);
     }
 }

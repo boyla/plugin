@@ -3,13 +3,16 @@ package top.wifistar.activity;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
 import pub.devrel.easypermissions.EasyPermissions;
-import top.wifistar.R;
 import top.wifistar.utils.SystemBarUtil;
+import top.wifistar.utils.Utils;
 
 
 /**
@@ -23,11 +26,19 @@ public class YWActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (isApplyKitKatTranslucency()) {
-            setTranslucentStatus(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
         }
-        if (isApplyColorPrimary()) {
-            setSystemBarTintDrawable(getResources().getDrawable(R.color.basic_color_primary));
+//        if (isApplyKitKatTranslucency()) {
+//            setTranslucentStatus(true);
+//        }
+//        if (isApplyColorPrimary()) {
+//            setSystemBarTintDrawable(getResources().getDrawable(R.color.basic_color_primary));
+//        }
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+            setStatusBarUpperAPI21();
+        }else{
+            setStatusBarUpperAPI19();
         }
     }
 
@@ -76,6 +87,38 @@ public class YWActivity extends AppCompatActivity {
 
 
 
+    // 5.0版本以上
+    private void setStatusBarUpperAPI21() {
+        Window window = getWindow();
+        //设置透明状态栏,这样才能让 ContentView 向上
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
+        //需要设置这个 flag 才能调用 setStatusBarColor 来设置状态栏颜色
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 
+        ViewGroup mContentView = (ViewGroup) findViewById(Window.ID_ANDROID_CONTENT);
+        View mChildView = mContentView.getChildAt(0);
+        if (mChildView != null) {
+            //注意不是设置 ContentView 的 FitsSystemWindows, 而是设置 ContentView 的第一个子 View . 使其不为系统 View 预留空间.
+            ViewCompat.setFitsSystemWindows(mChildView, false);
+        }
+    }
+
+    // 4.4 - 5.0版本
+    private void setStatusBarUpperAPI19() {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        ViewGroup mContentView = (ViewGroup) findViewById(Window.ID_ANDROID_CONTENT);
+        View statusBarView = mContentView.getChildAt(0);
+        //移除假的 View
+        if (statusBarView != null && statusBarView.getLayoutParams() != null &&
+                statusBarView.getLayoutParams().height == Utils.getStatusBarHeight(this)) {
+            mContentView.removeView(statusBarView);
+        }
+        //不预留空间
+        if (mContentView.getChildAt(0) != null) {
+            ViewCompat.setFitsSystemWindows(mContentView.getChildAt(0), false);
+        }
+    }
 }

@@ -86,13 +86,14 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     private LinearLayoutManager layoutManager;
     private TitleBar titleBar;
     private HomeActivity homeActivity;
+    public static MomentsFragment momentsFragment;
 
     public final static int TYPE_PULLDOWNREFRESH = 1;
     public final static int TYPE_PULLUPMORE = 2;
     private UpLoadDialog uploadDialog;
     private SwipeRefreshLayout.OnRefreshListener refreshListener;
 
-    private OnTouchXRecyclerView recyclerView;
+    public OnTouchXRecyclerView recyclerView;
     ProgressCombineView progressCombineView;
     public String selectMomentId;
     public User replyUser;
@@ -112,7 +113,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         editText = homeActivity.getBottomEditText();
         sendIv = homeActivity.getBottomImageView();
         presenter = new MomentsPresenter(this);
-        momentAdapter = new MomentAdapter(getActivity());
+        momentAdapter = new MomentAdapter(getActivity(), ((HomeActivity) getActivity()).getSharedViewListener());
         recyclerView.setRefreshProgressStyle(ProgressStyle.LineSpinFadeLoader);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallBeat);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -124,6 +125,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         //recyclerView.getItemAnimator().setChangeDuration(0);
         setXRecyclerView();
         recyclerView.refresh();
+        momentsFragment = this;
 
         sendIv.setOnClickListener(new View.OnClickListener() {
             @Override

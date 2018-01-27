@@ -1,6 +1,5 @@
 package top.wifistar.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -76,7 +75,6 @@ public class SplashActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        loadingDialog = ProgressDialogUtil.getCustomProgressDialog(this);
         setContentView(R.layout.activity_splash);
         flStart = (FrameLayout) findViewById(R.id.flStart);
         flWords = (FrameLayout) findViewById(R.id.flWords);
@@ -118,6 +116,7 @@ public class SplashActivity extends BaseActivity {
 
     private void goToMain() {
         App.currentUserProfile = (UserProfile) ACache.get(context).getAsObject("CURRENT_USER_PROFILE_" + BUser.getCurrentUser().getObjectId());
+        HomeActivity.isFirstLogin = true;
         startActivity(new Intent(context, HomeActivity.class));
         finish();
     }
@@ -420,6 +419,9 @@ public class SplashActivity extends BaseActivity {
         }
 
         topReminder.dismiss();
+        if (loadingDialog == null) {
+            loadingDialog = ProgressDialogUtil.getCustomProgressDialog(this);
+        }
         loadingDialog.show();
         final BUser user = new BUser();
         user.setUsername(username);

@@ -199,9 +199,8 @@ public class Moment extends BmobObject implements ToRealmObject {
         momentRealm.createAt = getCreatedAt();
         //persist likes, comments
         Realm realm = BaseRealmDao.realm;
-        momentRealm.likes = new RealmList(likes.toArray());
+        momentRealm.likes = new RealmList();
         if (likes != null && likes.size() > 0) {
-            momentRealm.likes = new RealmList<>();
             for (User user : likes) {
                 UserRealm commentRealm = user.toRealmObject();
 //				UserRealm res = realm.copyToRealmOrUpdate(commentRealm);

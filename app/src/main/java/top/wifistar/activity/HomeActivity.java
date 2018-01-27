@@ -1,25 +1,24 @@
 package top.wifistar.activity;
 
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
+import java.util.List;
+import java.util.Map;
 import top.wifistar.app.App;
 import top.wifistar.customview.BottomMenuView;
-import top.wifistar.customview.LoadingView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
-
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_BLOG_DISCOVER;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CHATS;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CONNECTIONS;
@@ -27,7 +26,6 @@ import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_MOMENTS;
 
 public class HomeActivity extends ToolbarActivity {
 
-    LoadingView loadingView;
     TopReminder topReminder;
     BottomMenuView bottomMenuView;
     View editTextBodyLl;
@@ -52,12 +50,17 @@ public class HomeActivity extends ToolbarActivity {
     }
 
 
+    public static boolean isFirstLogin = false;
     protected void setToolbarTitle() {
         mToolbar.setNavigationIcon(null);
         mToolbar.setTitle("");
         tool_bar_frame.setVisibility(View.VISIBLE);
         updateTitle();
-        App.getHandler().postDelayed(() -> Utils.setUserSelfAvatar(mCustomLogo),1234);
+        if(isFirstLogin){
+            App.getHandler().postDelayed(() -> Utils.setUserSelfAvatar(mCustomLogo),1234);
+        }else{
+            Utils.setUserSelfAvatar(mCustomLogo);
+        }
         invalidateOptionsMenu();
     }
 
@@ -156,6 +159,46 @@ public class HomeActivity extends ToolbarActivity {
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
-//        setEnterSharedElementCallback();
+        if (resultCode == RESULT_OK && data != null) {
+            exitPosition = data.getIntExtra("exit_position", enterPosition);
+        }
+    }
+
+    public OnSharedViewListener getSharedViewListener() {
+        return sharedViewListener;
+    }
+
+    public interface OnSharedViewListener {
+        void onSharedViewListener(View[] views, int enterPosition);
+    }
+    private View[] sharedViews;
+    private int exitPosition;
+    private int enterPosition;
+    private OnSharedViewListener sharedViewListener = new OnSharedViewListener() {
+        @Override
+        public void onSharedViewListener(View[] views, int enterPosition) {
+            sharedViews = views;
+            setCallback(enterPosition);
+        }
+    };
+
+    @TargetApi(21)
+    private void setCallback(final int enterPosition) {
+        this.enterPosition = enterPosition;
+        setExitSharedElementCallback(new android.support.v4.app.SharedElementCallback() {
+            @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                if (exitPosition != enterPosition &&
+                        names.size() > 0 && exitPosition < sharedViews.length) {
+                    names.clear();
+                    sharedElements.clear();
+                    View view = sharedViews[exitPosition];
+                    names.add(view.getTransitionName());
+                    sharedElements.put(view.getTransitionName(), view);
+                }
+                setExitSharedElementCallback((android.support.v4.app.SharedElementCallback) null);
+                sharedViews = null;
+            }
+        });
     }
 }
