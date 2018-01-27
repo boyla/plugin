@@ -103,4 +103,6 @@ dependencies {
         exclude group: 'io.reactivex'
         exclude group: 'com.squareup.okhttp3'
     }
+
+    implementation "com.andkulikov:transitionseverywhere:1.6.9"
 }

@@ -45,6 +45,7 @@ public abstract class MomentViewHolder extends RecyclerView.ViewHolder implement
     public PraiseListView praiseListView;
 
     public LinearLayout digCommentBody;
+    public LinearLayout llRightContent;
     public View digLine;
 
     /** 评论列表 */
@@ -72,6 +73,7 @@ public abstract class MomentViewHolder extends RecyclerView.ViewHolder implement
         praiseListView = (PraiseListView) itemView.findViewById(R.id.praiseListView);
 
         digCommentBody = (LinearLayout) itemView.findViewById(R.id.digCommentBody);
+        llRightContent = (LinearLayout) itemView.findViewById(R.id.llRightContent);
         commentList = (CommentListView)itemView.findViewById(R.id.commentList);
 
         snsPopupWindow = new SnsPopupWindow(itemView.getContext());

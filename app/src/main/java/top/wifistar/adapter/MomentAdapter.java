@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.transitionseverywhere.TransitionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -356,6 +357,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         List<Comment> commentsDatas = moment.getComments();
         boolean hasComment = moment.hasComment();
         boolean hasLike = moment.hasLikes();
+        TransitionManager.beginDelayedTransition(holder.llRightContent);
         holder.digLine.setVisibility(hasLike && hasComment ? View.VISIBLE : View.GONE);
         if (hasLike || hasComment) {
             holder.digCommentBody.setVisibility(View.VISIBLE);
@@ -363,6 +365,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             holder.digCommentBody.setVisibility(View.GONE);
         }
 
+        TransitionManager.beginDelayedTransition(holder.digCommentBody);
         if (hasComment) {//处理评论列表
             if (refreshComment) {
                 holder.commentList.setDatas(commentsDatas);
