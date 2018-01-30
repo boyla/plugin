@@ -36,6 +36,11 @@
     //允许应用程序修改全局声音设置的权限
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     //允许使用PowerManager的WakeLocks在进程休眠时能够后台保持
+
+    <meta-data
+    android:name="com.bumptech.glide.integration.okhttp.OkHttpGlideModule"
+    android:value="GlideModule"/>
+
     <application
         android:name=".app.App"
         android:configChanges="locale"

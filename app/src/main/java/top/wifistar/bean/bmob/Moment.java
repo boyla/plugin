@@ -207,7 +207,7 @@ public class Moment extends BmobObject implements ToRealmObject {
                 momentRealm.likes.add(commentRealm);
             }
         }
-        if (comments != null && comments.size() > 0) {
+        if (hasComment()) {
             momentRealm.comments = new RealmList<>();
             for (Comment comment : comments) {
                 CommentRealm commentRealm = comment.toRealmObject();

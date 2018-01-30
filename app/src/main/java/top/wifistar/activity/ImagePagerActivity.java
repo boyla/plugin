@@ -96,7 +96,8 @@ public class ImagePagerActivity extends YWActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
@@ -110,7 +111,8 @@ public class ImagePagerActivity extends YWActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) {
+            }
         });
         viewPager.setCurrentItem(current);
         addGuideView(guideGroup, current, imgUrls);
@@ -223,38 +225,47 @@ public class ImagePagerActivity extends YWActivity {
                 loading.setLayoutParams(loadingLayoutParams);
                 ((FrameLayout) view).addView(loading);
 
-                Glide.with(context)
-                        .load(imgurl)
-                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
-//                        .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
-                        .error(R.drawable.loading_failed)
-                        .into(new GlideDrawableImageViewTarget(imageView) {
-                            @Override
-                            public void onLoadStarted(Drawable placeholder) {
-                                super.onLoadStarted(placeholder);
-                                loading.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                super.onLoadFailed(e, errorDrawable);
-                                if (smallImageView != null) {
-                                    smallImageView.setVisibility(View.VISIBLE);
+//                if (imgurl.contains(".gif") || imgurl.contains(".GIF")) {
+//                    Glide.with(context)
+//                            .load(imgurl)
+//                            .asGif()
+//                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
+////                        .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
+//                            .error(R.drawable.loading_failed)
+//                            .into(imageView);
+//                } else {
+                    Glide.with(context)
+                            .load(imgurl)
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存多个尺寸
+                            .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
+                            .error(R.drawable.loading_failed)
+                            .into(new GlideDrawableImageViewTarget(imageView) {
+                                @Override
+                                public void onLoadStarted(Drawable placeholder) {
+                                    super.onLoadStarted(placeholder);
+                                    loading.setVisibility(View.VISIBLE);
                                 }
-                                loading.setVisibility(View.GONE);
-                            }
 
-                            @Override
-                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                super.onResourceReady(resource, animation);
-                                imageView.setTag(transitionName);
-                                loading.setVisibility(View.GONE);
-                                if (smallImageView != null) {
-                                    smallImageView.setVisibility(View.GONE);
+                                @Override
+                                public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                    super.onLoadFailed(e, errorDrawable);
+                                    if (smallImageView != null) {
+                                        smallImageView.setVisibility(View.VISIBLE);
+                                    }
+                                    loading.setVisibility(View.GONE);
                                 }
-                            }
-                        });
 
+                                @Override
+                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                    super.onResourceReady(resource, animation);
+                                    imageView.setTag(transitionName);
+                                    loading.setVisibility(View.GONE);
+                                    if (smallImageView != null) {
+                                        smallImageView.setVisibility(View.GONE);
+                                    }
+                                }
+                            });
+//                }
                 container.addView(view, 0);
             }
             return view;
@@ -343,7 +354,7 @@ public class ImagePagerActivity extends YWActivity {
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 names.clear();
                 sharedElements.clear();
-                if(view!=null){
+                if (view != null) {
                     names.add(view.getTransitionName());
                     sharedElements.put(view.getTransitionName(), view);
                 }

@@ -1,6 +1,7 @@
 package top.wifistar.adapter;
 
 import android.content.Context;
+import android.support.transition.TransitionManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.transitionseverywhere.TransitionManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -341,6 +341,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     moment.setComments(object);
                 } else {
                     Log.i("bmob", "获取评论失败：" + e.getMessage() + "," + e.getErrorCode());
+                    moment.setComments(new ArrayList<>());
                 }
                 MomentRealm momentRealm = moment.toRealmObject();
                 BaseRealmDao.insertOrUpdate(momentRealm);
@@ -358,6 +359,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         boolean hasComment = moment.hasComment();
         boolean hasLike = moment.hasLikes();
         TransitionManager.beginDelayedTransition(holder.llRightContent);
+        TransitionManager.beginDelayedTransition(holder.digCommentBody);
         holder.digLine.setVisibility(hasLike && hasComment ? View.VISIBLE : View.GONE);
         if (hasLike || hasComment) {
             holder.digCommentBody.setVisibility(View.VISIBLE);
@@ -365,7 +367,6 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             holder.digCommentBody.setVisibility(View.GONE);
         }
 
-        TransitionManager.beginDelayedTransition(holder.digCommentBody);
         if (hasComment) {//处理评论列表
             if (refreshComment) {
                 holder.commentList.setDatas(commentsDatas);
