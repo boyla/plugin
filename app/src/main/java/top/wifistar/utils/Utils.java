@@ -82,9 +82,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -981,7 +983,7 @@ public class Utils {
 //            Glide.with(context).load(R.drawable.default_avartar_male).into(imageView);
 //        }
 
-        if (needJumpPage){
+        if (needJumpPage) {
             imageView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, UserProfileActivity.class);
                 Bundle bundle = new Bundle();
@@ -1268,16 +1270,25 @@ public class Utils {
         void onFailure(Exception e);
     }
 
+    static Map<String, User> cacheUsers = new HashMap<>();
+
     public static void queryShortUser(String shortUserObjId, QueryUsesrCallBack callBack) {
+        //First, find user in cache
+        User cachedUser = cacheUsers.get(shortUserObjId);
+        if (cachedUser != null && !TextUtils.isEmpty(cachedUser.getName())) {
+            callBack.onSuccess(cachedUser);
+            return;
+        }
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", shortUserObjId).findAll();
         if (dbData.isEmpty()) {
-            //query Bmob
+            //didn't find in db, query Bmob
             BmobQuery<User> query = new BmobQuery<User>();
             query.getObject(shortUserObjId, new QueryListener<User>() {
                 @Override
                 public void done(User user, BmobException e) {
                     if (e == null) {
                         BaseRealmDao.insertOrUpdate(user.toRealmObject());
+                        cacheUsers.put(shortUserObjId, user);
                         callBack.onSuccess(user);
                     } else {
                         callBack.onFailure(e);
@@ -1287,6 +1298,7 @@ public class Utils {
         } else {
             UserRealm userRealm = dbData.first();
             User user = userRealm.toBmobObject();
+            cacheUsers.put(shortUserObjId, user);
             callBack.onSuccess(user);
         }
     }

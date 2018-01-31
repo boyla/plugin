@@ -202,6 +202,4 @@ public class CommentListView extends LinearLayout {
     public interface OnItemLongClickListener {
         void onItemLongClick(int position);
     }
-
-
 }
