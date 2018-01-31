@@ -18,8 +18,8 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	//nick name, from profile
 	public String name;
 	public String headUrl;
-	@PrimaryKey
 	public String id;
+	@PrimaryKey
 	public String objectId;
 	public String favorMoments = "";
 	public Integer sex;

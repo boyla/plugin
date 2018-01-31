@@ -38,6 +38,7 @@ public class MomentRealm extends RealmObject implements ToBmobObject{
 		moment.linkImg = linkImg;
 		moment.linkTitle = linkTitle;
 		moment.photos = photos;
+		moment.setCreateAt(createAt);
 		//comment things
 		moment.comments = new ArrayList<>();
 		for(CommentRealm commentRealm : comments){
@@ -54,8 +55,6 @@ public class MomentRealm extends RealmObject implements ToBmobObject{
 		for(Photo photo : photosData){
 			moment.photosData.add(photo);
 		}
-
-
 
 		return moment;
 	}

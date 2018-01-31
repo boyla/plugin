@@ -134,6 +134,10 @@ public class Moment extends BmobObject implements ToRealmObject {
         return this.isExpand;
     }
 
+    public void setCreateAt(String str){
+        super.setCreatedAt(str);
+    }
+
     public boolean hasLikes() {
         if (likes != null && likes.size() > 0) {
             return true;

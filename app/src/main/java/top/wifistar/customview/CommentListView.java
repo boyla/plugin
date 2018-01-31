@@ -178,7 +178,13 @@ public class CommentListView extends LinearLayout {
 
     @NonNull
     private SpannableString setClickableSpan(final String textStr, final String id) {
-        SpannableString subjectSpanText = new SpannableString(textStr);
+        String res;
+        if(TextUtils.isEmpty(textStr)){
+            res = "unknown";
+        }else{
+            res = textStr;
+        }
+        SpannableString subjectSpanText = new SpannableString(res);
         subjectSpanText.setSpan(new SpannableClickable(itemColor) {
                                     @Override
                                     public void onClick(View widget) {
