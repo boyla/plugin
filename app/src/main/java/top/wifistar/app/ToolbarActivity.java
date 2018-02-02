@@ -165,9 +165,9 @@ public abstract class ToolbarActivity extends BaseActivity {
 
     @Override
     public void setContentView(int layoutResID) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
-        }
+//        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+//            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+//        }
         View contentView = LayoutInflater.from(this).inflate(layoutResID, null, false);
         super.setContentView(setToolbarContent(contentView));
     }

@@ -138,6 +138,7 @@
         <item name="android:textSize">18sp</item>
     </style>
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
         <!--<item name="android:windowBackground">@null</item>-->
         <!--<item name="alertDialogTheme">@style/DialogTheme</item>-->
     </style>

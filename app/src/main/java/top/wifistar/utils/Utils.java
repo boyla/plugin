@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -49,6 +50,7 @@ import android.widget.Toast;
 //import com.mason.sociality.lib.xmpp.XMPPManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 import com.scottyab.aescrypt.AESCrypt;
 
 import cn.bmob.v3.BmobQuery;
@@ -1301,5 +1303,42 @@ public class Utils {
             cacheUsers.put(shortUserObjId, user);
             callBack.onSuccess(user);
         }
+    }
+
+    interface GetCacheGlideFileCallBack {
+        void onFinish(File result);
+    }
+
+    private static class GetImageCacheAsyncTask extends AsyncTask<String, Void, File> {
+        private final Context context;
+        GetCacheGlideFileCallBack callBack;
+
+        public GetImageCacheAsyncTask(Context context, GetCacheGlideFileCallBack callBack) {
+            this.context = context;
+            this.callBack = callBack;
+        }
+
+        @Override
+        protected File doInBackground(String... params) {
+            String imgUrl = params[0];
+            try {
+                return Glide.with(context)
+                        .load(imgUrl)
+                        .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                        .get();
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(File result) {
+            callBack.onFinish(result);
+        }
+    }
+
+    public static void getCacheGlideFile(String url, Context context, GetCacheGlideFileCallBack callBack) {
+        GetImageCacheAsyncTask task = new GetImageCacheAsyncTask(context, callBack);
+        task.equals(url);
     }
 }

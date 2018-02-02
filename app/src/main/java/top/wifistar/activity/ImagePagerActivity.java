@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import top.wifistar.R;
+import top.wifistar.app.App;
 import top.wifistar.customview.MultiImageView;
 
 /**
@@ -225,47 +226,58 @@ public class ImagePagerActivity extends YWActivity {
                 loading.setLayoutParams(loadingLayoutParams);
                 ((FrameLayout) view).addView(loading);
 
-//                if (imgurl.contains(".gif") || imgurl.contains(".GIF")) {
-//                    Glide.with(context)
-//                            .load(imgurl)
-//                            .asGif()
-//                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
-////                        .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
-//                            .error(R.drawable.loading_failed)
-//                            .into(imageView);
-//                } else {
-                    Glide.with(context)
-                            .load(imgurl)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存多个尺寸
-                            .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
-                            .error(R.drawable.loading_failed)
-                            .into(new GlideDrawableImageViewTarget(imageView) {
-                                @Override
-                                public void onLoadStarted(Drawable placeholder) {
-                                    super.onLoadStarted(placeholder);
-                                    loading.setVisibility(View.VISIBLE);
+                Glide.with(context)
+                        .load(imgurl)
+                        .dontAnimate()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)//缓存多个尺寸
+//                            .thumbnail(0.1f)//先显示缩略图  缩略图为原图的1/10
+                        .error(R.drawable.loading_failed)
+                        .into(new GlideDrawableImageViewTarget(imageView) {
+                            @Override
+                            public void onLoadStarted(Drawable placeholder) {
+                                super.onLoadStarted(placeholder);
+                                loading.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onLoadFailed(Exception e, Drawable errorDrawable) {
+                                super.onLoadFailed(e, errorDrawable);
+                                if (smallImageView != null) {
+                                    smallImageView.setVisibility(View.VISIBLE);
+                                }
+                                loading.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
+                                super.onResourceReady(resource, animation);
+                                loading.setVisibility(View.GONE);
+                                if (smallImageView != null) {
+                                    smallImageView.setVisibility(View.GONE);
                                 }
 
-                                @Override
-                                public void onLoadFailed(Exception e, Drawable errorDrawable) {
-                                    super.onLoadFailed(e, errorDrawable);
-                                    if (smallImageView != null) {
-                                        smallImageView.setVisibility(View.VISIBLE);
-                                    }
+                                if (imgurl.contains(".gif") || imgurl.contains(".GIF")) {
                                     loading.setVisibility(View.GONE);
-                                }
-
-                                @Override
-                                public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
-                                    super.onResourceReady(resource, animation);
+                                    App.getHandler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Glide.clear(imageView);
+                                            Glide.with(context)
+                                                    .load(imgurl)
+                                                    .asGif()
+                                                    .crossFade()
+                                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
+                                                    .error(R.drawable.loading_failed)
+                                                    .into(imageView);
+                                            imageView.setTag(transitionName);
+                                        }
+                                    }, 444);
+                                }else{
                                     imageView.setTag(transitionName);
-                                    loading.setVisibility(View.GONE);
-                                    if (smallImageView != null) {
-                                        smallImageView.setVisibility(View.GONE);
-                                    }
                                 }
-                            });
-//                }
+                            }
+                        });
+
                 container.addView(view, 0);
             }
             return view;
@@ -273,6 +285,9 @@ public class ImagePagerActivity extends YWActivity {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
+//            View view = (View) object;
+//            PhotoView photoView = (PhotoView) view.findViewById(R.id.image);
+//            Glide.clear(photoView);
             container.removeView((View) object);
         }
 
