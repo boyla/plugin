@@ -960,6 +960,7 @@ public class Utils {
             }
             Glide.with(context)
                     .load(img)
+                    .dontAnimate()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .bitmapTransform(new GlideCircleTransform(context))
                     .into(imageView);

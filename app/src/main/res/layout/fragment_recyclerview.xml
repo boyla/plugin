@@ -23,7 +23,7 @@
         <top.wifistar.customview.OnTouchXRecyclerView
             android:id="@+id/xRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:scrollbars="none" />
 
     </top.wifistar.customview.ProgressCombineView>
