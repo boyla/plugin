@@ -1,17 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="top.wifistar.activity.Main2Activity">
 
-    <top.wifistar.customview.CircleImageView
-        android:id="@+id/ivHead"
-        android:transitionName="@string/transition_name_head_img"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        app:civ_border_width="2.5dp"
-        android:layout_marginTop="15dp"
-        android:layout_gravity="center_horizontal"/>
-</FrameLayout>
+    <top.wifistar.customview.ObservableScrollView
+        android:id="@+id/scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/flUp"
+                android:layout_width="match_parent"
+                android:layout_height="280dp">
+
+                <ImageView
+                    android:id="@+id/ivHeadBg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/icon_head_bg" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/some_transparent" />
+
+                <LinearLayout
+                    android:id="@+id/llHeadAndInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:orientation="vertical">
+
+                    <top.wifistar.customview.CircleImageView
+                        android:id="@+id/ivHead"
+                        android:layout_width="90dp"
+                        android:layout_height="90dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="?attr/actionBarSize"
+                        android:transitionName="@string/transition_name_head_img"
+                        app:civ_border_width="2.5dp" />
+
+                    <com.ruffian.library.RTextView
+                        android:id="@+id/tvName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
+                        android:drawablePadding="10dp"
+                        android:text="Lily"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+
+                    <com.ruffian.library.RTextView
+                        android:id="@+id/tvInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="5dp"
+                        android:drawablePadding="10dp"
+                        android:text="25, USA NewYork"
+                        android:textColor="@color/transparent_white"
+                        android:textSize="14sp" />
+
+                    <LinearLayout
+                        android:id="@+id/llInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/white_round_rectangle"
+                        android:orientation="horizontal"
+                        android:paddingLeft="17dp"
+                        android:paddingRight="14dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/tvAddFan"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:text="＋关注"
+                            android:textColor="@color/white" />
+
+                        <View
+                            android:layout_width="0.5dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="12dp"
+                            android:layout_marginRight="12dp"
+                            android:background="@color/transparent_white" />
+
+                        <View
+                            android:id="@+id/vSendMail"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/ic_mail_24dp" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/llEditInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="15dp"
+                        android:background="@drawable/white_round_rectangle"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="14dp">
+
+                        <View
+                            android:layout_width="13dp"
+                            android:layout_height="13dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@drawable/edit" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:paddingLeft="3dp"
+                            android:paddingRight="14dp"
+                            android:textSize="12sp"
+                            android:text="我的资料" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/llDetail"
+                android:layout_width="match_parent"
+                android:layout_height="290dp"
+                android:background="@color/activity_bg"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </top.wifistar.customview.ObservableScrollView>
+
+
+    <LinearLayout
+        android:id="@+id/view_need_offset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -53,6 +53,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
 import com.scottyab.aescrypt.AESCrypt;
 
+import cn.bmob.push.lib.util.LogUtil;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
@@ -91,6 +92,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -1273,7 +1275,7 @@ public class Utils {
         void onFailure(Exception e);
     }
 
-    static Map<String, User> cacheUsers = new HashMap<>();
+    static Map<String, User> cacheUsers = new ConcurrentHashMap<>();
 
     public static void queryShortUser(String shortUserObjId, QueryUsesrCallBack callBack) {
         //First, find user in cache
@@ -1341,5 +1343,49 @@ public class Utils {
     public static void getCacheGlideFile(String url, Context context, GetCacheGlideFileCallBack callBack) {
         GetImageCacheAsyncTask task = new GetImageCacheAsyncTask(context, callBack);
         task.equals(url);
+    }
+
+    public static String getFuzzyTime(String rawTime) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        long serverTime;
+        try {
+            serverTime = System.currentTimeMillis() - simpleDateFormat.parse(rawTime).getTime();
+            String result;
+            int time = (int) (serverTime / (1000 * 60));
+            if(time < 0){
+                return rawTime;
+            }
+            if (time == 0) {
+                result = "刚刚";
+                return result;
+            }
+            if (time > 0 && time < 60) {
+                result = time + "分钟前";
+            } else {
+                time = (int) (serverTime / (1000 * 60 * 60));
+                if (time > 0 && time < 24) {
+                    result = time + "小时前";
+                } else {
+                    time = (int) (serverTime / (1000 * 60 * 60 * 24));
+                    if (time == 1) {
+                        result = "昨天";
+                    } else if (time == 2) {
+                        result = "前天";
+                    } else if(time < 7){
+                        result = time + "天前";
+                    }else if(time < 30){
+                        result = time/7 + "周前";
+                    }else if(time < 360){
+                        result = time/30 + "月前";
+                    }else{
+                        result = time/360 + "年前";
+                    }
+                }
+            }
+            return result;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return rawTime;
+        }
     }
 }

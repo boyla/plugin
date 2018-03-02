@@ -1,5 +1,7 @@
 package top.wifistar.bean.bmob;
 
+import android.text.TextUtils;
+
 import cn.bmob.v3.BmobObject;
 import io.realm.RealmObject;
 import top.wifistar.realm.ToRealmObject;
@@ -14,6 +16,9 @@ public class User extends BmobObject implements ToRealmObject {
 	public String id;
 	public Integer sex = 1;
 	public String favorMoments = "";
+	public Integer age = 1;
+	public String loaction;
+	public String headBgUrl;
 
 	public User(){}
 
@@ -29,7 +34,11 @@ public class User extends BmobObject implements ToRealmObject {
 	}
 
 	public String getName() {
-		return name;
+//		if(name == null){
+//			return "";
+//		}else{
+			return name;
+//		}
 	}
 	public void setName(String name) {
 		this.name = name;
@@ -56,7 +65,10 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.id = id;
 		realm.objectId = getObjectId();
 		realm.sex = sex;
+		realm.age = age;
 		realm.favorMoments = favorMoments;
+		realm.loaction = loaction;
+		realm.headBgUrl = headBgUrl;
 		return realm;
 	}
 }

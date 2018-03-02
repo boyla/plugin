@@ -147,7 +147,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
 
             final String content = moment.getContent();
             String createTime = moment.getCreatedAt();
-            holder.timeTv.setText(createTime);
+            holder.timeTv.setText(Utils.getFuzzyTime(createTime));
 
             if (!TextUtils.isEmpty(content)) {
                 holder.contentTv.setExpand(moment.isExpand());

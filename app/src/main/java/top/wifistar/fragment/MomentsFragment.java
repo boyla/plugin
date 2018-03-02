@@ -114,8 +114,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         sendIv = homeActivity.getBottomImageView();
         presenter = new MomentsPresenter(this);
         momentAdapter = new MomentAdapter(getActivity(), ((HomeActivity) getActivity()).getSharedViewListener());
-        recyclerView.setRefreshProgressStyle(ProgressStyle.LineSpinFadeLoader);
-        recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallBeat);
+        recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
+        recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
         recyclerView.listener = () -> homeActivity.showBottomInput(View.GONE);
         momentAdapter.setCirclePresenter(presenter);

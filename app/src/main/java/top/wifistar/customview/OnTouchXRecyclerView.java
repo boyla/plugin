@@ -32,7 +32,8 @@ public class OnTouchXRecyclerView extends XRecyclerView {
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         Utils.closeKeyboard((Activity) getContext());
-        listener.onTouch();
+        if (listener != null)
+            listener.onTouch();
         return super.onTouchEvent(ev);
     }
 

@@ -15,6 +15,8 @@
     <color name="theme_tool_bar_text_color">@color/white</color>
     <color name="transparent">#00000000</color>
 
+    <color name="some_transparent">#33000000</color>
+
     <color name="item_divider_line">#f3f3f3</color>
 
     <drawable name="btn_normal">#fffbfbfb</drawable>
@@ -89,7 +91,8 @@
     <color name="praise_item_selector_default">#cccccc</color>
 
     <color name="list_bg">#EBEBEB</color>
-    mContext.getResources().getColorStateList(R.drawable.big_btn_text_color)
+
+    <color name="transparent_white">#88FFFFFF</color>
 
 </resources>
 
