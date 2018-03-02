@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.jaeger.library.StatusBarUtil;
+import com.ruffian.library.RTextView;
 
 import top.wifistar.R;
 
@@ -42,8 +43,8 @@ public class UserProfileActivity extends AppCompatActivity {
     LinearLayout llDetail;
     View toolbar;
     LinearLayout llHeadAndInfo, llInfo, llEditInfo;
-    View flUp;
-    TextView tvName, tvInfo;
+    View flUp,vSex;
+    RTextView tvName, tvInfo;
 
 
     @Override
@@ -61,15 +62,18 @@ public class UserProfileActivity extends AppCompatActivity {
         llHeadAndInfo = (LinearLayout) findViewById(R.id.llHeadAndInfo);
         llInfo = (LinearLayout) findViewById(R.id.llInfo);
         flUp = findViewById(R.id.flUp);
-        tvName = (TextView) findViewById(R.id.tvName);
-        tvInfo = (TextView) findViewById(R.id.tvInfo);
+        vSex  = findViewById(R.id.vSex);
+        tvName = (RTextView) findViewById(R.id.tvName);
+        tvInfo = (RTextView) findViewById(R.id.tvInfo);
         llEditInfo = (LinearLayout) findViewById(R.id.llEditInfo);
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
         ivHead = (ImageView) findViewById(R.id.ivHead);
         mToolbar.setTitle("");
+
         Utils.setUserAvatar(shortUser, ivHead, false);
+
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -81,6 +85,11 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         tvName.setText(shortUser.getName());
+        if(shortUser.sex == 1){
+            vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
+        }else{
+            vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
+        }
         tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? "" : ", shortUser.loaction"));
 
         String curId = App.currentUserProfile.getObjectId();
@@ -145,11 +154,11 @@ public class UserProfileActivity extends AppCompatActivity {
     private void setTopAlpha(int alpha, int scrolledY) {
         toolbar.setBackgroundColor(Color.argb(alpha, 0x00, 0x00, 0x00));
         StatusBarUtil.setTranslucentForImageView(this, alpha, mViewNeedOffset);
-        setLinearAlpha(llHeadAndInfo, alpha, scrolledY);
-        setLinearAlpha(llInfo, alpha, scrolledY);
+        setLinearAlpha(llHeadAndInfo, scrolledY);
+        setLinearAlpha(llInfo, scrolledY);
     }
 
-    private void setLinearAlpha(LinearLayout llHeadAndInfo, int alpha, int scrolledY) {
+    private void setLinearAlpha(LinearLayout llHeadAndInfo, int scrolledY) {
         float percent = scrolledY / (float) slidingDistance * 2;
         if (percent > 1) {
             percent = 1;
@@ -158,6 +167,9 @@ public class UserProfileActivity extends AppCompatActivity {
         int count = llHeadAndInfo.getChildCount();
         for (int i = 0; i < count; i++) {
             View view = llHeadAndInfo.getChildAt(i);
+            if(view instanceof LinearLayout){
+                setLinearAlpha(((LinearLayout) view),scrolledY);
+            }
             if (view.getBackground() != null) {
                 view.getBackground().setAlpha(alph);
             }
