@@ -1064,7 +1064,7 @@ public class Utils {
         return result;
     }
 
-    public static void updateUser() {
+    public static void updateUserFromProfile() {
         String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
         App.getHandler().postDelayed(() -> {
             UserProfile profile = App.currentUserProfile;

@@ -23,6 +23,9 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	public String objectId;
 	public String favorMoments = "";
 	public String loaction;
+	public String country;
+	public String region;
+	public String city;
 	public String headBgUrl;
 	public Integer sex;
 	public Integer age;
@@ -45,6 +48,9 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 		user.age = age;
 		user.loaction = loaction;
 		user.headBgUrl = headBgUrl;
+		user.country = country;
+		user.region = region;
+		user.city = city;
 		user.setObjectId(objectId);
 		return user;
 	}

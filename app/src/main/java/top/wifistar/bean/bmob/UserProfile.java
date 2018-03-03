@@ -28,6 +28,7 @@ public class UserProfile extends BmobObject implements ToRealmObject {
     public String blocks;
     public String mass;
     public String momentsNum;
+    public String fanOf;
 
     public String getUserId() {
         return userId;
@@ -186,6 +187,7 @@ public class UserProfile extends BmobObject implements ToRealmObject {
         obj.setMomentsNum(this.getMomentsNum());
         obj.setUpdatedAt(this.getUpdatedAt());
         obj.objectId = getObjectId();
+        obj.fanOf = fanOf;
         return obj;
     }
 }

@@ -18,6 +18,9 @@ public class User extends BmobObject implements ToRealmObject {
 	public String favorMoments = "";
 	public Integer age = 1;
 	public String loaction;
+	public String country;
+	public String region;
+	public String city;
 	public String headBgUrl;
 
 	public User(){}
@@ -68,6 +71,9 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.age = age;
 		realm.favorMoments = favorMoments;
 		realm.loaction = loaction;
+		realm.country = country;
+		realm.region = region;
+		realm.city = city;
 		realm.headBgUrl = headBgUrl;
 		return realm;
 	}

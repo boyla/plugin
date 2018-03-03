@@ -1,5 +1,6 @@
 package top.wifistar.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,12 +18,23 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.jaeger.library.StatusBarUtil;
 import com.ruffian.library.RTextView;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 import top.wifistar.R;
 
 import top.wifistar.app.App;
+import top.wifistar.bean.LocationBean;
+import top.wifistar.bean.CNLocationBean;
+import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
@@ -41,10 +53,10 @@ public class UserProfileActivity extends AppCompatActivity {
     private View mViewNeedOffset;
     ObservableScrollView scrollview;
     LinearLayout llDetail;
-    View toolbar;
+    View toolbar, vSendMail;
     LinearLayout llHeadAndInfo, llInfo, llEditInfo;
-    View flUp,vSex;
-    RTextView tvName, tvInfo;
+    View flUp, vSex;
+    TextView tvAddFan,tvInfo,tvName;
 
 
     @Override
@@ -62,10 +74,12 @@ public class UserProfileActivity extends AppCompatActivity {
         llHeadAndInfo = (LinearLayout) findViewById(R.id.llHeadAndInfo);
         llInfo = (LinearLayout) findViewById(R.id.llInfo);
         flUp = findViewById(R.id.flUp);
-        vSex  = findViewById(R.id.vSex);
-        tvName = (RTextView) findViewById(R.id.tvName);
-        tvInfo = (RTextView) findViewById(R.id.tvInfo);
+        vSex = findViewById(R.id.vSex);
+        tvName = (TextView) findViewById(R.id.tvName);
+        tvInfo = (TextView) findViewById(R.id.tvInfo);
         llEditInfo = (LinearLayout) findViewById(R.id.llEditInfo);
+        tvAddFan = (TextView) findViewById(R.id.tvAddFan);
+        vSendMail = findViewById(R.id.vSendMail);
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
@@ -85,21 +99,122 @@ public class UserProfileActivity extends AppCompatActivity {
         });
 
         tvName.setText(shortUser.getName());
-        if(shortUser.sex == 1){
+        if (shortUser.sex == 1) {
             vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
-        }else{
+        } else {
             vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
         }
-        tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? "" : ", shortUser.loaction"));
+        /**
+         *     先查询 https://freegeoip.net/json/， 获取外网IP和英文地理位置
+         *     如果当前手机是中文环境，再根据外网IP查询 http://ip.taobao.com/service/getIpInfo.php?ip=125.69.107.89
+         */
+        String able = getResources().getConfiguration().locale.getCountry();
+        boolean isChinese = able.equals("CN");
+
+        tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
 
         String curId = App.currentUserProfile.getObjectId();
         if (curId.equals(shortUser.id)) {
             llEditInfo.setVisibility(View.VISIBLE);
             llInfo.setVisibility(View.GONE);
+            llEditInfo.setOnClickListener((v) -> {
+                Intent intent = new Intent(UserProfileActivity.this, EditProfileActivity.class);
+                startActivity(intent);
+            });
+            new Thread(() -> {
+                LocationBean locationBean = getLocationByIp(isChinese);
+                if (locationBean != null) {
+                    shortUser.country = locationBean.getCountry_name();
+                    shortUser.region = locationBean.getRegion_name();
+                    shortUser.city = locationBean.getCity();
+                    if (TextUtils.isEmpty(shortUser.city)) {
+                        shortUser.loaction = shortUser.region;
+                    } else {
+                        shortUser.loaction = shortUser.region + "丨" + shortUser.city;
+                    }
+                    tvInfo.post(() -> {
+                        tvInfo.setText(shortUser.age + ", " + shortUser.loaction);
+                        BmobUtils.updateUser(shortUser);
+                    });
+                }
+            }).start();
         } else {
             llEditInfo.setVisibility(View.GONE);
             llInfo.setVisibility(View.VISIBLE);
+            tvAddFan.setOnClickListener((v) -> {
+                //TODO 添加关注
+            });
+            vSendMail.setOnClickListener((v) -> {
+                //TODO 私信
+            });
         }
+    }
+
+
+    private LocationBean getLocationByIp(boolean isChinese) {
+        LocationBean locationBean = null;
+        String urlStr, encodeType;
+        if (isChinese) {
+            urlStr = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js";
+            encodeType = "utf-8";
+        } else {
+            urlStr = "https://freegeoip.net/json/";
+            encodeType = "utf-8";
+        }
+        URL infoUrl;
+        InputStream inStream = null;
+        HttpURLConnection httpConnection = null;
+        try {
+            infoUrl = new URL(urlStr);
+            URLConnection connection = infoUrl.openConnection();
+            httpConnection = (HttpURLConnection) connection;
+            httpConnection.setRequestMethod("GET");
+            httpConnection.setReadTimeout(2000);
+            httpConnection.setConnectTimeout(2000);
+            int responseCode = httpConnection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                inStream = httpConnection.getInputStream();
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(inStream, encodeType));
+                StringBuilder strber = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    strber.append(line + "\n");
+                }
+                String res = strber.toString();
+                if (!isChinese) {
+                    locationBean = new Gson().fromJson(res, LocationBean.class);
+                } else {
+                    String cnStr = convert(res).replace(";", "").split(" = ")[1];
+                    CNLocationBean CNLocationBean = new Gson().fromJson(cnStr, CNLocationBean.class);
+                    if (CNLocationBean != null) {
+                        locationBean = new LocationBean();
+                        locationBean.setCountry_name(CNLocationBean.getCountry());
+                        locationBean.setRegion_name(CNLocationBean.getProvince());
+                        locationBean.setCity(CNLocationBean.getCity());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                inStream.close();
+                httpConnection.disconnect();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+//        if (isChinese && locationBean != null && firstGetLocation) {
+//            firstGetLocation = false;
+//            try {
+//                Thread.sleep(234);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            getLocationByIp(isChinese, firstGetLocation, locationBean);
+//        }
+        return locationBean;
     }
 
     @Override
@@ -167,8 +282,8 @@ public class UserProfileActivity extends AppCompatActivity {
         int count = llHeadAndInfo.getChildCount();
         for (int i = 0; i < count; i++) {
             View view = llHeadAndInfo.getChildAt(i);
-            if(view instanceof LinearLayout){
-                setLinearAlpha(((LinearLayout) view),scrolledY);
+            if (view instanceof LinearLayout) {
+                setLinearAlpha(((LinearLayout) view), scrolledY);
             }
             if (view.getBackground() != null) {
                 view.getBackground().setAlpha(alph);
@@ -196,5 +311,23 @@ public class UserProfileActivity extends AppCompatActivity {
                 mToolbar.setTitle(shortUser.getName());
             }
         }
+    }
+
+    public String convert(String utfString) {
+        StringBuilder sb = new StringBuilder();
+        int i = -1;
+        int pos = 0;
+
+        while ((i = utfString.indexOf("\\u", pos)) != -1) {
+            sb.append(utfString.substring(pos, i));
+            if (i + 5 < utfString.length()) {
+                pos = i + 6;
+                sb.append((char) Integer.parseInt(utfString.substring(i + 2, i + 6), 16));
+            }
+        }
+        if (pos < utfString.length()) {
+            sb.append(utfString.substring(pos, utfString.length()));
+        }
+        return sb.toString();
     }
 }

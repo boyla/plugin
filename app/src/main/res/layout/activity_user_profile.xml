@@ -58,7 +58,7 @@
                         android:layout_gravity="center"
                         android:orientation="horizontal">
 
-                        <com.ruffian.library.RTextView
+                        <TextView
                             android:id="@+id/tvName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -78,17 +78,16 @@
                             android:layout_height="20dp"/>
                     </LinearLayout>
 
-                    <com.ruffian.library.RTextView
+                    <TextView
                         android:id="@+id/tvInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginTop="5dp"
                         android:drawablePadding="10dp"
-                        android:text="25, USA · NewYork"
+                        android:text="25, USA丨NewYork"
                         android:textColor="@color/transparent_white"
-                        android:textSize="14sp"
-                        app:icon_src_normal="@drawable/ic_mail_24dp" />
+                        android:textSize="14sp" />
 
                     <LinearLayout
                         android:id="@+id/llInfo"
@@ -136,6 +135,8 @@
                         android:layout_marginTop="15dp"
                         android:background="@drawable/white_round_rectangle"
                         android:gravity="center"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:orientation="horizontal"
                         android:paddingLeft="20dp"
                         android:paddingRight="14dp">

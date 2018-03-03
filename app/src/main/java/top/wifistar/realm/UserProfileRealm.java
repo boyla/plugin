@@ -32,6 +32,7 @@ public class UserProfileRealm extends RealmObject implements ToBmobObject{
     String mass;
     String updatedAt;
     String momentsNum;
+    public String fanOf;
     @PrimaryKey
     public String objectId;
 
@@ -214,6 +215,7 @@ public class UserProfileRealm extends RealmObject implements ToBmobObject{
         userProfile.mass = mass;
         userProfile.momentsNum = momentsNum;
         userProfile.userId = userId;
+        userProfile.fanOf = fanOf;
         return userProfile;
     }
 }

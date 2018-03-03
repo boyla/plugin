@@ -283,12 +283,44 @@ public class SplashActivity extends BaseActivity {
                     clearRegister = true;
                     Utils.showToast(topReminder, getResources().getString(R.string.register_success), TopReminder.THEME_SUCCESS);
                     backLogin(llRegister);
+                    //add profile by buser
+                    addProfile(resultUser,nickname);
                 } else {
                     Utils.showToast(topReminder, e.getMessage());
                 }
             }
         }));
 
+    }
+
+    private void addProfile(BUser bmobUser,String nickname){
+        final UserProfile profile = new UserProfile();
+        profile.setUserId(bmobUser.getObjectId());
+        profile.setNickName(nickname);
+        profile.save(new SaveListener<String>() {
+            @Override
+            public void done(String profileId, BmobException e) {
+                if (e != null) {
+                    Utils.showToast(topReminder, e.getMessage());
+                } else {
+                    profile.setObjectId(profileId);
+                    bmobUser.setProfileId(profileId);
+                    bmobUser.update(bmobUser.getObjectId(), new UpdateListener() {
+                        @Override
+                        public void done(BmobException e) {
+                            if (e != null) {
+                                Utils.makeToast(SplashActivity.this, e.getMessage());
+                            }
+                        }
+                    });
+                    ACache.get(context).put("CURRENT_USER_" + bmobUser.getObjectId(), bmobUser);
+                    ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
+                    App.currentUserProfile = profile;
+                    generateNewUser(profileId);
+
+                }
+            }
+        });
     }
 
     private void resetPassword(final String email) {
@@ -506,7 +538,7 @@ public class SplashActivity extends BaseActivity {
 
     private void updateUser() {
         if (count == 2) {
-            Utils.updateUser();
+            Utils.updateUserFromProfile();
         }
     }
 

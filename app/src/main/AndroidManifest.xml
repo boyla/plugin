@@ -87,6 +87,8 @@
 
         <activity android:name=".activity.Main2Activity"/>
 
+        <activity android:name=".activity.EditProfileActivity"/>
+
         <activity android:name=".activity.ImagePagerActivity"
             android:screenOrientation="portrait"/>
 
@@ -97,6 +99,8 @@
         <activity android:name="com.lidong.photopicker.PhotoPickerActivity"/>
 
         <activity android:name="com.lidong.photopicker.PhotoPreviewActivity"/>
+
+
     </application>
 
 </manifest>

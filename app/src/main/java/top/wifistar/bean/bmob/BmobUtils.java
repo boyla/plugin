@@ -32,4 +32,18 @@ public class BmobUtils {
             }
         });
     }
+
+    public static void updateUser(User user) {
+        BaseRealmDao.insertOrUpdate(user.toRealmObject());
+        user.update(user.getObjectId(), new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e==null){
+                    Log.i("ShortUser:","更新成功");
+                }else{
+                    Log.i("ShortUser:","更新失败："+e.getMessage()+","+e.getErrorCode());
+                }
+            }
+        });
+    }
 }
