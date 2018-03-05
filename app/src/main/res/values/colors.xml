@@ -92,7 +92,7 @@
 
     <color name="list_bg">#EBEBEB</color>
 
-    <color name="transparent_white">#88FFFFFF</color>
+    <color name="transparent_white">#bbFFFFFF</color>
 
     <color name="base_color_text_black">#232121</color>
     <color name="base_color_bg">#f4f6f6</color>

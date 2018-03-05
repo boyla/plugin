@@ -1064,11 +1064,18 @@ public class Utils {
         return result;
     }
 
-    public static void updateUserFromProfile() {
-        String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+    public static void updateUserFromProfile(User user) {
         App.getHandler().postDelayed(() -> {
             UserProfile profile = App.currentUserProfile;
-            BmobUtils.updateUser(objId, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
+            User res;
+            if (user == null) {
+                res = new User();
+                String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
+                res.setObjectId(objId);
+            }else{
+                res = user;
+            }
+            BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
         }, 111);
     }
 

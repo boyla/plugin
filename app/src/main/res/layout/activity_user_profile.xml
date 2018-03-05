@@ -26,8 +26,7 @@
                     android:id="@+id/ivHeadBg"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/icon_head_bg" />
+                    android:scaleType="centerCrop" />
 
                 <View
                     android:layout_width="match_parent"
@@ -74,8 +73,8 @@
                             android:background="@drawable/sex_male"
                             android:layout_gravity="center"
                             android:layout_marginLeft="5dp"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"/>
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"/>
                     </LinearLayout>
 
                     <TextView

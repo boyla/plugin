@@ -511,7 +511,7 @@ public class SplashActivity extends BaseActivity {
                             ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), userProfile);
                             loadingDialog.dismiss();
                             count++;
-                            updateUser();
+                            updateUser(null);
                             goToMain();
                         }
                     });
@@ -525,7 +525,7 @@ public class SplashActivity extends BaseActivity {
                                 String objId = list.get(0).getObjectId();
                                 ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                                 count++;
-                                updateUser();
+                                updateUser(list.get(0));
                             } else {
                                 generateNewUser(bmobUser.getProfileId());
                             }
@@ -536,9 +536,9 @@ public class SplashActivity extends BaseActivity {
         });
     }
 
-    private void updateUser() {
+    private void updateUser(User user) {
         if (count == 2) {
-            Utils.updateUserFromProfile();
+            Utils.updateUserFromProfile(user);
         }
     }
 

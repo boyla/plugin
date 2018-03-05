@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -114,6 +115,13 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 tvName.setText(profile.getNickName());
             }
             // TODO: change moment title background
+            User shortUser = Utils.getCurrentShortUser();
+            if(TextUtils.isEmpty(shortUser.headBgUrl)){
+                ivBg.setImageResource(R.drawable.splash);
+            }else{
+                ivBg.setImageResource(R.color.darkgray);
+                Glide.with(context).load(shortUser.headBgUrl).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
+            }
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_moment, parent, false);
             if (viewType == MomentViewHolder.TYPE_URL) {

@@ -1,23 +1,33 @@
 package top.wifistar.activity;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.jaeger.library.StatusBarUtil;
 import com.ruffian.library.RTextView;
@@ -38,6 +48,7 @@ import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
+import top.wifistar.utils.DensityUtil;
 import top.wifistar.utils.Utils;
 
 
@@ -48,7 +59,7 @@ import top.wifistar.utils.Utils;
 public class UserProfileActivity extends AppCompatActivity {
 
     private User shortUser;
-    ImageView ivHead;
+    ImageView ivHead,ivHeadBg;
     private Toolbar mToolbar;
     private View mViewNeedOffset;
     ObservableScrollView scrollview;
@@ -80,6 +91,7 @@ public class UserProfileActivity extends AppCompatActivity {
         llEditInfo = (LinearLayout) findViewById(R.id.llEditInfo);
         tvAddFan = (TextView) findViewById(R.id.tvAddFan);
         vSendMail = findViewById(R.id.vSendMail);
+        ivHeadBg = (ImageView) findViewById(R.id.ivHeadBg);
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
@@ -87,6 +99,15 @@ public class UserProfileActivity extends AppCompatActivity {
         mToolbar.setTitle("");
 
         Utils.setUserAvatar(shortUser, ivHead, false);
+        if(TextUtils.isEmpty(shortUser.headBgUrl)){
+            ivHeadBg.setImageResource(R.drawable.splash);
+        }else{
+            ivHeadBg.setImageResource(R.color.darkgray);
+            Glide.with(this).load(shortUser.headBgUrl).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
+        }
+        ivHeadBg.setOnClickListener((v) -> {
+            showChangeHeadBgDialog();
+        });
 
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
@@ -110,7 +131,20 @@ public class UserProfileActivity extends AppCompatActivity {
          */
         String able = getResources().getConfiguration().locale.getCountry();
         boolean isChinese = able.equals("CN");
-
+        String selfCountry = Utils.getCurrentShortUser().country;
+        if(!TextUtils.isEmpty(selfCountry) && selfCountry.equals(shortUser.country)){
+            if (TextUtils.isEmpty(shortUser.city)) {
+                shortUser.loaction = shortUser.region;
+            } else {
+                shortUser.loaction = shortUser.region + "丨" + shortUser.city;
+            }
+        }else {
+            if (TextUtils.isEmpty(shortUser.region)) {
+                shortUser.loaction = shortUser.country;
+            } else {
+                shortUser.loaction = shortUser.country + "丨" + shortUser.region;
+            }
+        }
         tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
 
         String curId = App.currentUserProfile.getObjectId();
@@ -148,6 +182,41 @@ public class UserProfileActivity extends AppCompatActivity {
                 //TODO 私信
             });
         }
+    }
+
+    private void showChangeHeadBgDialog() {
+        //,R.style.DialogTheme
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog alertDialog = builder.create();
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        RTextView tv = new RTextView(this);
+        tv.setText("更换相册封面");
+        tv.setTextColor(Color.BLACK);
+        tv.setBackgroundColorNormal(Color.WHITE);
+        tv.setBackgroundColorPressed(Color.LTGRAY);
+        tv.setCornerRadius(5);
+        tv.setPadding(50,0,0,0);
+        tv.setTextSize(16f);
+        tv.setGravity(Gravity.CENTER_VERTICAL);
+
+//        android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
+//        tv.setHeight(tv.getHeight()*2);
+        tv.setWidth(Utils.dip2px(this,260));
+        tv.setMinHeight(Utils.dip2px(this,50));
+        builder.setView(tv);
+        tv.setOnClickListener((v)->{
+            Utils.makeSysToast("选择图片");
+            alertDialog.dismiss();
+        });
+//        WindowManager m = getWindowManager();
+//        Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
+//        android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
+//        p.height = tv.getHeight();   //高度设置为屏幕的0.3
+//        p.width = (int) (d.getWidth() * 0.8);    //宽度设置为屏幕的0.5
+////        alertDialog.getWindow().setAttributes(p);
+//        alertDialog.getWindow().setLayout(p.width, p.height);
+//        alertDialog.getWindow().setGravity(Gravity.CENTER_VERTICAL);
+        builder.show();
     }
 
 
@@ -286,7 +355,9 @@ public class UserProfileActivity extends AppCompatActivity {
                 setLinearAlpha(((LinearLayout) view), scrolledY);
             }
             if (view.getBackground() != null) {
-                view.getBackground().setAlpha(alph);
+                Drawable drawable = view.getBackground();
+                drawable.mutate();
+                drawable.setAlpha(alph);
             }
             if (view instanceof TextView) {
                 if (view.getTag() == null) {
