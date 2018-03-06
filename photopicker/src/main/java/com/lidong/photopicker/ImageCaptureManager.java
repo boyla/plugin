@@ -30,7 +30,7 @@ public class ImageCaptureManager {
         this.mContext = mContext;
     }
 
-    private File createImageFile() throws IOException {
+    public File createImageFile() throws IOException {
 
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -46,23 +46,6 @@ public class ImageCaptureManager {
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
-
-
-    public Intent dispatchTakePictureIntent() throws IOException {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(mContext.getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = createImageFile();
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                        Uri.fromFile(photoFile));
-            }
-        }
-        return takePictureIntent;
-    }
-
 
     public void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);

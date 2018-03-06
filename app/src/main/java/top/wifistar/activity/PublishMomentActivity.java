@@ -2,11 +2,9 @@ package top.wifistar.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +19,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.greysonparrelli.permiso.Permiso;
 import com.lidong.photopicker.ImageCaptureManager;
 import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.PhotoPreviewActivity;
@@ -65,6 +64,12 @@ public class PublishMomentActivity extends ToolbarActivity {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Permiso.getInstance().setActivity(this);
+    }
+
+    @Override
     protected void initUI() {
         super.setContentView(R.layout.activity_publish_moment);
         setToolbarTitle();
@@ -82,18 +87,21 @@ public class PublishMomentActivity extends ToolbarActivity {
                 String imgs = (String) parent.getItemAtPosition(position);
                 //when click add item to pick a picture
                 if ("000000".equals(imgs)) {
-                    //check permission
-                    if (ContextCompat.checkSelfPermission(PublishMomentActivity.this,
-                            Manifest.permission.READ_EXTERNAL_STORAGE)
-                            != PackageManager.PERMISSION_GRANTED) {
-                        //ask for permission
-                        ActivityCompat.requestPermissions(PublishMomentActivity.this,
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                PERMISSION_REQUEST_CODE);
-                    } else {
-                        //show pictures select page
-                        jumpToPicSelectPage();
-                    }
+                    Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+                        @Override
+                        public void onPermissionResult(Permiso.ResultSet resultSet) {
+                            if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                                jumpToPicSelectPage();
+                            }else{
+                                Utils.makeSysToast("打开相册需要文件读取权限，请到应用权限中进行设置");
+                            }
+                        }
+
+                        @Override
+                        public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+                            Permiso.getInstance().showRationaleInDialog("Title", "Message", null, callback);
+                        }
+                    }, Manifest.permission.READ_EXTERNAL_STORAGE);
                 } else {
                     PhotoPreviewIntent intent = new PhotoPreviewIntent(PublishMomentActivity.this);
                     intent.setCurrentItem(position);
@@ -114,28 +122,6 @@ public class PublishMomentActivity extends ToolbarActivity {
         intent.setMaxTotal(9); // 最多选择照片数量，默认为6
         intent.setSelectedPaths(imagePaths); // 已选中的照片地址， 用于回显选中状态
         startActivityForResult(intent, REQUEST_CAMERA_CODE);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    jumpToPicSelectPage();
-                } else {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                }
-                return;
-            }
-        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
@@ -263,6 +249,7 @@ public class PublishMomentActivity extends ToolbarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Permiso.getInstance().setActivity(this);
     }
 
     @Override
@@ -368,5 +355,11 @@ public class PublishMomentActivity extends ToolbarActivity {
     protected void onDestroy() {
 //        EventUtils.unregisterEventBus(this);
         super.onDestroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 }

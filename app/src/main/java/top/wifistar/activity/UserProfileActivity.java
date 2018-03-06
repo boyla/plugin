@@ -1,7 +1,5 @@
 package top.wifistar.activity;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -10,18 +8,15 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,7 +43,6 @@ import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
-import top.wifistar.utils.DensityUtil;
 import top.wifistar.utils.Utils;
 
 
@@ -59,7 +53,7 @@ import top.wifistar.utils.Utils;
 public class UserProfileActivity extends AppCompatActivity {
 
     private User shortUser;
-    ImageView ivHead,ivHeadBg;
+    ImageView ivHead, ivHeadBg;
     private Toolbar mToolbar;
     private View mViewNeedOffset;
     ObservableScrollView scrollview;
@@ -67,7 +61,7 @@ public class UserProfileActivity extends AppCompatActivity {
     View toolbar, vSendMail;
     LinearLayout llHeadAndInfo, llInfo, llEditInfo;
     View flUp, vSex;
-    TextView tvAddFan,tvInfo,tvName;
+    TextView tvAddFan, tvInfo, tvName;
 
 
     @Override
@@ -99,16 +93,20 @@ public class UserProfileActivity extends AppCompatActivity {
         mToolbar.setTitle("");
 
         Utils.setUserAvatar(shortUser, ivHead, false);
-        if(TextUtils.isEmpty(shortUser.headBgUrl)){
+        if (TextUtils.isEmpty(shortUser.headBgUrl)) {
             ivHeadBg.setImageResource(R.drawable.splash);
-        }else{
+        } else {
             ivHeadBg.setImageResource(R.color.darkgray);
             Glide.with(this).load(shortUser.headBgUrl).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
         }
-        ivHeadBg.setOnClickListener((v) -> {
-            showChangeHeadBgDialog();
-        });
-
+        if(isSelfProfile()){
+            ivHeadBg.setOnClickListener((v) -> {
+                showChangeHeadImgDialog(0);
+            });
+            ivHead.setOnClickListener((v) -> {
+                showChangeHeadImgDialog(1);
+            });
+        }
         setSupportActionBar(mToolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -132,13 +130,13 @@ public class UserProfileActivity extends AppCompatActivity {
         String able = getResources().getConfiguration().locale.getCountry();
         boolean isChinese = able.equals("CN");
         String selfCountry = Utils.getCurrentShortUser().country;
-        if(!TextUtils.isEmpty(selfCountry) && selfCountry.equals(shortUser.country)){
+        if (!TextUtils.isEmpty(selfCountry) && selfCountry.equals(shortUser.country)) {
             if (TextUtils.isEmpty(shortUser.city)) {
                 shortUser.loaction = shortUser.region;
             } else {
                 shortUser.loaction = shortUser.region + "丨" + shortUser.city;
             }
-        }else {
+        } else {
             if (TextUtils.isEmpty(shortUser.region)) {
                 shortUser.loaction = shortUser.country;
             } else {
@@ -147,8 +145,7 @@ public class UserProfileActivity extends AppCompatActivity {
         }
         tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
 
-        String curId = App.currentUserProfile.getObjectId();
-        if (curId.equals(shortUser.id)) {
+        if (isSelfProfile()) {
             llEditInfo.setVisibility(View.VISIBLE);
             llInfo.setVisibility(View.GONE);
             llEditInfo.setOnClickListener((v) -> {
@@ -184,27 +181,27 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
-    private void showChangeHeadBgDialog() {
-        //,R.style.DialogTheme
+    private void showChangeHeadImgDialog(int type) {
+        //type: 0, 相册封面；1， 头像
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         AlertDialog alertDialog = builder.create();
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         RTextView tv = new RTextView(this);
-        tv.setText("更换相册封面");
+        if (type == 0)
+            tv.setText("更换相册封面");
+        if (type == 1)
+            tv.setText("更换头像");
         tv.setTextColor(Color.BLACK);
         tv.setBackgroundColorNormal(Color.WHITE);
         tv.setBackgroundColorPressed(Color.LTGRAY);
         tv.setCornerRadius(5);
-        tv.setPadding(50,0,0,0);
+        tv.setPadding(50, 0, 0, 0);
         tv.setTextSize(16f);
         tv.setGravity(Gravity.CENTER_VERTICAL);
-
-//        android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
-//        tv.setHeight(tv.getHeight()*2);
-        tv.setWidth(Utils.dip2px(this,260));
-        tv.setMinHeight(Utils.dip2px(this,50));
+        tv.setWidth(Utils.dip2px(this, 260));
+        tv.setMinHeight(Utils.dip2px(this, 50));
         builder.setView(tv);
-        tv.setOnClickListener((v)->{
+        tv.setOnClickListener((v) -> {
             Utils.makeSysToast("选择图片");
             alertDialog.dismiss();
         });
@@ -274,15 +271,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 ex.printStackTrace();
             }
         }
-//        if (isChinese && locationBean != null && firstGetLocation) {
-//            firstGetLocation = false;
-//            try {
-//                Thread.sleep(234);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            getLocationByIp(isChinese, firstGetLocation, locationBean);
-//        }
         return locationBean;
     }
 
@@ -400,5 +388,10 @@ public class UserProfileActivity extends AppCompatActivity {
             sb.append(utfString.substring(pos, utfString.length()));
         }
         return sb.toString();
+    }
+
+    public boolean isSelfProfile(){
+        String curId = App.currentUserProfile.getObjectId();
+        return  curId.equals(shortUser.id);
     }
 }

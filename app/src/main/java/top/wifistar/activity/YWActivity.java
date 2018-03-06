@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-
-import pub.devrel.easypermissions.EasyPermissions;
 import top.wifistar.utils.SystemBarUtil;
 import top.wifistar.utils.Utils;
 
@@ -76,16 +74,6 @@ public class YWActivity extends AppCompatActivity {
             win.setAttributes(winParams);
         }
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-
 
     // 5.0版本以上
     private void setStatusBarUpperAPI21() {

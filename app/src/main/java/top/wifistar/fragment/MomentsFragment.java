@@ -34,7 +34,6 @@ import java.util.List;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
-import pub.devrel.easypermissions.EasyPermissions;
 import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.activity.PublishMomentActivity;
@@ -62,7 +61,7 @@ import static top.wifistar.activity.mvp.presenter.MomentsPresenter.NO_MORE_DATA;
  * Created by hasee on 2017/4/8.
  */
 
-public class MomentsFragment extends BaseFragment implements MomentsContract.View, EasyPermissions.PermissionCallbacks {
+public class MomentsFragment extends BaseFragment implements MomentsContract.View{
 
     //TextView tvNoData;
 
@@ -369,25 +368,6 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 }
             }, 888);
         }
-    }
-
-    @Override
-    public void onPermissionsGranted(int requestCode, List<String> perms) {
-        Toast.makeText(getActivity(), "onPermissionsGranted  requestCode: " + requestCode, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, List<String> perms) {
-        Toast.makeText(getActivity(), "您拒绝了相关权限，可能会导致相关功能不可用", Toast.LENGTH_LONG).show();
-        /*if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this, getString(R.string.rationale_ask_again))
-                    .setTitle(getString(R.string.title_settings_dialog))
-                    .setPositiveButton(getString(R.string.setting))
-                    .setNegativeButton(getString(R.string.cancel), null *//* click listener *//*)
-                    .setRequestCode(RC_SETTINGS_SCREEN)
-                    .build()
-                    .show();
-        }*/
     }
 
     private void measureCircleItemHighAndCommentItemOffset(CommentConfig commentConfig) {
