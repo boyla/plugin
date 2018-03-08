@@ -240,7 +240,7 @@ public class TitleBar extends ViewGroup implements View.OnClickListener {
     }
 
     /**
-     * Function to set a click listener for Title TextView
+     * Function to set a click onTouchListener for Title TextView
      *
      * @param listener the onClickListener
      */

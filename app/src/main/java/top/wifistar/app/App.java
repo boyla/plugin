@@ -195,7 +195,6 @@ public class App extends MultiDexApplication {
 
         public DataBaseSyncTask(String dbDir, String dbName) {
             this.dbDir = dbDir;
-
             this.dbName = dbName;
         }
 

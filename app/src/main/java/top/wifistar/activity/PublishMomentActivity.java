@@ -92,14 +92,14 @@ public class PublishMomentActivity extends ToolbarActivity {
                         public void onPermissionResult(Permiso.ResultSet resultSet) {
                             if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                                 jumpToPicSelectPage();
-                            }else{
+                            } else {
                                 Utils.makeSysToast("打开相册需要文件读取权限，请到应用权限中进行设置");
                             }
                         }
 
                         @Override
                         public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                            Permiso.getInstance().showRationaleInDialog("Title", "Message", null, callback);
+                            Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "打开相册需要文件读取权限，请到应用权限中进行设置", null, callback);
                         }
                     }, Manifest.permission.READ_EXTERNAL_STORAGE);
                 } else {
@@ -150,12 +150,13 @@ public class PublishMomentActivity extends ToolbarActivity {
             //first get moment type
             if (imagePaths.size() > 1) {
                 momentType = "2";//pic type
-            }else if(TextUtils.isEmpty(textView.getText().toString())){
+            } else if (TextUtils.isEmpty(textView.getText().toString())) {
                 Utils.makeSysToast("还没有添加动态内容");
                 return super.onOptionsItemSelected(item);
             }
 
             //post moment
+            sendTempEvent();
             switch (momentType) {
                 case "2":
                     uploadPics();
@@ -170,15 +171,39 @@ public class PublishMomentActivity extends ToolbarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void uploadPics() {
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
+    private void sendTempEvent() {
+        //生成模拟Moment Event
         String[] filePaths = new String[imagePaths.size() - 1];
         String[] src = new String[imagePaths.size()];
         imagePaths.toArray(src);
         System.arraycopy(src, 0, filePaths, 0,
                 imagePaths.size() - 1);
+        PublishMomentEvent event = new PublishMomentEvent(true);
+        Moment tempMoment = new Moment();
+        tempMoment.setType(momentType);
+        tempMoment.setContent(textView.getText().toString());
+        if (filePaths.length > 0) {
+            tempMoment.setPhotos(TextUtils.join(",", filePaths));
+        }
+        //set user
+        User user = Utils.getCurrentShortUser();
+        if (user == null) {
+            Utils.showToast("登陆用户失效，请重新登陆");
+            return;
+        }
+        tempMoment.setUser(user);
+        tempMoment.setCreateAt(Utils.getTimeByMills());
+        event.moment = tempMoment;
+        EventUtils.post(event);
+    }
+
+    private void uploadPics() {
+        String[] filePaths = new String[imagePaths.size() - 1];
+        String[] src = new String[imagePaths.size()];
+        imagePaths.toArray(src);
+        System.arraycopy(src, 0, filePaths, 0,
+                imagePaths.size() - 1);
+        //为提升用户体验，进行网络操作的时候，不进入等待页面，先发送一个模拟Moment Event给Fragment,待请求完成后,再发送有效的Moment Event替换之
         BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
 
             @Override
@@ -207,8 +232,6 @@ public class PublishMomentActivity extends ToolbarActivity {
                 //4、totalPercent--表示总的上传进度（百分比）
             }
         });
-//            }
-//        }).start();
     }
 
     private void saveMoment() {
@@ -236,7 +259,7 @@ public class PublishMomentActivity extends ToolbarActivity {
                 if (e == null) {
                     Utils.showToast("发布动态成功");
                     momentToPost.setObjectId(objectId);
-                    PublishMomentEvent event = new PublishMomentEvent();
+                    PublishMomentEvent event = new PublishMomentEvent(false);
                     event.moment = momentToPost;
                     EventUtils.post(event);
                 } else {

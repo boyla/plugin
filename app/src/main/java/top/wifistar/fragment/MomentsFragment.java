@@ -21,7 +21,6 @@ import android.view.ViewTreeObserver;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
@@ -116,7 +115,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        recyclerView.listener = () -> homeActivity.showBottomInput(View.GONE);
+        recyclerView.onTouchListener = () -> homeActivity.showBottomInput(View.GONE);
         momentAdapter.setCirclePresenter(presenter);
         recyclerView.setAdapter(momentAdapter);
         //优化更新item时的闪烁
@@ -218,6 +217,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 Moment moment = moments.remove(i);
                 if (!TextUtils.isEmpty(moment.getPhotos())) {
                     String[] urls = moment.getPhotos().split(",");
+                    for(int index = 0; index < urls.length; index++){
+                        urls[index] = urls[index].split("_wh_")[0];
+                    }
                     BmobFile.deleteBatch(urls, new DeleteBatchListener() {
 
                         @Override
@@ -239,6 +241,10 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 momentAdapter.notifyItemRangeChanged(i + 2, momentAdapter.getItemCount());
                 return;
             }
+            break;
+        }
+        if(momentAdapter.getDatas().size() == 0){
+            progressCombineView.showEmpty(null, "", "没有动态数据，认识更多朋友吧");
         }
     }
 
@@ -354,7 +360,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     private void updateDataList(int loadType) {
         if (momentAdapter.getDatas().size() == 0) {
-            progressCombineView.showEmpty(null, "哎呀", "没有获取到数据，认识更多朋友吧~");
+            progressCombineView.showEmpty(null, "", "没有动态数据，认识更多朋友吧");
         } else {
             momentAdapter.notifyDataSetChanged();
             App.getHandler().postDelayed(new Runnable() {
@@ -445,7 +451,6 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 if (keyboardH == currentKeyboardH) {//有变化时才处理，否则会陷入死循环
                     return;
                 }
-
                 currentKeyboardH = keyboardH;
                 screenHeight = screenH;//应用屏幕的高度
                 editTextBodyHeight = edittextbody.getHeight();
@@ -474,9 +479,25 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         EventUtils.unregisterEventBus(this);
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    Moment temp;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMoment(PublishMomentEvent event) {
-        momentAdapter.getDatas().add(0, event.moment);
-        momentAdapter.notifyItemInserted(1);
+        if(event.isTempEvent){
+            if(momentAdapter.getDatas().size() == 0){
+                progressCombineView.showContent();
+                recyclerView.refreshComplete();
+            }
+            momentAdapter.getDatas().add(0, event.moment);
+            momentAdapter.notifyItemInserted(1);
+        }else{
+            ((Moment)momentAdapter.getDatas().get(0)).setObjectId(event.moment.getObjectId());
+            ((Moment)momentAdapter.getDatas().get(0)).setPhotos(event.moment.getPhotos());
+        }
     }
 }

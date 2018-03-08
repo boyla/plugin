@@ -2,9 +2,10 @@ package top.wifistar.bean.bmob;
 
 import android.util.Log;
 
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.DeleteBatchListener;
 import cn.bmob.v3.listener.UpdateListener;
-import top.wifistar.bean.bmob.User;
 import top.wifistar.realm.BaseRealmDao;
 
 /**
@@ -41,6 +42,24 @@ public class BmobUtils {
                     Log.i("ShortUser:", "更新成功");
                 } else {
                     Log.i("ShortUser:", "更新失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
+    }
+
+    public static void deleteBmobFile(String[] urls){
+        BmobFile.deleteBatch(urls, new DeleteBatchListener() {
+
+            @Override
+            public void done(String[] failUrls, BmobException e) {
+                if (e == null) {
+                    Log.i("删除moment关联图片：", "全部删除成功");
+                } else {
+                    if (failUrls != null) {
+                        Log.i("删除moment关联图片失败个数：", failUrls.length + "," + e.toString());
+                    } else {
+                        Log.i("全部文件删除失败：", e.getErrorCode() + "," + e.toString());
+                    }
                 }
             }
         });

@@ -41,7 +41,7 @@
 //import com.yiw.circledemo.widgets.TitleBar;
 //import com.yiw.circledemo.widgets.dialog.UpLoadDialog;
 //import com.yiw.qupai.QPManager;
-//import com.yiw.qupai.listener.IUploadListener;
+//import com.yiw.qupai.onTouchListener.IUploadListener;
 //import com.yiw.qupai.result.RecordResult;
 //
 //import java.util.List;
@@ -549,7 +549,7 @@
 //            new AppSettingsDialog.Builder(this, getString(R.string.rationale_ask_again))
 //                    .setTitle(getString(R.string.title_settings_dialog))
 //                    .setPositiveButton(getString(R.string.setting))
-//                    .setNegativeButton(getString(R.string.cancel), null *//* click listener *//*)
+//                    .setNegativeButton(getString(R.string.cancel), null *//* click onTouchListener *//*)
 //                    .setRequestCode(RC_SETTINGS_SCREEN)
 //                    .build()
 //                    .show();

@@ -194,7 +194,7 @@ public class ImagePagerActivity extends YWActivity {
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
-            final String imgurl = datas.get(position).split("_")[0];
+            final String imgurl = datas.get(position).split("_wh_")[0];
             final String transitionName = container.getContext()
                     .getString(R.string.transition_name, adapterPosition, position);
             if (view != null) {

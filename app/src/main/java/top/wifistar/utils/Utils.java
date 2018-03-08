@@ -953,6 +953,9 @@ public class Utils {
     public static void setUserAvatar(User shortProfile, ImageView imageView, boolean needJumpPage) {
         Context context = imageView.getContext();
         String headImg = shortProfile.getHeadUrl();
+        if (!TextUtils.isEmpty(headImg) && headImg.contains("_wh_")) {
+            headImg = headImg.split("_wh_")[0];
+        }
         if (TextUtils.isEmpty(headImg) || "null".equals(headImg)) {
             int img;
             if (shortProfile.sex == 0) {
@@ -990,19 +993,33 @@ public class Utils {
 
         if (needJumpPage) {
             imageView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, UserProfileActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("ShortUser", shortProfile);
-                intent.putExtras(bundle);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    // 创建一个包含过渡动画信息的 ActivityOptions 对象
-                    Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, imageView, App.getApp().getString(R.string.transition_name_head_img)).toBundle();
-                    // 使用 Intent 跳转界面，并传递共享对象信息
-                    ActivityCompat.startActivity(context, intent, options);
-                } else {
-                    context.startActivity(intent);
-                }
+                queryShortUserFromDB(shortProfile.getObjectId(), new QueryUsesrCallBack() {
+                    @Override
+                    public void onSuccess(User user) {
+                        jumpToProfile(context, user, imageView);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        jumpToProfile(context, shortProfile, imageView);
+                    }
+                });
             });
+        }
+    }
+
+    private static void jumpToProfile(Context context, User user, ImageView imageView) {
+        Intent intent = new Intent(context, UserProfileActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("ShortUser", user);
+        intent.putExtras(bundle);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // 创建一个包含过渡动画信息的 ActivityOptions 对象
+            Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, imageView, App.getApp().getString(R.string.transition_name_head_img)).toBundle();
+            // 使用 Intent 跳转界面，并传递共享对象信息
+            ActivityCompat.startActivity(context, intent, options);
+        } else {
+            context.startActivity(intent);
         }
     }
 
@@ -1072,10 +1089,10 @@ public class Utils {
                 res = new User();
                 String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
                 res.setObjectId(objId);
-            }else{
-                res = user;
+                BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
+            } else {
+                BmobUtils.updateUser(user);
             }
-            BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
         }, 111);
     }
 
@@ -1133,7 +1150,7 @@ public class Utils {
         /**
          *options.outHeight为原始图片的高
          */
-        return "_" + options.outWidth + "&" + options.outHeight;
+        return "_wh_" + options.outWidth + "&" + options.outHeight;
     }
 
     public static boolean isWifiConnected() {
@@ -1291,6 +1308,10 @@ public class Utils {
             callBack.onSuccess(cachedUser);
             return;
         }
+        queryShortUserFromDB(shortUserObjId, callBack);
+    }
+
+    public static void queryShortUserFromDB(String shortUserObjId, QueryUsesrCallBack callBack) {
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", shortUserObjId).findAll();
         if (dbData.isEmpty()) {
             //didn't find in db, query Bmob
@@ -1352,6 +1373,11 @@ public class Utils {
         task.equals(url);
     }
 
+    public static String getTimeByMills(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return simpleDateFormat.format(new Date());
+    }
+
     public static String getFuzzyTime(String rawTime) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long serverTime;
@@ -1359,7 +1385,7 @@ public class Utils {
             serverTime = System.currentTimeMillis() - simpleDateFormat.parse(rawTime).getTime();
             String result;
             int time = (int) (serverTime / (1000 * 60));
-            if(time < 0){
+            if (time < 0) {
                 return rawTime;
             }
             if (time == 0) {
@@ -1378,14 +1404,14 @@ public class Utils {
                         result = "昨天";
                     } else if (time == 2) {
                         result = "前天";
-                    } else if(time < 7){
+                    } else if (time < 7) {
                         result = time + "天前";
-                    }else if(time < 30){
-                        result = time/7 + "周前";
-                    }else if(time < 360){
-                        result = time/30 + "月前";
-                    }else{
-                        result = time/360 + "年前";
+                    } else if (time < 30) {
+                        result = time / 7 + "周前";
+                    } else if (time < 360) {
+                        result = time / 30 + "月前";
+                    } else {
+                        result = time / 360 + "年前";
                     }
                 }
             }

@@ -132,8 +132,8 @@
 //    }
 //
 //
-//    public CustomAlertDialog setOnPressBackListener(OnPressBackListener listener){
-//        backListener = listener;
+//    public CustomAlertDialog setOnPressBackListener(OnPressBackListener onTouchListener){
+//        backListener = onTouchListener;
 //        return this;
 //    }
 //
@@ -198,7 +198,7 @@
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setPositiveButton(String text, final View.OnClickListener listener) {
+//    public CustomAlertDialog setPositiveButton(String text, final View.OnClickListener onTouchListener) {
 //        isPositiveButtonShowing = true;
 //
 //        btnAlertDialogPositive.setVisibility(View.VISIBLE);
@@ -207,8 +207,8 @@
 //        btnAlertDialogPositive.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                if (null != listener) {
-//                    listener.onClick(v);
+//                if (null != onTouchListener) {
+//                    onTouchListener.onClick(v);
 //                }
 //                mDialog.dismiss();
 //            }
@@ -216,27 +216,27 @@
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setPositiveButton(int textId, final View.OnClickListener listener) {
+//    public CustomAlertDialog setPositiveButton(int textId, final View.OnClickListener onTouchListener) {
 //        String text = mContext.getResources().getString(textId);
-//        setPositiveButton(text, listener);
+//        setPositiveButton(text, onTouchListener);
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setPositiveButton(String text, Boolean isBold, final View.OnClickListener listener) {
+//    public CustomAlertDialog setPositiveButton(String text, Boolean isBold, final View.OnClickListener onTouchListener) {
 //        TextPaint tp = btnAlertDialogPositive.getPaint();
 //        tp.setFakeBoldText(isBold);
 //
-//        setPositiveButton(text, listener);
+//        setPositiveButton(text, onTouchListener);
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setPositiveButton(int textId, Boolean isBold, final View.OnClickListener listener) {
+//    public CustomAlertDialog setPositiveButton(int textId, Boolean isBold, final View.OnClickListener onTouchListener) {
 //        String text = mContext.getResources().getString(textId);
-//        setPositiveButton(text, isBold, listener);
+//        setPositiveButton(text, isBold, onTouchListener);
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setNegativeButton(String text, final View.OnClickListener listener) {
+//    public CustomAlertDialog setNegativeButton(String text, final View.OnClickListener onTouchListener) {
 //        isNegativeButtonShowing = true;
 //
 //        btnAlertDialogNegative.setVisibility(View.VISIBLE);
@@ -246,8 +246,8 @@
 //        btnAlertDialogNegative.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
-//                if (null != listener) {
-//                    listener.onClick(v);
+//                if (null != onTouchListener) {
+//                    onTouchListener.onClick(v);
 //                }
 //                mDialog.dismiss();
 //            }
@@ -255,23 +255,23 @@
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setNegativeButton(int textId, final View.OnClickListener listener) {
+//    public CustomAlertDialog setNegativeButton(int textId, final View.OnClickListener onTouchListener) {
 //        String text = mContext.getResources().getString(textId);
-//        setNegativeButton(text, listener);
+//        setNegativeButton(text, onTouchListener);
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setNegativeButton(String text, Boolean isBold, final View.OnClickListener listener) {
+//    public CustomAlertDialog setNegativeButton(String text, Boolean isBold, final View.OnClickListener onTouchListener) {
 //        TextPaint tp = btnAlertDialogNegative.getPaint();
 //        tp.setFakeBoldText(isBold);
 //
-//        setNegativeButton(text, listener);
+//        setNegativeButton(text, onTouchListener);
 //        return this;
 //    }
 //
-//    public CustomAlertDialog setNegativeButton(int textId, Boolean isBold, final View.OnClickListener listener) {
+//    public CustomAlertDialog setNegativeButton(int textId, Boolean isBold, final View.OnClickListener onTouchListener) {
 //        String text = mContext.getResources().getString(textId);
-//        setNegativeButton(text, isBold, listener);
+//        setNegativeButton(text, isBold, onTouchListener);
 //        return this;
 //    }
 //

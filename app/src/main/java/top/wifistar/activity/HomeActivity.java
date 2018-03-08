@@ -65,6 +65,12 @@ public class HomeActivity extends ToolbarActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Utils.setUserSelfAvatar(mCustomLogo);
+    }
+
+    @Override
     protected void onDestroy() {
         EventUtils.unregisterEventBus(this);
         super.onDestroy();

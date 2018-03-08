@@ -1,5 +1,6 @@
 package top.wifistar.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -24,7 +25,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
+import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
+import com.lidong.photopicker.PhotoPickerActivity;
+import com.lidong.photopicker.SelectModel;
+import com.lidong.photopicker.intent.PhotoPickerIntent;
 import com.ruffian.library.RTextView;
 
 import java.io.BufferedReader;
@@ -33,7 +38,11 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
+import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 
 import top.wifistar.app.App;
@@ -43,6 +52,7 @@ import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
+import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.Utils;
 
 
@@ -68,7 +78,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
-
+        Permiso.getInstance().setActivity(this);
         mViewNeedOffset = findViewById(R.id.view_need_offset);
         StatusBarUtil.setTransparentForImageView(this, mViewNeedOffset);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -97,14 +107,16 @@ public class UserProfileActivity extends AppCompatActivity {
             ivHeadBg.setImageResource(R.drawable.splash);
         } else {
             ivHeadBg.setImageResource(R.color.darkgray);
-            Glide.with(this).load(shortUser.headBgUrl).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
+            Glide.with(this).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
         }
-        if(isSelfProfile()){
+        if (isSelfProfile()) {
             ivHeadBg.setOnClickListener((v) -> {
-                showChangeHeadImgDialog(0);
+                changeHeadImgType = HEAD_IMG_TYPE_BG;
+                showChangeHeadImgDialog(changeHeadImgType);
             });
             ivHead.setOnClickListener((v) -> {
-                showChangeHeadImgDialog(1);
+                changeHeadImgType = HEAD_IMG_TYPE_AVATAR;
+                showChangeHeadImgDialog(changeHeadImgType);
             });
         }
         setSupportActionBar(mToolbar);
@@ -181,15 +193,20 @@ public class UserProfileActivity extends AppCompatActivity {
         }
     }
 
+    private static final int HEAD_IMG_TYPE_AVATAR = 1;
+    private static final int HEAD_IMG_TYPE_BG = 0;
+
+    public static int changeHeadImgType;
+
     private void showChangeHeadImgDialog(int type) {
         //type: 0, 相册封面；1， 头像
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         AlertDialog alertDialog = builder.create();
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         RTextView tv = new RTextView(this);
-        if (type == 0)
+        if (type == HEAD_IMG_TYPE_BG)
             tv.setText("更换相册封面");
-        if (type == 1)
+        if (type == HEAD_IMG_TYPE_AVATAR)
             tv.setText("更换头像");
         tv.setTextColor(Color.BLACK);
         tv.setBackgroundColorNormal(Color.WHITE);
@@ -201,21 +218,100 @@ public class UserProfileActivity extends AppCompatActivity {
         tv.setWidth(Utils.dip2px(this, 260));
         tv.setMinHeight(Utils.dip2px(this, 50));
         builder.setView(tv);
+        AlertDialog dialog = builder.show();
         tv.setOnClickListener((v) -> {
-            Utils.makeSysToast("选择图片");
-            alertDialog.dismiss();
+            dialog.dismiss();
+            Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+                @Override
+                public void onPermissionResult(Permiso.ResultSet resultSet) {
+                    if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        jumpToPicSelectPage();
+                    } else {
+                        Utils.makeSysToast("打开相册需要文件读取权限，请到应用权限中进行设置");
+                    }
+                }
+
+                @Override
+                public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+                    Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "打开相册需要文件读取权限，请到应用权限中进行设置", null, callback);
+                }
+            }, Manifest.permission.READ_EXTERNAL_STORAGE);
         });
-//        WindowManager m = getWindowManager();
-//        Display d = m.getDefaultDisplay();  //为获取屏幕宽、高
-//        android.view.WindowManager.LayoutParams p = alertDialog.getWindow().getAttributes();  //获取对话框当前的参数值
-//        p.height = tv.getHeight();   //高度设置为屏幕的0.3
-//        p.width = (int) (d.getWidth() * 0.8);    //宽度设置为屏幕的0.5
-////        alertDialog.getWindow().setAttributes(p);
-//        alertDialog.getWindow().setLayout(p.width, p.height);
-//        alertDialog.getWindow().setGravity(Gravity.CENTER_VERTICAL);
-        builder.show();
     }
 
+    private static final int REQUEST_CAMERA_CODE = 10;
+    private ArrayList<String> imagePaths = new ArrayList<>();
+
+    private void jumpToPicSelectPage() {
+        PhotoPickerIntent intent = new PhotoPickerIntent(this);
+        intent.setSelectModel(SelectModel.SINGLE);
+        intent.setShowCarema(true); // 是否显示拍照
+        intent.setMaxTotal(1); // 最多选择照片数量，默认为6
+        intent.setSelectedPaths(imagePaths); // 已选中的照片地址， 用于回显选中状态
+        startActivityForResult(intent, REQUEST_CAMERA_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                // 得到图片路径，根据type显示并上传
+                case REQUEST_CAMERA_CODE:
+                    ArrayList<String> list = data.getStringArrayListExtra(PhotoPickerActivity.EXTRA_RESULT);
+                    if (list != null && list.size() > 0) {
+                        String delUrl = changeHeadImgType == HEAD_IMG_TYPE_BG ? shortUser.headBgUrl : shortUser.headUrl;
+                        if(!TextUtils.isEmpty(delUrl)){
+                            BmobUtils.deleteBmobFile(new String[]{delUrl.split("_wh_")[0]});
+                        }
+                        imagePaths.clear();
+                        imagePaths.add(list.get(0));
+                        Glide.with(this).load(list.get(0).split("_wh_")[0]).into(changeHeadImgType == 0 ? ivHeadBg : ivHead);
+                        uploadPic(changeHeadImgType);
+                    }
+                    break;
+            }
+        }
+    }
+
+    //changeHeadImgType 0:相册封面  1:头像
+    private void uploadPic(int headIvType) {
+        String[] src = new String[imagePaths.size()];
+        imagePaths.toArray(src);
+        BmobFile.uploadBatch(imagePaths.toArray(src), new UploadBatchListener() {
+
+            @Override
+            public void onSuccess(List<BmobFile> files, List<String> urls) {
+                //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
+                //2、urls-上传文件的完整url地址
+                if (urls.size() == 1) {//如果数量相等，则代表文件全部上传完成
+                    //获取图片宽高，并保存
+                    for (int i = 0; i < urls.size(); i++) {
+                        urls.set(i, urls.get(i) + Utils.getImageUrlWithWidthHeight(src[i]));
+                    }
+                    if (headIvType == HEAD_IMG_TYPE_BG) {
+                        shortUser.headBgUrl = urls.get(0);
+                    } else {
+                        shortUser.headUrl = urls.get(0);
+                    }
+                    BmobUtils.updateUser(shortUser);
+                }
+            }
+
+            @Override
+            public void onError(int statuscode, String errormsg) {
+                //ShowToast("错误码"+statuscode +",错误描述："+errormsg);
+            }
+
+            @Override
+            public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+                //1、curIndex--表示当前第几个文件正在上传
+                //2、curPercent--表示当前上传文件的进度值（百分比）
+                //3、total--表示总的上传文件数
+                //4、totalPercent--表示总的上传进度（百分比）
+            }
+        });
+    }
 
     private LocationBean getLocationByIp(boolean isChinese) {
         LocationBean locationBean = null;
@@ -390,8 +486,20 @@ public class UserProfileActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-    public boolean isSelfProfile(){
-        String curId = App.currentUserProfile.getObjectId();
-        return  curId.equals(shortUser.id);
+    public boolean isSelfProfile() {
+        String curId = Utils.getCurrentShortUser().getObjectId();
+        return curId.equals(shortUser.getObjectId());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Permiso.getInstance().setActivity(this);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
     }
 }

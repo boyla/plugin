@@ -15,7 +15,7 @@ import top.wifistar.utils.Utils;
 
 public class OnTouchXRecyclerView extends XRecyclerView {
 
-    public OnTouchListener listener;
+    public OnTouchListener onTouchListener;
 
     public OnTouchXRecyclerView(Context context) {
         super(context);
@@ -32,8 +32,8 @@ public class OnTouchXRecyclerView extends XRecyclerView {
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         Utils.closeKeyboard((Activity) getContext());
-        if (listener != null)
-            listener.onTouch();
+        if (onTouchListener != null)
+            onTouchListener.onTouch();
         return super.onTouchEvent(ev);
     }
 

@@ -8,4 +8,10 @@ import top.wifistar.bean.bmob.Moment;
 
 public class PublishMomentEvent {
     public Moment moment;
+    //是否为模拟事件
+    public boolean isTempEvent;
+
+    public PublishMomentEvent(boolean isTempEvent) {
+        this.isTempEvent = isTempEvent;
+    }
 }

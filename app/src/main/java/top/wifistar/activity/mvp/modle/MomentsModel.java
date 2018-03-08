@@ -137,7 +137,7 @@ public class MomentsModel {
 //			}
 //
 //			protected void onMomentExecute(Object result) {
-//				listener.onSuccess();
+//				onTouchListener.onSuccess();
 //			}
 //		}.execute();
 

@@ -120,7 +120,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 ivBg.setImageResource(R.drawable.splash);
             }else{
                 ivBg.setImageResource(R.color.darkgray);
-                Glide.with(context).load(shortUser.headBgUrl).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
+                Glide.with(context).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
             }
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_moment, parent, false);
