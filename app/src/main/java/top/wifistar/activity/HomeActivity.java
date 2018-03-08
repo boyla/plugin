@@ -7,11 +7,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 import java.util.Map;
-import top.wifistar.app.App;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
@@ -19,6 +20,7 @@ import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
+
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_BLOG_DISCOVER;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CHATS;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CONNECTIONS;
@@ -38,7 +40,7 @@ public class HomeActivity extends ToolbarActivity {
         super.setContentView(R.layout.activity_main);
         topReminder = (TopReminder) findViewById(R.id.topReminder);
         bottomMenuView = (BottomMenuView) findViewById(R.id.bottomMenuView);
-        editTextBodyLl =  findViewById(R.id.editTextBodyLl);
+        editTextBodyLl = findViewById(R.id.editTextBodyLl);
         setToolbarTitle();
         EventUtils.registerEventBus(this);
         refreshPage();
@@ -51,16 +53,12 @@ public class HomeActivity extends ToolbarActivity {
 
 
     public static boolean isFirstLogin = false;
+
     protected void setToolbarTitle() {
         mToolbar.setNavigationIcon(null);
         mToolbar.setTitle("");
         tool_bar_frame.setVisibility(View.VISIBLE);
         updateTitle();
-        if(isFirstLogin){
-            App.getHandler().postDelayed(() -> Utils.setUserSelfAvatar(mCustomLogo),1234);
-        }else{
-            Utils.setUserSelfAvatar(mCustomLogo);
-        }
         invalidateOptionsMenu();
     }
 
@@ -177,6 +175,7 @@ public class HomeActivity extends ToolbarActivity {
     public interface OnSharedViewListener {
         void onSharedViewListener(View[] views, int enterPosition);
     }
+
     private View[] sharedViews;
     private int exitPosition;
     private int enterPosition;

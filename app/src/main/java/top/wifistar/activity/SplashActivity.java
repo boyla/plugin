@@ -492,7 +492,6 @@ public class SplashActivity extends BaseActivity {
                                     }
                                 });
                                 generateNewUser(profileId);
-
                                 ACache.get(context).put("CURRENT_USER_" + bmobUser.getObjectId(), bmobUser);
                                 ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
                                 loadingDialog.dismiss();
@@ -512,7 +511,6 @@ public class SplashActivity extends BaseActivity {
                             loadingDialog.dismiss();
                             count++;
                             updateUser(null);
-                            goToMain();
                         }
                     });
 
@@ -529,6 +527,7 @@ public class SplashActivity extends BaseActivity {
                             } else {
                                 generateNewUser(bmobUser.getProfileId());
                             }
+                            goToMain();
                         }
                     });
                 }

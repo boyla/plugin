@@ -8,9 +8,24 @@
 
     <include layout="@layout/photopicker_toolbar" />
 
-    <com.lidong.photopicker.widget.ViewPagerFixed
-        android:id="@+id/vp_photos"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <com.lidong.photopicker.widget.ViewPagerFixed
+            android:id="@+id/vp_photos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/tvCrop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="裁切"
+            android:textColor="#FFFFFF"
+            android:background="#c0000000"
+            android:layout_gravity="left|bottom"/>
+    </FrameLayout>
 
 </LinearLayout>

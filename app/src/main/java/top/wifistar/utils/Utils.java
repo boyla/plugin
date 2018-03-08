@@ -1082,7 +1082,7 @@ public class Utils {
     }
 
     public static void updateUserFromProfile(User user) {
-        App.getHandler().postDelayed(() -> {
+        App.getHandler().post(() -> {
             UserProfile profile = App.currentUserProfile;
             User res;
             if (user == null) {
@@ -1093,7 +1093,7 @@ public class Utils {
             } else {
                 BmobUtils.updateUser(user);
             }
-        }, 111);
+        });
     }
 
     public static User getCurrentShortUser() {
