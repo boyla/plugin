@@ -38,17 +38,20 @@ public class HomeActivity extends ToolbarActivity {
     protected String currentPageStr = null;
     boolean isFirstIn = true;
     public List<ImageView> selfAvatarsInMomentList = new ArrayList<>();
+    public static HomeActivity INSTANCE;
 
     @Override
     protected void initUI() {
         super.setContentView(R.layout.activity_main);
+        INSTANCE = this;
+        refreshTopAvatar();
         topReminder = (TopReminder) findViewById(R.id.topReminder);
         bottomMenuView = (BottomMenuView) findViewById(R.id.bottomMenuView);
         editTextBodyLl = findViewById(R.id.editTextBodyLl);
         setToolbarTitle();
         EventUtils.registerEventBus(this);
         refreshPage();
-        Utils.setUserSelfAvatar(mCustomLogo);
+        selfAvatarsInMomentList.add(mCustomLogo);
     }
 
     @Override
@@ -83,6 +86,10 @@ public class HomeActivity extends ToolbarActivity {
         for (ImageView item : selfAvatarsInMomentList) {
             Utils.setUserAvatar(Utils.getCurrentShortUser(),item);
         }
+    }
+
+    public void refreshTopAvatar() {
+            Utils.setUserSelfAvatar(mCustomLogo);
     }
 
     public void reSetAvatarList(){

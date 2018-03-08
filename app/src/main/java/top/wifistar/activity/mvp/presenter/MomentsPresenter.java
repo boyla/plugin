@@ -1,6 +1,5 @@
 package top.wifistar.activity.mvp.presenter;
 
-import android.text.TextUtils;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -9,22 +8,18 @@ import java.util.List;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import io.realm.RealmObject;
 import io.realm.RealmResults;
 import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.activity.mvp.modle.MomentsModel;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
-import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.MomentRealm;
-import top.wifistar.utils.DatasUtil;
 import top.wifistar.utils.Utils;
 
 import static top.wifistar.fragment.MomentsFragment.TYPE_PULLDOWNREFRESH;
-import static top.wifistar.fragment.MomentsFragment.TYPE_PULLUPMORE;
 
 
 /**
@@ -98,13 +93,13 @@ public class MomentsPresenter implements MomentsContract.Presenter {
      * @Title: deleteMoment
      * @Description: 删除动态
      */
-    public void deleteMoment(final String momentId) {
+    public void deleteMoment(final String momentId,int position) {
         momentsModel.deleteMoment(momentId, new IDataRequestListener() {
 
             @Override
             public void onSuccess() {
                 if (view != null) {
-                    view.update2DeleteCircle(momentId);
+                    view.update2DeleteMoment(momentId,position);
                 }
             }
         });

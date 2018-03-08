@@ -60,7 +60,7 @@ import static top.wifistar.activity.mvp.presenter.MomentsPresenter.NO_MORE_DATA;
  * Created by hasee on 2017/4/8.
  */
 
-public class MomentsFragment extends BaseFragment implements MomentsContract.View{
+public class MomentsFragment extends BaseFragment implements MomentsContract.View {
 
     //TextView tvNoData;
 
@@ -155,7 +155,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-                ((HomeActivity)mContext).reSetAvatarList();
+                ((HomeActivity) mContext).reSetAvatarList();
                 presenter.loadData(TYPE_PULLDOWNREFRESH);
             }
 
@@ -211,14 +211,18 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     }
 
     @Override
-    public void update2DeleteCircle(String momentId) {
+    public void update2DeleteMoment(String momentId, int position) {
         List<Moment> moments = momentAdapter.getDatas();
         for (int i = 0; i < moments.size(); i++) {
             if (momentId.equals(moments.get(i).getObjectId())) {
                 Moment moment = moments.remove(i);
+                momentAdapter.notifyItemRemoved(position);
+                if(position != moments.size()){
+                    momentAdapter.notifyItemRangeChanged(position, moments.size() - position);
+                }
                 if (!TextUtils.isEmpty(moment.getPhotos())) {
                     String[] urls = moment.getPhotos().split(",");
-                    for(int index = 0; index < urls.length; index++){
+                    for (int index = 0; index < urls.length; index++) {
                         urls[index] = urls[index].split("_wh_")[0];
                     }
                     BmobFile.deleteBatch(urls, new DeleteBatchListener() {
@@ -238,15 +242,13 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                     });
                 }
                 //momentAdapter.notifyDataSetChanged();
-                momentAdapter.notifyItemRemoved(i + 2);
-                momentAdapter.notifyItemRangeChanged(i + 2, momentAdapter.getItemCount());
+                if (momentAdapter.getDatas().size() == 0) {
+                    progressCombineView.showEmpty(null, "", "没有动态数据，认识更多朋友吧");
+                }
                 return;
             }
-            break;
         }
-        if(momentAdapter.getDatas().size() == 0){
-            progressCombineView.showEmpty(null, "", "没有动态数据，认识更多朋友吧");
-        }
+
     }
 
     @Override
@@ -487,18 +489,19 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     }
 
     Moment temp;
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNewMoment(PublishMomentEvent event) {
-        if(event.isTempEvent){
-            if(momentAdapter.getDatas().size() == 0){
+        if (event.isTempEvent) {
+            if (momentAdapter.getDatas().size() == 0) {
                 progressCombineView.showContent();
                 recyclerView.refreshComplete();
             }
             momentAdapter.getDatas().add(0, event.moment);
             momentAdapter.notifyItemInserted(1);
-        }else{
-            ((Moment)momentAdapter.getDatas().get(0)).setObjectId(event.moment.getObjectId());
-            ((Moment)momentAdapter.getDatas().get(0)).setPhotos(event.moment.getPhotos());
+        } else {
+            ((Moment) momentAdapter.getDatas().get(0)).setObjectId(event.moment.getObjectId());
+            ((Moment) momentAdapter.getDatas().get(0)).setPhotos(event.moment.getPhotos());
         }
     }
 }

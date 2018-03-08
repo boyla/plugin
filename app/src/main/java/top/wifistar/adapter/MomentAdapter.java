@@ -455,7 +455,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 Utils.showSimpleDialog(context, "确定删除该动态？", (dialog, which) -> {
                     //删除
                     if (presenter != null) {
-                        presenter.deleteMoment(moment.getObjectId());
+                        presenter.deleteMoment(moment.getObjectId(),holder.getAdapterPosition());
                     }
                 });
             });

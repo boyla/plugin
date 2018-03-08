@@ -60,6 +60,7 @@ import cn.bmob.v3.listener.QueryListener;
 import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
+import top.wifistar.activity.HomeActivity;
 import top.wifistar.activity.UserProfileActivity;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
@@ -1082,7 +1083,7 @@ public class Utils {
     }
 
     public static void updateUserFromProfile(User user) {
-        App.getHandler().post(() -> {
+//        App.getHandler().post(() -> {
             UserProfile profile = App.currentUserProfile;
             User res;
             if (user == null) {
@@ -1092,8 +1093,11 @@ public class Utils {
                 BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
             } else {
                 BmobUtils.updateUser(user);
+                App.getHandler().postDelayed(() -> {
+                    HomeActivity.INSTANCE.refreshTopAvatar();
+                }, 566);
             }
-        });
+//        });
     }
 
     public static User getCurrentShortUser() {
@@ -1373,7 +1377,7 @@ public class Utils {
         task.equals(url);
     }
 
-    public static String getTimeByMills(){
+    public static String getTimeByMills() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return simpleDateFormat.format(new Date());
     }

@@ -294,7 +294,7 @@
 //	}
 //
 //	@Override
-//	public void update2DeleteCircle(String circleId) {
+//	public void update2DeleteMoment(String circleId) {
 //		List<Moment> circleItems = circleAdapter.getDatas();
 //		for(int i=0; i<circleItems.size(); i++){
 //			if(circleId.equals(circleItems.get(i).getObjectId())){

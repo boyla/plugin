@@ -41,7 +41,7 @@ public class EditProfileActivity extends ToolbarActivity {
 
     @Override
     protected void initTopBar() {
-
+        mToolbar.setNavigationIcon(R.drawable.back);
     }
 
     @Override
