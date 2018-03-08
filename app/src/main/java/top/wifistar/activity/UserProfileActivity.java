@@ -52,7 +52,9 @@ import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
+import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
 
@@ -295,6 +297,9 @@ public class UserProfileActivity extends AppCompatActivity {
                         shortUser.headUrl = urls.get(0);
                     }
                     BmobUtils.updateUser(shortUser);
+                    if (headIvType == HEAD_IMG_TYPE_AVATAR){
+                        EventUtils.post(new RefreshAvatarsEvent());
+                    }
                 }
             }
 

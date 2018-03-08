@@ -155,6 +155,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
+                ((HomeActivity)mContext).reSetAvatarList();
                 presenter.loadData(TYPE_PULLDOWNREFRESH);
             }
 

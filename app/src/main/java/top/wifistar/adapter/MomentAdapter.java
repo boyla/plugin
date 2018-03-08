@@ -116,9 +116,9 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             }
             // TODO: change moment title background
             User shortUser = Utils.getCurrentShortUser();
-            if(TextUtils.isEmpty(shortUser.headBgUrl)){
+            if (TextUtils.isEmpty(shortUser.headBgUrl)) {
                 ivBg.setImageResource(R.drawable.splash);
-            }else{
+            } else {
                 ivBg.setImageResource(R.color.darkgray);
                 Glide.with(context).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
             }
@@ -414,6 +414,11 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
+        if (Utils.getCurrentShortUser().getObjectId().equals(moment.getUser().getObjectId())) {
+            moment.setUser(Utils.getCurrentShortUser());
+            setUserToHolder(moment, holder);
+            return;
+        }
         if (moment.getUser() != null && moment.getUser().getName() != null) {
             setUserToHolder(moment, holder);
             return;
@@ -435,10 +440,16 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
-        holder.nameTv.setText(moment.getUser().getName());
-        Utils.setUserAvatar(moment.getUser(), holder.headIv);
+        User user = moment.getUser();
+        //如果头像是用户自己，保存至列表
+        if (Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())) {
+            ((HomeActivity) context).selfAvatarsInMomentList.add(holder.headIv);
+        }
+        holder.nameTv.setText(user.getName());
+        Utils.setUserAvatar(user, holder.headIv);
+
         //加载完User后
-        if (BUser.getCurrentUser().getProfileId().equals(moment.getUser().id)) {
+        if (BUser.getCurrentUser().getProfileId().equals(user.id)) {
             holder.deleteBtn.setVisibility(View.VISIBLE);
             holder.deleteBtn.setOnClickListener(v -> {
                 Utils.showSimpleDialog(context, "确定删除该动态？", (dialog, which) -> {

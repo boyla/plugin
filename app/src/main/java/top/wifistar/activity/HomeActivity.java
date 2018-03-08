@@ -11,13 +11,16 @@ import android.widget.ImageView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
+import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
@@ -34,6 +37,7 @@ public class HomeActivity extends ToolbarActivity {
     int lastBottomItem = BottomMenuView.Item_None;
     protected String currentPageStr = null;
     boolean isFirstIn = true;
+    public List<ImageView> selfAvatarsInMomentList = new ArrayList<>();
 
     @Override
     protected void initUI() {
@@ -44,6 +48,7 @@ public class HomeActivity extends ToolbarActivity {
         setToolbarTitle();
         EventUtils.registerEventBus(this);
         refreshPage();
+        Utils.setUserSelfAvatar(mCustomLogo);
     }
 
     @Override
@@ -65,13 +70,24 @@ public class HomeActivity extends ToolbarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Utils.setUserSelfAvatar(mCustomLogo);
     }
 
     @Override
     protected void onDestroy() {
         EventUtils.unregisterEventBus(this);
         super.onDestroy();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshAvatars(RefreshAvatarsEvent event) {
+        for (ImageView item : selfAvatarsInMomentList) {
+            Utils.setUserAvatar(Utils.getCurrentShortUser(),item);
+        }
+    }
+
+    public void reSetAvatarList(){
+        selfAvatarsInMomentList.clear();
+        selfAvatarsInMomentList.add(mCustomLogo);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
