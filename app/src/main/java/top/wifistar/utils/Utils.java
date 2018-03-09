@@ -1090,7 +1090,7 @@ public class Utils {
                 res = new User();
                 String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
                 res.setObjectId(objId);
-                BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.getAvatar(), profile.sex);
+                BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.sex);
             } else {
                 BmobUtils.updateUser(user);
                 App.getHandler().postDelayed(() -> {

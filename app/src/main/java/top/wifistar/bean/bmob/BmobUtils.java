@@ -13,11 +13,10 @@ import top.wifistar.realm.BaseRealmDao;
  */
 
 public class BmobUtils {
-    public static void updateUser(User user, String profileId, String nickName, String avatar, Integer sex) {
+    public static void updateUser(User user, String profileId, String nickName, Integer sex) {
 
         user.name = nickName;
         user.id = profileId;
-        user.headUrl = avatar;
         user.sex = sex;
         BaseRealmDao.insertOrUpdate(user.toRealmObject());
 

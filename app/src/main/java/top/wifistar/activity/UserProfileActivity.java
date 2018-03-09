@@ -144,17 +144,33 @@ public class UserProfileActivity extends AppCompatActivity {
         String able = getResources().getConfiguration().locale.getCountry();
         boolean isChinese = able.equals("CN");
         String selfCountry = Utils.getCurrentShortUser().country;
-        if (!TextUtils.isEmpty(selfCountry) && selfCountry.equals(shortUser.country)) {
+        if (isSelfProfile()) {
             if (TextUtils.isEmpty(shortUser.city)) {
-                shortUser.loaction = shortUser.region;
+                if (!TextUtils.isEmpty(shortUser.country) && shortUser.country.equals(shortUser.region) || TextUtils.isEmpty(shortUser.region)) {
+                    shortUser.loaction = shortUser.country;
+                } else {
+                    shortUser.loaction = shortUser.country + "丨" + shortUser.region;
+                }
             } else {
                 shortUser.loaction = shortUser.region + "丨" + shortUser.city;
             }
         } else {
-            if (TextUtils.isEmpty(shortUser.region)) {
-                shortUser.loaction = shortUser.country;
+            if (!TextUtils.isEmpty(selfCountry) && selfCountry.equals(shortUser.country)) {
+                if (TextUtils.isEmpty(shortUser.city)) {
+                    if (TextUtils.isEmpty(shortUser.region)) {
+                        shortUser.loaction = shortUser.country;
+                    } else {
+                        shortUser.loaction = shortUser.country + "丨" + shortUser.region;
+                    }
+                } else {
+                    shortUser.loaction = shortUser.region + "丨" + shortUser.city;
+                }
             } else {
-                shortUser.loaction = shortUser.country + "丨" + shortUser.region;
+                if (TextUtils.isEmpty(shortUser.region)) {
+                    shortUser.loaction = shortUser.country;
+                } else {
+                    shortUser.loaction = shortUser.country + "丨" + shortUser.region;
+                }
             }
         }
         tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
@@ -173,7 +189,11 @@ public class UserProfileActivity extends AppCompatActivity {
                     shortUser.region = locationBean.getRegion_name();
                     shortUser.city = locationBean.getCity();
                     if (TextUtils.isEmpty(shortUser.city)) {
-                        shortUser.loaction = shortUser.region;
+                        if (shortUser.country.equals(shortUser.region) || TextUtils.isEmpty(shortUser.region)) {
+                            shortUser.loaction = shortUser.country;
+                        } else {
+                            shortUser.loaction = shortUser.country + "丨" + shortUser.region;
+                        }
                     } else {
                         shortUser.loaction = shortUser.region + "丨" + shortUser.city;
                     }
@@ -263,7 +283,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     ArrayList<String> list = data.getStringArrayListExtra(PhotoPickerActivity.EXTRA_RESULT);
                     if (list != null && list.size() > 0) {
                         String delUrl = changeHeadImgType == HEAD_IMG_TYPE_BG ? shortUser.headBgUrl : shortUser.headUrl;
-                        if(!TextUtils.isEmpty(delUrl)){
+                        if (!TextUtils.isEmpty(delUrl)) {
                             BmobUtils.deleteBmobFile(new String[]{delUrl.split("_wh_")[0]});
                         }
                         imagePaths.clear();
@@ -297,7 +317,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         shortUser.headUrl = urls.get(0);
                     }
                     BmobUtils.updateUser(shortUser);
-                    if (headIvType == HEAD_IMG_TYPE_AVATAR){
+                    if (headIvType == HEAD_IMG_TYPE_AVATAR) {
                         EventUtils.post(new RefreshAvatarsEvent());
                     }
                 }
