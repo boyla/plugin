@@ -505,6 +505,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         } else {
             ((Moment) momentAdapter.getDatas().get(0)).setObjectId(event.moment.getObjectId());
             ((Moment) momentAdapter.getDatas().get(0)).setPhotos(event.moment.getPhotos());
+            BaseRealmDao.insertOrUpdate(((Moment) momentAdapter.getDatas().get(0)).toRealmObject());
         }
     }
 }

@@ -38,6 +38,7 @@ import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
+import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.event.PublishMomentEvent;
@@ -242,8 +243,10 @@ public class PublishMomentActivity extends ToolbarActivity {
         Moment momentToPost = new Moment();
         momentToPost.setType(momentType);
         momentToPost.setContent(textView.getText().toString());
+        String urlsStr = null;
         if (urls != null) {
-            momentToPost.setPhotos(TextUtils.join(",", urls));
+            urlsStr = TextUtils.join(",", urls);
+            momentToPost.setPhotos(urlsStr);
         }
         //set user
         User user = Utils.getCurrentShortUser();
@@ -252,6 +255,7 @@ public class PublishMomentActivity extends ToolbarActivity {
             return;
         }
         momentToPost.setUser(user);
+        String finalUrlsStr = urlsStr;
         momentToPost.save(new SaveListener<String>() {
 
             @Override
@@ -262,6 +266,27 @@ public class PublishMomentActivity extends ToolbarActivity {
                     PublishMomentEvent event = new PublishMomentEvent(false);
                     event.moment = momentToPost;
                     EventUtils.post(event);
+                    //更新最近相册
+                    if (urls != null) {
+                        User user = Utils.getCurrentShortUser();
+                        if (urls.size() > 3) {
+                            user.recentImgs = finalUrlsStr;
+                        } else {
+                            if (TextUtils.isEmpty(user.recentImgs)) {
+                                user.recentImgs = finalUrlsStr;
+                            } else {
+                                String[] temp = (finalUrlsStr + "," + user.recentImgs).split(",");
+                                if (temp.length < 5) {
+                                    user.recentImgs = TextUtils.join(",", temp);
+                                } else {
+                                    String[] temp2 = new String[4];
+                                    System.arraycopy(temp, 0, temp2, 0, 4);
+                                    user.recentImgs = TextUtils.join(",", temp2);
+                                }
+                            }
+                        }
+                        BmobUtils.updateUser(user);
+                    }
                 } else {
                     Utils.showToast("发布动态失败：" + e.getMessage());
                 }

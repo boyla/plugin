@@ -22,6 +22,11 @@ public class User extends BmobObject implements ToRealmObject {
 	public String region;
 	public String city;
 	public String headBgUrl;
+	public String recentImgs;
+	public String startWord1;
+	public String startWord2;
+	public String startWord3;
+	public String selfIntroduce;
 
 	public User(){}
 
@@ -75,6 +80,11 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.region = region;
 		realm.city = city;
 		realm.headBgUrl = headBgUrl;
+		realm.recentImgs = recentImgs;
+		realm.startWord1 = startWord1;
+		realm.startWord2 = startWord2;
+		realm.startWord3 = startWord3;
+		realm.selfIntroduce = selfIntroduce;
 		return realm;
 	}
 }

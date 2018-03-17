@@ -71,6 +71,8 @@
     <color name="text_dark">#fa4d4d4d</color>
     <color name="text_gray">#ff959aa1</color>
     <color name="activity_bg">#fff8f8f8</color>
+    <color name="activity_bg2">#fff0f5ff</color>
+    <color name="activity_bg_dark">#ee000000</color>
 
     <color name="text_subtitle_color">#777777</color>
     <color name="button_diable">#949494</color>

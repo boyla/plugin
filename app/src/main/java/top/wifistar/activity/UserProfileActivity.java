@@ -45,7 +45,6 @@ import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 
-import top.wifistar.app.App;
 import top.wifistar.bean.LocationBean;
 import top.wifistar.bean.CNLocationBean;
 import top.wifistar.bean.bmob.BmobUtils;
@@ -53,7 +52,6 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
-import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
@@ -65,15 +63,15 @@ import top.wifistar.utils.Utils;
 public class UserProfileActivity extends AppCompatActivity {
 
     private User shortUser;
-    ImageView ivHead, ivHeadBg;
+    ImageView ivHead, ivHeadBg, ivRecentPic1, ivRecentPic2, ivRecentPic3, ivRecentPic4;
     private Toolbar mToolbar;
     private View mViewNeedOffset;
     ObservableScrollView scrollview;
     LinearLayout llDetail;
     View toolbar, vSendMail;
-    LinearLayout llHeadAndInfo, llInfo, llEditInfo;
+    LinearLayout llHeadAndInfo, llInfo, llEditInfo, llMoments;
     View flUp, vSex;
-    TextView tvAddFan, tvInfo, tvName;
+    TextView tvAddFan, tvInfo, tvName,tvSelfIntro,tvStartWord1;
 
 
     @Override
@@ -92,12 +90,20 @@ public class UserProfileActivity extends AppCompatActivity {
         llInfo = (LinearLayout) findViewById(R.id.llInfo);
         flUp = findViewById(R.id.flUp);
         vSex = findViewById(R.id.vSex);
+        llMoments = (LinearLayout) findViewById(R.id.llMoments);
         tvName = (TextView) findViewById(R.id.tvName);
         tvInfo = (TextView) findViewById(R.id.tvInfo);
+        tvSelfIntro = (TextView) findViewById(R.id.tvSelfIntro);
+        tvStartWord1 = (TextView) findViewById(R.id.tvStartWord1);
         llEditInfo = (LinearLayout) findViewById(R.id.llEditInfo);
         tvAddFan = (TextView) findViewById(R.id.tvAddFan);
         vSendMail = findViewById(R.id.vSendMail);
         ivHeadBg = (ImageView) findViewById(R.id.ivHeadBg);
+        ivRecentPic1 = (ImageView) findViewById(R.id.ivRecentPic1);
+        ivRecentPic2 = (ImageView) findViewById(R.id.ivRecentPic2);
+        ivRecentPic3 = (ImageView) findViewById(R.id.ivRecentPic3);
+        ivRecentPic4 = (ImageView) findViewById(R.id.ivRecentPic4);
+
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
@@ -213,6 +219,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 //TODO 私信
             });
         }
+        setUserImgsAndInfo();
     }
 
     private static final int HEAD_IMG_TYPE_AVATAR = 1;
@@ -526,5 +533,27 @@ public class UserProfileActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    private void setUserImgsAndInfo() {
+        if (TextUtils.isEmpty(shortUser.recentImgs)) {
+            llMoments.setVisibility(View.GONE);
+        } else {
+            ImageView[] ivList = new ImageView[]{ivRecentPic1,ivRecentPic2,ivRecentPic3,ivRecentPic4};
+            String[] urls = shortUser.recentImgs.split(",");
+            for (int i = 0; i < urls.length; i++) {
+                if(i == ivList.length){
+                    break;
+                }
+                Glide.with(this).load(urls[i].split("_wh_")[0]).into(ivList[i]);
+            }
+        }
+
+        if(!TextUtils.isEmpty(shortUser.selfIntroduce)){
+            tvSelfIntro.setText(shortUser.selfIntroduce);
+        }
+        if(!TextUtils.isEmpty(shortUser.startWord1)){
+            tvStartWord1.setText(shortUser.startWord1);
+        }
     }
 }

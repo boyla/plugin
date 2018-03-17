@@ -189,7 +189,11 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     break;
                 case MomentViewHolder.TYPE_IMAGE:// 处理图片
                     if (holder instanceof ImageViewHolder) {
-                        final List<String> photos = Arrays.asList(moment.getPhotos().split(","));
+                    String photosStr = "";
+                    if(!TextUtils.isEmpty(moment.getPhotos())){
+                        photosStr = moment.getPhotos();
+                    }
+                        final List<String> photos = Arrays.asList(photosStr.split(","));
                         if (photos != null && photos.size() > 0) {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.VISIBLE);
                             ((ImageViewHolder) holder).multiImageView.setAdapterPosition(position);
@@ -336,8 +340,10 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             refreshLikeListAndCommentList(moment, holder, dataPosition);
             return;
         }
+        if(TextUtils.isEmpty(moment.getObjectId())){
+            return;
+        }
         BmobQuery<Comment> query = new BmobQuery<Comment>();
-
         query.addWhereEqualTo("momentId", moment.getObjectId());
 //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(50);

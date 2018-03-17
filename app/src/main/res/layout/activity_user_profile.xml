@@ -53,8 +53,8 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
                         android:layout_gravity="center"
+                        android:layout_marginTop="3dp"
                         android:orientation="horizontal">
 
                         <TextView
@@ -62,19 +62,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:gravity="center"
                             android:drawablePadding="10dp"
+                            android:gravity="center"
                             android:text="大哥"
                             android:textColor="@color/white"
                             android:textSize="16sp" />
 
                         <View
                             android:id="@+id/vSex"
-                            android:background="@drawable/sex_male"
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
                             android:layout_gravity="center"
                             android:layout_marginLeft="5dp"
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"/>
+                            android:background="@drawable/sex_male" />
                     </LinearLayout>
 
                     <TextView
@@ -133,9 +133,9 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="15dp"
                         android:background="@drawable/white_round_rectangle"
-                        android:gravity="center"
                         android:clickable="true"
                         android:focusable="true"
+                        android:gravity="center"
                         android:orientation="horizontal"
                         android:paddingLeft="20dp"
                         android:paddingRight="14dp">
@@ -164,8 +164,105 @@
                 android:id="@+id/llDetail"
                 android:layout_width="match_parent"
                 android:layout_height="290dp"
-                android:background="@color/activity_bg"
-                android:orientation="vertical" />
+                android:background="@color/activity_bg2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvStartWord1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="25dp"
+                    android:text="所有命运馈赠的礼物，早已在暗中标好了价格"
+                    android:gravity="center"
+                    android:textColor="#000000"
+                    android:textSize="17sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/divider_line_default_color" />
+
+                <LinearLayout
+                    android:id="@+id/llMoments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:background="@color/activity_bg_dark"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="相册"
+                        android:layout_marginRight="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="#000000"
+                        android:textSize="15sp" />
+
+                    <top.wifistar.customview.SquareImageView
+                        android:id="@+id/ivRecentPic1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:scaleType="centerCrop" />
+
+                    <top.wifistar.customview.SquareImageView
+                        android:id="@+id/ivRecentPic2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:scaleType="centerCrop"
+                       />
+
+                    <top.wifistar.customview.SquareImageView
+                        android:id="@+id/ivRecentPic3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:scaleType="centerCrop"
+                        />
+
+                    <top.wifistar.customview.SquareImageView
+                        android:id="@+id/ivRecentPic4"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="5dp"
+                        android:scaleType="centerCrop"
+                        />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.3dp"
+                    android:background="@color/divider_line_default_color"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:text="个人介绍"
+                    android:textColor="#000000"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/tvSelfIntro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:text="这个人太懒了，什么也没留下"
+                    android:textColor="@color/text_default_color"
+                    android:textSize="14sp" />
+            </LinearLayout>
         </LinearLayout>
     </top.wifistar.customview.ObservableScrollView>
 
