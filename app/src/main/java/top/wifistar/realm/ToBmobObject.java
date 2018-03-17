@@ -8,4 +8,5 @@ import cn.bmob.v3.BmobObject;
 
 public interface ToBmobObject {
     BmobObject toBmobObject();
+    String getRealmId();
 }

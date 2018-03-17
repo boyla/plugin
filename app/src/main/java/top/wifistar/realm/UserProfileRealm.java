@@ -189,6 +189,11 @@ public class UserProfileRealm extends RealmObject implements ToBmobObject{
     }
 
     @Override
+    public String getRealmId() {
+        return objectId;
+    }
+
+    @Override
     public BmobObject toBmobObject() {
         UserProfile userProfile = new UserProfile();
         userProfile.setObjectId(objectId);

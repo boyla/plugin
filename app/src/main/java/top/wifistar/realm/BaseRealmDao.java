@@ -203,7 +203,7 @@ public class BaseRealmDao {
      * @param id          id字段值
      * @return
      */
-    public boolean deleteById(Class<? extends RealmObject> clazz, String idFieldName, int id) {
+    public static boolean deleteById(Class<? extends RealmObject> clazz, String idFieldName, int id) {
         try {
             realm.beginTransaction();
             realm.where(clazz).equalTo(idFieldName, id).findAll().deleteFirstFromRealm();

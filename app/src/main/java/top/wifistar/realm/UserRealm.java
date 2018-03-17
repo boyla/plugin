@@ -38,6 +38,11 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	}
 
 	@Override
+	public String getRealmId() {
+		return objectId;
+	}
+
+	@Override
 	public User toBmobObject() {
 		User user = new User();
 		user.name = name;

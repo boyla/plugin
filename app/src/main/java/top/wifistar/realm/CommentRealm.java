@@ -20,6 +20,11 @@ public class CommentRealm extends RealmObject implements ToBmobObject {
     public String objectId;
 
     @Override
+    public String getRealmId() {
+        return objectId;
+    }
+
+    @Override
     public Comment toBmobObject() {
         Comment comment = new Comment();
         comment.setObjectId(objectId);

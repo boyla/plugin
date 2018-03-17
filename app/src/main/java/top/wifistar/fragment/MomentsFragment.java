@@ -50,8 +50,10 @@ import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.TitleBar;
 import top.wifistar.dialog.UpLoadDialog;
 import top.wifistar.event.PublishMomentEvent;
+import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.CommonUtils;
 import top.wifistar.utils.EventUtils;
+import top.wifistar.utils.RealmUtils;
 import top.wifistar.utils.Utils;
 
 import static top.wifistar.activity.mvp.presenter.MomentsPresenter.NO_MORE_DATA;
@@ -216,6 +218,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         for (int i = 0; i < moments.size(); i++) {
             if (momentId.equals(moments.get(i).getObjectId())) {
                 Moment moment = moments.remove(i);
+                RealmUtils.deleteFromRealmByObjId(moment.toRealmObject());
                 momentAdapter.notifyItemRemoved(position);
                 if(position != moments.size()){
                     momentAdapter.notifyItemRangeChanged(position, moments.size() - position);

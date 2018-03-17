@@ -29,6 +29,12 @@ public class MomentRealm extends RealmObject implements ToBmobObject{
 
 	public boolean isExpand;
 
+
+	@Override
+	public String getRealmId() {
+		return objectId;
+	}
+
 	@Override
 	public Moment toBmobObject() {
 		Moment moment = new Moment();
