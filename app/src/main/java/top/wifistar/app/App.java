@@ -17,6 +17,8 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.listener.BmobIMMessageHandler;
 import cn.bmob.v3.Bmob;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -130,6 +132,8 @@ public class App extends MultiDexApplication {
 
         //第一：默认初始化
         Bmob.initialize(this, "15210abb365601ec97b87f55b1efa0d4");
+        BmobIM.init(this);
+        BmobIM.registerDefaultMessageHandler(new BmobIMMessageHandler());
 
 
         //第二：自v3.4.7版本开始,设置BmobConfig,允许设置请求超时时间、文件分片上传时每片的大小、文件的过期时间(单位为秒)，

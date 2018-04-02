@@ -56,6 +56,7 @@
     <color name="error_theme_background_color">#FF4949</color>
     <color name="success_theme_background_color">#7CE085</color>
     <color name="block_tip_bg">#E56060</color>
+    <color name="dialog_title_bg">#88FF571D</color>
 
     <!-- level color -->
     <color name="level_1">#46C01B</color>
@@ -72,7 +73,7 @@
     <color name="text_gray">#ff959aa1</color>
     <color name="activity_bg">#fff8f8f8</color>
     <color name="activity_bg2">#fff0f5ff</color>
-    <color name="activity_bg_dark">#ee000000</color>
+    <color name="activity_bg_dark">#11000000</color>
 
     <color name="text_subtitle_color">#777777</color>
     <color name="button_diable">#949494</color>

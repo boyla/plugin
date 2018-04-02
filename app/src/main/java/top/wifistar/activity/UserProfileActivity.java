@@ -71,7 +71,7 @@ public class UserProfileActivity extends AppCompatActivity {
     View toolbar, vSendMail;
     LinearLayout llHeadAndInfo, llInfo, llEditInfo, llMoments;
     View flUp, vSex;
-    TextView tvAddFan, tvInfo, tvName,tvSelfIntro,tvStartWord1;
+    TextView tvAddFan, tvInfo, tvName, tvSelfIntro, tvStartWord1;
 
 
     @Override
@@ -486,7 +486,8 @@ public class UserProfileActivity extends AppCompatActivity {
             }
             if (view instanceof CircleImageView) {
                 Drawable drawable = ((ImageView) view).getDrawable();
-                drawable.mutate().setAlpha(alph);
+                if (drawable != null)
+                    drawable.mutate().setAlpha(alph);
                 ((CircleImageView) view).setImageDrawable(drawable);
                 int rawColor = Utils.getLevelColor(this);
                 int borderColor = alph << 24 | Color.red(rawColor) << 16 | Color.green(rawColor) << 8 | Color.blue(rawColor);
@@ -539,20 +540,20 @@ public class UserProfileActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(shortUser.recentImgs)) {
             llMoments.setVisibility(View.GONE);
         } else {
-            ImageView[] ivList = new ImageView[]{ivRecentPic1,ivRecentPic2,ivRecentPic3,ivRecentPic4};
+            ImageView[] ivList = new ImageView[]{ivRecentPic1, ivRecentPic2, ivRecentPic3, ivRecentPic4};
             String[] urls = shortUser.recentImgs.split(",");
             for (int i = 0; i < urls.length; i++) {
-                if(i == ivList.length){
+                if (i == ivList.length) {
                     break;
                 }
                 Glide.with(this).load(urls[i].split("_wh_")[0]).into(ivList[i]);
             }
         }
 
-        if(!TextUtils.isEmpty(shortUser.selfIntroduce)){
+        if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
             tvSelfIntro.setText(shortUser.selfIntroduce);
         }
-        if(!TextUtils.isEmpty(shortUser.startWord1)){
+        if (!TextUtils.isEmpty(shortUser.startWord1)) {
             tvStartWord1.setText(shortUser.startWord1);
         }
     }

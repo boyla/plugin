@@ -23,6 +23,7 @@ import org.json.JSONArray;
 
 import cn.bmob.v3.BmobUser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -82,10 +83,7 @@ public class SplashActivity extends BaseActivity {
         ivBackground = (ImageView) findViewById(R.id.ivBackground);
         topReminder = (TopReminder) findViewById(R.id.topReminder);
         context = this;
-        String[] strs = getResources().getStringArray(R.array.splash_word);
-        if (strs.length > 0) {
-            tvWelcome.setText(strs[new Random().nextInt(strs.length)]);
-        }
+        setSplashWord();
         String cacheToken = ACache.get(this).getAsString("token");
         String username = ACache.get(this).getAsString("username");
         String password = ACache.get(this).getAsString("password");
@@ -111,6 +109,29 @@ public class SplashActivity extends BaseActivity {
             canLogin = true;
         }
 
+    }
+
+    private void setSplashWord() {
+        String[] originStrs = getResources().getStringArray(R.array.splash_word);
+        ArrayList<String> userStrs = new ArrayList();
+        if(Utils.getCurrentShortUser()!=null){
+            if(!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord1)){
+                userStrs.add(Utils.getCurrentShortUser().startWord1);
+            }
+            if(!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord2)){
+                userStrs.add(Utils.getCurrentShortUser().startWord2);
+            }
+            if(!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord3)){
+                userStrs.add(Utils.getCurrentShortUser().startWord3);
+            }
+            if(userStrs.size()>0){
+                originStrs = new String[userStrs.size()];
+                originStrs = userStrs.toArray(originStrs);
+            }
+        }
+        if (originStrs.length > 0) {
+            tvWelcome.setText(originStrs[new Random().nextInt(originStrs.length)]);
+        }
     }
 
 

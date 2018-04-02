@@ -20,7 +20,7 @@
             <FrameLayout
                 android:id="@+id/flUp"
                 android:layout_width="match_parent"
-                android:layout_height="280dp">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/ivHeadBg"
@@ -35,7 +35,7 @@
 
                 <LinearLayout
                     android:id="@+id/llHeadAndInfo"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="15dp"
@@ -66,7 +66,7 @@
                             android:gravity="center"
                             android:text="大哥"
                             android:textColor="@color/white"
-                            android:textSize="16sp" />
+                            android:textSize="17sp" />
 
                         <View
                             android:id="@+id/vSex"
@@ -76,6 +76,17 @@
                             android:layout_marginLeft="5dp"
                             android:background="@drawable/sex_male" />
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvStartWord1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="5dp"
+                        android:text="所有命运馈赠的礼物，早已在暗中标好了价格"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:textSize="15sp" />
 
                     <TextView
                         android:id="@+id/tvInfo"
@@ -132,6 +143,7 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"
                         android:background="@drawable/white_round_rectangle"
                         android:clickable="true"
                         android:focusable="true"
@@ -167,16 +179,6 @@
                 android:background="@color/activity_bg2"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvStartWord1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="25dp"
-                    android:text="所有命运馈赠的礼物，早已在暗中标好了价格"
-                    android:gravity="center"
-                    android:textColor="#000000"
-                    android:textSize="17sp" />
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.3dp"
@@ -190,8 +192,8 @@
                     android:background="@color/activity_bg_dark"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp">
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp">
 
                     <TextView
                         android:layout_width="wrap_content"
