@@ -114,17 +114,17 @@ public class SplashActivity extends BaseActivity {
     private void setSplashWord() {
         String[] originStrs = getResources().getStringArray(R.array.splash_word);
         ArrayList<String> userStrs = new ArrayList();
-        if(Utils.getCurrentShortUser()!=null){
-            if(!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord1)){
+        if (Utils.getCurrentShortUser() != null) {
+            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord1)) {
                 userStrs.add(Utils.getCurrentShortUser().startWord1);
             }
-            if(!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord2)){
+            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord2)) {
                 userStrs.add(Utils.getCurrentShortUser().startWord2);
             }
-            if(!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord3)){
+            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord3)) {
                 userStrs.add(Utils.getCurrentShortUser().startWord3);
             }
-            if(userStrs.size()>0){
+            if (userStrs.size() > 0) {
                 originStrs = new String[userStrs.size()];
                 originStrs = userStrs.toArray(originStrs);
             }
@@ -188,7 +188,6 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
         ivBackground.clearAnimation();
         if (canLogin) {
             //RongIM.connect(cacheToken, RongIMListener.getInstance().getConnectCallback());
@@ -305,7 +304,7 @@ public class SplashActivity extends BaseActivity {
                     Utils.showToast(topReminder, getResources().getString(R.string.register_success), TopReminder.THEME_SUCCESS);
                     backLogin(llRegister);
                     //add profile by buser
-                    addProfile(resultUser,nickname);
+                    addProfile(resultUser, nickname);
                 } else {
                     Utils.showToast(topReminder, e.getMessage());
                 }
@@ -314,7 +313,7 @@ public class SplashActivity extends BaseActivity {
 
     }
 
-    private void addProfile(BUser bmobUser,String nickname){
+    private void addProfile(BUser bmobUser, String nickname) {
         final UserProfile profile = new UserProfile();
         profile.setUserId(bmobUser.getObjectId());
         profile.setNickName(nickname);
@@ -338,7 +337,6 @@ public class SplashActivity extends BaseActivity {
                     ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
                     App.currentUserProfile = profile;
                     generateNewUser(profileId);
-
                 }
             }
         });
@@ -496,7 +494,7 @@ public class SplashActivity extends BaseActivity {
                 if (TextUtils.isEmpty(bmobUser.getProfileId())) {
                     final UserProfile profile = new UserProfile();
                     profile.setUserId(bmobUser.getObjectId());
-                    profile.setNickName(nickname);
+                    profile.setNickName(username.substring(0, (username.length() - 2)));
                     profile.save(new SaveListener<String>() {
                         @Override
                         public void done(String profileId, BmobException e) {
@@ -531,7 +529,7 @@ public class SplashActivity extends BaseActivity {
                             ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), userProfile);
                             loadingDialog.dismiss();
                             count++;
-                            updateUser(null);
+                            updateUserAndJump(null);
                         }
                     });
 
@@ -544,11 +542,11 @@ public class SplashActivity extends BaseActivity {
                                 String objId = list.get(0).getObjectId();
                                 ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                                 count++;
-                                updateUser(list.get(0));
+                                updateUserAndJump(list.get(0));
                             } else {
                                 generateNewUser(bmobUser.getProfileId());
+                                goToMain();
                             }
-                            goToMain();
                         }
                     });
                 }
@@ -556,9 +554,10 @@ public class SplashActivity extends BaseActivity {
         });
     }
 
-    private void updateUser(User user) {
+    private void updateUserAndJump(User user) {
         if (count == 2) {
             Utils.updateUserFromProfile(user);
+            goToMain();
         }
     }
 

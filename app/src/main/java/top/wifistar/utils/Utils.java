@@ -1083,24 +1083,36 @@ public class Utils {
     }
 
     public static void updateUserFromProfile(User user) {
-//        App.getHandler().post(() -> {
-            UserProfile profile = App.currentUserProfile;
-            User res;
+        UserProfile profile = App.currentUserProfile;
+        User res;
+        if (user == null) {
+            user = Utils.getCurrentShortUser();
+            if (user == null){
+                try {
+                    Thread.sleep(300);
+                    user = Utils.getCurrentShortUser();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             if (user == null) {
                 res = new User();
                 String objId = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
                 res.setObjectId(objId);
                 BmobUtils.updateUser(res, profile.getObjectId(), profile.getNickName(), profile.sex);
-            } else {
-                BmobUtils.updateUser(user);
-                App.getHandler().postDelayed(() -> {
-                    HomeActivity.INSTANCE.refreshTopAvatar();
-                }, 566);
             }
-//        });
+        } else {
+            BmobUtils.updateUser(user);
+        }
+        App.getHandler().postDelayed(() -> {
+            HomeActivity.INSTANCE.refreshTopAvatar();
+        }, 566);
     }
 
     public static User getCurrentShortUser() {
+        if (BUser.getCurrentUser() == null) {
+            return null;
+        }
         String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", id).findAll();
         if (dbData.isLoaded()) {

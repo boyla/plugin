@@ -45,10 +45,12 @@ import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 
+import top.wifistar.app.App;
 import top.wifistar.bean.LocationBean;
 import top.wifistar.bean.CNLocationBean;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
@@ -528,6 +530,25 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Permiso.getInstance().setActivity(this);
+        if(isSelfProfile()){
+            shortUser = Utils.getCurrentShortUser();
+            UserProfile userProfile = App.currentUserProfile;
+            tvName.setText(shortUser.getName());
+            userProfile.nickName = shortUser.getName();
+            userProfile.sex = shortUser.sex;
+            if (shortUser.sex == 1) {
+                vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
+            } else {
+                vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
+            }
+            if (!TextUtils.isEmpty(shortUser.startWord1)) {
+                tvStartWord1.setText(shortUser.startWord1);
+            }
+            tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
+            if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
+                tvSelfIntro.setText(shortUser.selfIntroduce);
+            }
+        }
     }
 
     @Override
