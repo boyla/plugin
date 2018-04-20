@@ -42,18 +42,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.datatype.BmobFile;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadBatchListener;
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 import top.wifistar.R;
 
 import top.wifistar.app.App;
 import top.wifistar.bean.LocationBean;
 import top.wifistar.bean.CNLocationBean;
 import top.wifistar.bean.bmob.BmobUtils;
+import top.wifistar.bean.bmob.Follow;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.FollowRealm;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
@@ -75,6 +83,9 @@ public class UserProfileActivity extends AppCompatActivity {
     View flUp, vSex;
     TextView tvAddFan, tvInfo, tvName, tvSelfIntro, tvStartWord1;
 
+    String follower;
+    String followed;
+    FollowRealm followRealm;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -214,14 +225,57 @@ public class UserProfileActivity extends AppCompatActivity {
         } else {
             llEditInfo.setVisibility(View.GONE);
             llInfo.setVisibility(View.VISIBLE);
+
             tvAddFan.setOnClickListener((v) -> {
-                //TODO 添加关注
+                if (followRealm != null) {
+                    //取消关注
+                    followRealm.toBmobObject().delete(new UpdateListener() {
+
+                        @Override
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                followRealm.deleteFromRealm();
+                                tvAddFan.setText("＋关注");
+                            } else {
+                                Utils.makeSysToast(e.getMessage());
+                            }
+                        }
+                    });
+                } else {
+                    //添加关注
+                    Follow follow = new Follow();
+                    follow.follower = follower;
+                    follow.followed = followed;
+                    follow.save(new SaveListener<String>() {
+                        @Override
+                        public void done(String s, BmobException e) {
+                            if (e == null) {
+                                follow.setObjectId(s);
+                                BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                                tvAddFan.setText("已关注");
+                            } else {
+                                Utils.makeSysToast(e.getMessage());
+                            }
+                        }
+                    });
+                }
+
             });
             vSendMail.setOnClickListener((v) -> {
                 //TODO 私信
             });
         }
         setUserImgsAndInfo();
+        initFollow();
+    }
+
+    private void initFollow() {
+        follower = Utils.getCurrentShortUser().getObjectId();
+        followed = shortUser.getObjectId();
+        followRealm = BaseRealmDao.realm.where(FollowRealm.class).equalTo("follower", follower).equalTo("followed", followed).findFirst();
+        if(followRealm!=null){
+            tvAddFan.setText("已关注");
+        }
     }
 
     private static final int HEAD_IMG_TYPE_AVATAR = 1;
@@ -530,7 +584,7 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Permiso.getInstance().setActivity(this);
-        if(isSelfProfile()){
+        if (isSelfProfile()) {
             shortUser = Utils.getCurrentShortUser();
             UserProfile userProfile = App.currentUserProfile;
             tvName.setText(shortUser.getName());
@@ -548,6 +602,7 @@ public class UserProfileActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
                 tvSelfIntro.setText(shortUser.selfIntroduce);
             }
+            userProfile.save();
         }
     }
 
