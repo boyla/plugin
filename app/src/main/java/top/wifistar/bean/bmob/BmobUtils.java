@@ -1,10 +1,12 @@
 package top.wifistar.bean.bmob;
 
 import android.util.Log;
-
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 import top.wifistar.realm.BaseRealmDao;
 
@@ -62,5 +64,25 @@ public class BmobUtils {
                 }
             }
         });
+    }
+
+    //查询单条数据
+    public static void querySingleUser(String objId,BmobDoneListener listener){
+        BmobQuery<User> query = new BmobQuery<>();
+        query.getObject(objId, new QueryListener<User>() {
+            @Override
+            public void done(User user, BmobException e) {
+                if(e==null){
+                    listener.onSuccess(user);
+                }else{
+                    listener.onFailure(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public interface BmobDoneListener<T extends BmobObject>{
+        void onSuccess(T res);
+        void onFailure(String msg);
     }
 }

@@ -17,6 +17,8 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.kongzue.dialog.v2.DialogSettings;
+
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.listener.BmobIMMessageHandler;
 import cn.bmob.v3.Bmob;
@@ -175,7 +177,7 @@ public class App extends MultiDexApplication {
 
 
         new DataBaseSyncTask(getDefaultDBInstallDir(), DB_NAME).execute(0);
-
+        DialogSettings.type = DialogSettings.TYPE_IOS;
 
     }
 

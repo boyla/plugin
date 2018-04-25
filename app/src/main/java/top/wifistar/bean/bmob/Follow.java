@@ -8,6 +8,7 @@ public class Follow extends BmobObject implements ToRealmObject {
 
     public String follower;
     public String followed;
+    public boolean isFollowing;
 
     public Follow(){}
 
@@ -44,6 +45,7 @@ public class Follow extends BmobObject implements ToRealmObject {
         FollowRealm realm = new FollowRealm();
         realm.follower = follower;
         realm.followed = followed;
+        realm.isFollowing = isFollowing;
         realm.objectId = getObjectId();
         return realm;
     }

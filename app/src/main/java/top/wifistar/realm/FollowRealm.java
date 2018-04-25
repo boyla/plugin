@@ -10,12 +10,14 @@ public class FollowRealm  extends RealmObject implements ToBmobObject{
     public String objectId;
     public String follower;
     public String followed;
+    public boolean isFollowing;
 
     @Override
     public Follow toBmobObject() {
         Follow bmob = new Follow();
         bmob.follower = follower;
         bmob.followed = followed;
+        bmob.isFollowing = isFollowing;
         bmob.setObjectId(objectId);
         return bmob;
     }

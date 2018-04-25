@@ -38,16 +38,21 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
 import cn.bmob.v3.listener.UploadBatchListener;
-import io.realm.RealmObject;
-import io.realm.RealmResults;
 import top.wifistar.R;
 
 import top.wifistar.app.App;
@@ -117,19 +122,26 @@ public class UserProfileActivity extends AppCompatActivity {
         ivRecentPic3 = (ImageView) findViewById(R.id.ivRecentPic3);
         ivRecentPic4 = (ImageView) findViewById(R.id.ivRecentPic4);
 
-
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
         ivHead = (ImageView) findViewById(R.id.ivHead);
         mToolbar.setTitle("");
 
-        Utils.setUserAvatar(shortUser, ivHead, false);
-        if (TextUtils.isEmpty(shortUser.headBgUrl)) {
-            ivHeadBg.setImageResource(R.drawable.splash);
-        } else {
-            ivHeadBg.setImageResource(R.color.darkgray);
-            Glide.with(this).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
-        }
+        showUserInfo(shortUser);
+        BmobUtils.querySingleUser(shortUser.getObjectId(),new BmobUtils.BmobDoneListener<User>() {
+            @Override
+            public void onSuccess(User res) {
+                shortUser = res;
+                BaseRealmDao.insertOrUpdate(shortUser.toRealmObject());
+                showUserInfo(shortUser);
+            }
+
+            @Override
+            public void onFailure(String msg) {
+                Log.d("querySingleBmob failed:",msg);
+            }
+        });
+
         if (isSelfProfile()) {
             ivHeadBg.setOnClickListener((v) -> {
                 changeHeadImgType = HEAD_IMG_TYPE_BG;
@@ -150,12 +162,6 @@ public class UserProfileActivity extends AppCompatActivity {
             setViewHeight();
         });
 
-        tvName.setText(shortUser.getName());
-        if (shortUser.sex == 1) {
-            vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
-        } else {
-            vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
-        }
         /**
          *     先查询 https://freegeoip.net/json/， 获取外网IP和英文地理位置
          *     如果当前手机是中文环境，再根据外网IP查询 http://ip.taobao.com/service/getIpInfo.php?ip=125.69.107.89
@@ -192,7 +198,6 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             }
         }
-        tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
 
         if (isSelfProfile()) {
             llEditInfo.setVisibility(View.VISIBLE);
@@ -217,7 +222,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         shortUser.loaction = shortUser.region + "丨" + shortUser.city;
                     }
                     tvInfo.post(() -> {
-                        tvInfo.setText(shortUser.age + ", " + shortUser.loaction);
+                        tvInfo.setText(getAgeByBirth(shortUser.birth) + ", " + shortUser.loaction);
                         BmobUtils.updateUser(shortUser);
                     });
                 }
@@ -226,15 +231,17 @@ public class UserProfileActivity extends AppCompatActivity {
             llEditInfo.setVisibility(View.GONE);
             llInfo.setVisibility(View.VISIBLE);
 
+            initFollow();
             tvAddFan.setOnClickListener((v) -> {
-                if (followRealm != null) {
+                if (followRealm != null && followRealm.isFollowing) {
                     //取消关注
-                    followRealm.toBmobObject().delete(new UpdateListener() {
-
+                    Follow follow = followRealm.toBmobObject();
+                    follow.isFollowing = false;
+                    follow.update(new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
-                                followRealm.deleteFromRealm();
+                                BaseRealmDao.insertOrUpdate(follow.toRealmObject());
                                 tvAddFan.setText("＋关注");
                             } else {
                                 Utils.makeSysToast(e.getMessage());
@@ -243,21 +250,39 @@ public class UserProfileActivity extends AppCompatActivity {
                     });
                 } else {
                     //添加关注
-                    Follow follow = new Follow();
-                    follow.follower = follower;
-                    follow.followed = followed;
-                    follow.save(new SaveListener<String>() {
-                        @Override
-                        public void done(String s, BmobException e) {
-                            if (e == null) {
-                                follow.setObjectId(s);
-                                BaseRealmDao.insertOrUpdate(follow.toRealmObject());
-                                tvAddFan.setText("已关注");
-                            } else {
-                                Utils.makeSysToast(e.getMessage());
+                    if(followRealm==null){
+                        Follow follow = new Follow();
+                        follow.follower = follower;
+                        follow.followed = followed;
+                        follow.isFollowing = true;
+                        follow.save(new SaveListener<String>() {
+                            @Override
+                            public void done(String s, BmobException e) {
+                                if (e == null) {
+                                    follow.setObjectId(s);
+                                    BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                                    tvAddFan.setText("已关注");
+                                } else {
+                                    Utils.makeSysToast(e.getMessage());
+                                }
                             }
-                        }
-                    });
+                        });
+                    }else{
+                        Follow follow = followRealm.toBmobObject();
+                        follow.isFollowing = true;
+                        follow.update(new UpdateListener() {
+                            @Override
+                            public void done(BmobException e) {
+                                if (e == null) {
+                                    BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                                    tvAddFan.setText("已关注");
+                                } else {
+                                    Utils.makeSysToast(e.getMessage());
+                                }
+                            }
+                        });
+                    }
+
                 }
 
             });
@@ -265,16 +290,82 @@ public class UserProfileActivity extends AppCompatActivity {
                 //TODO 私信
             });
         }
+    }
+
+    private void showUserInfo(User shortUser) {
+        Utils.setUserAvatar(shortUser, ivHead, false);
+        if (TextUtils.isEmpty(shortUser.headBgUrl)) {
+            ivHeadBg.setImageResource(R.color.darkgray);
+        } else {
+            ivHeadBg.setImageResource(R.color.darkgray);
+            Glide.with(this).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
+        }
+        tvName.setText(shortUser.getName());
+        if (shortUser.sex == 1) {
+            vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
+        } else {
+            vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
+        }
+
+        tvInfo.setText(getAgeByBirth(shortUser.birth) + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
         setUserImgsAndInfo();
-        initFollow();
+    }
+
+    private int getAgeByBirth(String birthStr) {
+        int age = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date birthDate;
+        try {
+             birthDate = sdf.parse(birthStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return age;
+        }
+        try {
+            Calendar now = Calendar.getInstance();
+            now.setTime(new Date());// 当前时间
+            Calendar birth = Calendar.getInstance();
+            birth.setTime(birthDate);
+            if (birth.after(now)) {//如果传入的时间，在当前时间的后面，返回0岁
+                age = 0;
+            } else {
+                age = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR);
+                if (now.get(Calendar.DAY_OF_YEAR) < birth.get(Calendar.DAY_OF_YEAR)) {
+                    age -= 1;
+                }
+            }
+            return age;
+        } catch (Exception e) {//兼容性更强,异常后返回数据
+            return age;
+        }
     }
 
     private void initFollow() {
         follower = Utils.getCurrentShortUser().getObjectId();
         followed = shortUser.getObjectId();
+        //from realm
         followRealm = BaseRealmDao.realm.where(FollowRealm.class).equalTo("follower", follower).equalTo("followed", followed).findFirst();
-        if(followRealm!=null){
-            tvAddFan.setText("已关注");
+        //from bmob
+        if(followRealm==null){
+            BmobQuery<Follow> query = new BmobQuery<>();
+            query.addWhereEqualTo("follower", follower);
+            query.addWhereEqualTo("followed", followed);
+            query.findObjects(new FindListener<Follow>() {
+                @Override
+                public void done(List<Follow> list, BmobException e) {
+                    if(e==null && list.size()>0){
+                        Follow follow = list.get(0);
+                        if(follow.isFollowing){
+                            tvAddFan.setText("已关注");
+                        }
+                        BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                    }
+                }
+            });
+        }else{
+            if(followRealm.isFollowing){
+                tvAddFan.setText("已关注");
+            }
         }
     }
 
@@ -598,7 +689,7 @@ public class UserProfileActivity extends AppCompatActivity {
             if (!TextUtils.isEmpty(shortUser.startWord1)) {
                 tvStartWord1.setText(shortUser.startWord1);
             }
-            tvInfo.setText(shortUser.age + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
+            tvInfo.setText(getAgeByBirth(shortUser.birth) + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
             if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
                 tvSelfIntro.setText(shortUser.selfIntroduce);
             }
