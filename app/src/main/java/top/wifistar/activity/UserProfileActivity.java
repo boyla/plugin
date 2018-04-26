@@ -27,6 +27,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
+import com.kongzue.dialog.v2.WaitDialog;
 import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.SelectModel;
 import com.lidong.photopicker.intent.PhotoPickerIntent;
@@ -233,6 +234,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
             initFollow();
             tvAddFan.setOnClickListener((v) -> {
+                WaitDialog waitDialog = WaitDialog.show(this,"请稍后...");
                 if (followRealm != null && followRealm.isFollowing) {
                     //取消关注
                     Follow follow = followRealm.toBmobObject();
@@ -240,6 +242,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     follow.update(new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
+                            waitDialog.dismiss();
                             if (e == null) {
                                 BaseRealmDao.insertOrUpdate(follow.toRealmObject());
                                 tvAddFan.setText("＋关注");
@@ -258,6 +261,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         follow.save(new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
+                                waitDialog.dismiss();
                                 if (e == null) {
                                     follow.setObjectId(s);
                                     BaseRealmDao.insertOrUpdate(follow.toRealmObject());
@@ -273,6 +277,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         follow.update(new UpdateListener() {
                             @Override
                             public void done(BmobException e) {
+                                waitDialog.dismiss();
                                 if (e == null) {
                                     BaseRealmDao.insertOrUpdate(follow.toRealmObject());
                                     tvAddFan.setText("已关注");
