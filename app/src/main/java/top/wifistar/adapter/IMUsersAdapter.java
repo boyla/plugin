@@ -2,6 +2,8 @@ package top.wifistar.adapter;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,32 +14,40 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import io.realm.RealmResults;
+import java.util.Date;
+import java.util.List;
+
 import top.wifistar.R;
-import top.wifistar.bean.IMUserRealm;
 import top.wifistar.customview.BadgeView;
+import top.wifistar.realm.UserRealm;
 import top.wifistar.utils.TimeUtils;
 import top.wifistar.utils.Utils;
 
-public class IMUsersAdapter extends BaseRealmAdapter<IMUserRealm> {
+public class IMUsersAdapter extends BaseRecycleViewAdapter {
 
 
     private Context mContext;
 
-    public IMUsersAdapter(Context context, RealmResults<IMUserRealm> datas) {
-        super(context, datas);
+    public IMUsersAdapter(Context context, List<UserRealm> datas) {
+        this.datas = datas;
         this.mContext = context;
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new ChildViewHolder(LayoutInflater.from(mContext).inflate(
                 R.layout.message_item_view, parent, false
         ));
     }
 
     @Override
-    protected void onBindViewHolder(BaseViewHolder baseHolder, final IMUserRealm imUser) {
+    public int getItemCount() {
+        return datas.size();
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder baseHolder, int position) {
+        UserRealm imUser = (UserRealm) datas.get(position);
         final ChildViewHolder textViewHolder = (ChildViewHolder) baseHolder;
         BadgeView badgeView = (BadgeView) textViewHolder.rlHeader.getTag();
         if (badgeView == null) {
@@ -52,45 +62,37 @@ public class IMUsersAdapter extends BaseRealmAdapter<IMUserRealm> {
             badgeView.setGravity(Gravity.CENTER);
             badgeView.setBadgePosition(BadgeView.POSITION_TOP_RIGHT);
         }
-        if (imUser.getNewMsgCount() > 0) {
-            badgeView.setText(imUser.getNewMsgCount() + "");
+        if (imUser.unReadNum > 0) {
+            badgeView.setText(imUser.unReadNum + "");
             badgeView.show();
         } else {
             badgeView.hide();
         }
 
-        if (("1").equals(imUser.getSendState())) {
+        if (!imUser.sendSuccess) {
             textViewHolder.message_send_failed.setVisibility(View.VISIBLE);
         } else {
             textViewHolder.message_send_failed.setVisibility(View.GONE);
         }
-        textViewHolder.mUserName.setText(imUser.getUserName());
-        textViewHolder.mHeadImg.setTag(imUser.getUserId());
-        if ("00000".equals(imUser.getUserId())) {
+        textViewHolder.mUserName.setText(imUser.name);
+        if ("00000".equals(imUser.getRealmId())) {
             //Glide 加载公众号头像
             textViewHolder.mUserName.setText("Subscription");
         } else {
-            Utils.setUserSelfAvatar(context, imUser, textViewHolder.mHeadImg);
-            textViewHolder.mUserName.setText(imUser.getUserName());
+            Utils.setUserAvatar(mContext, imUser, textViewHolder.mHeadImg);
         }
 
-        textViewHolder.mTime.setText(TimeUtils.transformTimeInside(imUser.getTime()));
-//        showMessageContent("image".equals(imUser.getMessage_type()) ? "[Photo]" : imUser.getBody(), textViewHolder.mMessageInfo);
-//        String draft = ScreenUtils.MessageDraftUtils.fetch(mContext, imUser.getUserid());
-//        if (!TextUtils.isEmpty(draft)) {
-//            Spannable sText = new SpannableString(mContext.getResources().getString(R.string.Draft) + " " + draft);
-//            sText.setSpan(new ForegroundColorSpan(mContext.getResources().getColor(R.color.red)), 0, 7, 0);
-//            textViewHolder.mMessageInfo.setTextHtml(sText, false);
-//        }
+        textViewHolder.mTime.setText(TimeUtils.transformTimeInside(new Date(imUser.updateTime)));
+        if(!TextUtils.isEmpty(imUser.lastMsg)){
+            showMessageContent(imUser.lastMsg,textViewHolder.mMessageInfo);
+        }
     }
 
     private void showMessageContent(String str, TextView textView) {
-
-            textView.setText(str);
-
+        textView.setText(str);
     }
 
-    static public class ChildViewHolder extends BaseViewHolder {
+    static public class ChildViewHolder extends RecyclerView.ViewHolder {
 
         LinearLayout mLinearLayout;
         ImageView mHeadImg;
@@ -114,7 +116,20 @@ public class IMUsersAdapter extends BaseRealmAdapter<IMUserRealm> {
             mLinearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_item);
             message_send_failed = (ImageView) itemView.findViewById(R.id.message_send_failed);
             rlHeader = (RelativeLayout) itemView.findViewById(R.id.mrlHeader);
+            //jump to conversation page
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
+                }
+            });
+            //delete or sth
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    return true;
+                }
+            });
         }
     }
 }

@@ -3,11 +3,13 @@ package top.wifistar.activity;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -15,6 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import cn.bmob.imdemo.event.RefreshEvent;
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.bean.BmobIMUserInfo;
+import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.newim.listener.ConnectListener;
+import cn.bmob.newim.listener.ConnectStatusChangeListener;
+import cn.bmob.v3.exception.BmobException;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
@@ -84,15 +94,15 @@ public class HomeActivity extends ToolbarActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshAvatars(RefreshAvatarsEvent event) {
         for (ImageView item : selfAvatarsInMomentList) {
-            Utils.setUserAvatar(Utils.getCurrentShortUser(),item);
+            Utils.setUserAvatar(Utils.getCurrentShortUser(), item);
         }
     }
 
     public void refreshTopAvatar() {
-            Utils.setUserSelfAvatar(mCustomLogo);
+        Utils.setUserAvatar(mCustomLogo);
     }
 
-    public void reSetAvatarList(){
+    public void reSetAvatarList() {
         selfAvatarsInMomentList.clear();
         selfAvatarsInMomentList.add(mCustomLogo);
     }

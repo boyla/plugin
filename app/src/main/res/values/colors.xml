@@ -11,6 +11,10 @@
     <color name="divider">#B6B6B6</color>
     <color name="line">#DDDDDD</color>
     <color name="white">#ffffffff</color>
+    <color name="bottom_menu_bgc">#fcfcfc</color>
+    <color name="chat_bgc">#f5f5f5</color>
+    <color name="chat_text">#1e1e1e</color>
+
 
     <color name="theme_tool_bar_text_color">@color/white</color>
     <color name="transparent">#00000000</color>

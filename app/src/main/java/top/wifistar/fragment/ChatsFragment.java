@@ -1,5 +1,6 @@
 package top.wifistar.fragment;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,38 +10,43 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.realm.RealmResults;
 import top.wifistar.R;
-import top.wifistar.adapter.BaseRealmAdapter;
+import top.wifistar.activity.HomeActivity;
 import top.wifistar.adapter.IMUsersAdapter;
-import top.wifistar.bean.IMUserRealm;
+import top.wifistar.customview.OnTouchXRecyclerView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.RecyclerViewDivider;
-import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.UserRealm;
 import top.wifistar.utils.EventUtils;
 
 /**
  * Created by hasee on 2017/4/8.
  */
 
-public class ChatsFragment extends BaseFragment{
+public class ChatsFragment extends BaseFragment {
 
 
     ProgressCombineView progressCombineView;
 
-    private XRecyclerView xRecyclerView;
+    private OnTouchXRecyclerView xRecyclerView;
 
     private Button mEmptyBrowseMatches;
 
     private IMUsersAdapter mAdapter;
 
-    private RealmResults<IMUserRealm> datas;
+    private List<UserRealm> datas = new ArrayList<>();
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -48,11 +54,6 @@ public class ChatsFragment extends BaseFragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventUtils.registerEventBus(this);
-        // Create the presenter
-//        new IMUsersPresenter(
-//                new MessageDao(),
-//                this);
-
     }
 
     @Override
@@ -64,50 +65,41 @@ public class ChatsFragment extends BaseFragment{
     protected void viewCreated(View view, Bundle savedInstanceState) {
         progressCombineView = bindViewById(R.id.progressCombineView);
         xRecyclerView = bindViewById(R.id.xRecyclerView);
+        xRecyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
+        xRecyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
+        xRecyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+        xRecyclerView.onTouchListener = () -> ((HomeActivity) getActivity()).showBottomInput(View.GONE);
+
         mEmptyBrowseMatches = bindViewById(R.id.empty_message_browsematches);
         linearLayoutManager = new LinearLayoutManager(getActivity());
         xRecyclerView.setLayoutManager(linearLayoutManager);
         xRecyclerView.addItemDecoration(new RecyclerViewDivider(
                 mContext, LinearLayoutManager.HORIZONTAL, R.color.list_divider_default_color));
 //        xRecyclerView.setLayoutManager(new WrapContentLinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        xRecyclerView.setPullRefreshEnabled(false);
+        xRecyclerView.setPullRefreshEnabled(true);
         xRecyclerView.setLoadingMoreEnabled(false);
-
-//        topReminder.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                topReminder.dismiss();
-// //               mPresenter.reLogin();
-//
-//            }
-//        });
-        /** init recyclerView */
-        //datas = mPresenter.loadIMUsers();
         mAdapter = new IMUsersAdapter(getActivity(), datas);
-        mAdapter.setOnItemClickListener(new BaseRealmAdapter.OnItemClickListener<IMUserRealm>() {
-            @Override
-            public void onItemClick(View view, IMUserRealm item, int position) {
-                clickItem(item, position);
-            }
-        });
-        mAdapter.setOnItemLongClickListener(new BaseRealmAdapter.OnItemLongClickListener<IMUserRealm>() {
-            @Override
-            public void onItemLongClick(View view, final IMUserRealm item, int position) {
-                longClickItem(item, position);
-            }
-        });
         xRecyclerView.setAdapter(mAdapter);
-       
-            mEmptyBrowseMatches.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EventUtils.post(new BottomMenuItemClickEvent(6));
-                }
-            });
-         
+        xRecyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
+            @Override
+            public void onRefresh() {
+                loadConversationsData();
+            }
+
+            @Override
+            public void onLoadMore() {
+
+            }
+        });
+        xRecyclerView.refresh();
+        mEmptyBrowseMatches.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EventUtils.post(new BottomMenuItemClickEvent(6));
+            }
+        });
+
     }
-
-
 
 
     public void updateResultPage() {
@@ -120,8 +112,8 @@ public class ChatsFragment extends BaseFragment{
         }
     }
 
-//    @Override
-    public void longClickItem(@NonNull final IMUserRealm item, final int position) {
+    //    @Override
+    public void longClickItem(@NonNull final UserRealm item, final int position) {
 //        new CustomAlertDialog(getActivity()).builder()
 //                .setMsg(R.string.Message_Confirm_Deletion)
 //                .setPositiveButton(R.string.Delete, new View.OnClickListener() {
@@ -144,10 +136,10 @@ public class ChatsFragment extends BaseFragment{
     }
 
 
-    public void clickItem(@NonNull IMUserRealm item, int position) {
+    public void clickItem(@NonNull UserRealm item, int position) {
 //        Intent intent = new Intent(getActivity(), ChatActivity.class);
 //        Bundle bundle = new Bundle();
-//        bundle.putParcelable(IntentExtraDataKeyConfig.EXTRA_MESSAGE_USER_BEAN, Parcels.wrap(IMUserRealm.class, item));
+//        bundle.putParcelable(IntentExtraDataKeyConfig.EXTRA_MESSAGE_USER_BEAN, Parcels.wrap(UserRealm.class, item));
 //        bundle.putBoolean(ChatActivity.WILLSHOWIME, false);
 //        intent.putExtras(bundle);
 //        startActivity(intent);
@@ -196,4 +188,32 @@ public class ChatsFragment extends BaseFragment{
         }
     }
 
+    private void loadConversationsData() {
+        RealmResults<UserRealm> dbData = (RealmResults<UserRealm>) BaseRealmDao.findAll(UserRealm.class, "updateTime");
+        if (!dbData.isEmpty()) {
+            if (dbData.isLoaded()) {
+                List<UserRealm> tempUnReadData = new ArrayList<>();
+                for (UserRealm item : dbData) {
+                    if (item.isInConversation) {
+                        if (item.unReadNum > 0) {
+                            tempUnReadData.add(item);
+                        } else {
+                            datas.add(item);
+                        }
+                    }
+                }
+                if (tempUnReadData.size() > 0) {
+                    datas.addAll(0, tempUnReadData);
+                }
+            }
+            mAdapter.notifyDataSetChanged();
+            xRecyclerView.refreshComplete();
+        }
+    }
+
+    private void refreshConversations() {
+        datas.clear();
+        loadConversationsData();
+        mAdapter.notifyDataSetChanged();
+    }
 }

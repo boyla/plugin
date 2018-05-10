@@ -2,6 +2,8 @@ package top.wifistar.bean.bmob;
 
 import android.text.TextUtils;
 
+import java.lang.reflect.Field;
+
 import cn.bmob.v3.BmobObject;
 import io.realm.RealmObject;
 import top.wifistar.realm.ToRealmObject;
@@ -87,7 +89,54 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.startWord3 = startWord3;
 		realm.selfIntroduce = selfIntroduce;
 		realm.birth = birth;
+		realm.updateTime = System.currentTimeMillis();
 
 		return realm;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj instanceof User){
+			if(this==obj){
+				return true;
+			}else if(!isSame(this.getObjectId(),((User) obj).getObjectId())){
+				return false;
+			}else if(!this.name.equals(((User) obj).name)){
+				return false;
+			}else{
+				Field[] objectFields = obj.getClass().getDeclaredFields();
+				Field[] thisFields = obj.getClass().getDeclaredFields();
+				try {
+					for(int i = 0;i< objectFields.length;i++){
+						if(objectFields[i].get(obj) instanceof String){
+							if(!isSame((String)objectFields[i].get(obj), (String)thisFields[i].get(this))){
+								return false;
+							}
+						}else if(!objectFields[i].get(obj).equals(thisFields[i].get(this))){
+							return false;
+                        }
+				}
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				return true;
+			}
+		}else{
+			return false;
+		}
+	}
+
+	private boolean isSame(String str1,String str2){
+		if(str1 == null && str2 == null){
+			return true;
+		}else if(str1 != null && str2 != null){
+			if(str1.equals(str2)){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
 	}
 }

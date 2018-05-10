@@ -53,10 +53,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
 import com.scottyab.aescrypt.AESCrypt;
 
+import cn.bmob.imdemo.util.DisplayConfig;
 import cn.bmob.push.lib.util.LogUtil;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
+import cn.volley.toolbox.ImageLoader;
 import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
@@ -938,7 +940,7 @@ public class Utils {
         }
     }
 
-    public static void setUserSelfAvatar(CircleImageView mCustomLogo) {
+    public static void setUserAvatar(CircleImageView mCustomLogo) {
         User user = Utils.getCurrentShortUser();
         if (user != null) {
             mCustomLogo.setVisibility(View.INVISIBLE);
@@ -1025,23 +1027,22 @@ public class Utils {
     }
 
 
-    public static void setUserSelfAvatar(Context context, IMUserRealm profile, ImageView imageView) {
-        if (profile == null || TextUtils.isEmpty(profile.getSex())) {
+    public static void setUserAvatar(Context context, UserRealm profile, ImageView imageView) {
+        if (profile == null || profile.sex == null) {
             return;
-        } else if (!TextUtils.isEmpty(profile.getPhoto())) {
-            Glide.with(context).load(profile.getPhoto())
+        } else if (!TextUtils.isEmpty(profile.headUrl)) {
+            Glide.with(context).load(profile.headUrl)
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
-        } else if ("0".equals(profile.getSex())) {
+        } else if (0 == profile.sex) {
             Glide.with(context).load(R.drawable.default_avartar_female)
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
-        } else if ("1".equals(profile.getSex())) {
+        } else if (1 == profile.sex) {
             Glide.with(context).load(R.drawable.default_avartar_male)
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
         }
-
     }
 
     public static int toInt(String str, int defValue) {
@@ -1087,7 +1088,7 @@ public class Utils {
         User res;
         if (user == null) {
             user = Utils.getCurrentShortUser();
-            if (user == null){
+            if (user == null) {
                 try {
                     Thread.sleep(300);
                     user = Utils.getCurrentShortUser();
@@ -1124,33 +1125,6 @@ public class Utils {
             }
         }
         return null;
-    }
-
-    public static String friendlyTime(Date time) {
-        //获取time距离当前的秒数
-        int ct = (int) ((System.currentTimeMillis() - time.getTime()) / 1000);
-
-        if (ct == 0) {
-            return "刚刚";
-        }
-
-        if (ct > 0 && ct < 60) {
-            return ct + "秒前";
-        }
-
-        if (ct >= 60 && ct < 3600) {
-            return Math.max(ct / 60, 1) + "分钟前";
-        }
-        if (ct >= 3600 && ct < 86400)
-            return ct / 3600 + "小时前";
-        if (ct >= 86400 && ct < 2592000) { //86400 * 30
-            int day = ct / 86400;
-            return day + "天前";
-        }
-        if (ct >= 2592000 && ct < 31104000) { //86400 * 30
-            return ct / 2592000 + "月前";
-        }
-        return ct / 31104000 + "年前";
     }
 
     //在不加载图片的前提下获得图片的宽高
@@ -1309,6 +1283,34 @@ public class Utils {
         builder.show();
     }
 
+    public static boolean isEmpty(String str) {
+        if (TextUtils.isEmpty(str)) {
+            return true;
+        } else if ("null".equals(str)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static String getFuzzyTime2(long createTime) {
+        long current = System.currentTimeMillis();
+        SimpleDateFormat resSdf;
+        SimpleDateFormat isSameDay = new SimpleDateFormat("yyyy-MM-dd");
+        if(isSameDay.format(new Date(createTime)).equals(isSameDay.format(new Date(current)))){
+            resSdf = new SimpleDateFormat("HH:mm");
+            return resSdf.format(new Date(createTime));
+        }
+        SimpleDateFormat isSameYear = new SimpleDateFormat("yyyy");
+        if(isSameYear.format(new Date(createTime)).equals(isSameYear.format(new Date(current)))){
+            resSdf = new SimpleDateFormat("MM-dd HH:mm");
+            return resSdf.format(new Date(createTime));
+        }else{
+            resSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return resSdf.format(new Date(createTime));
+        }
+    }
+
     public interface QueryUsesrCallBack {
         void onSuccess(User user);
 
@@ -1398,7 +1400,8 @@ public class Utils {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long serverTime;
         try {
-            serverTime = System.currentTimeMillis() - simpleDateFormat.parse(rawTime).getTime();
+            long rawMills = simpleDateFormat.parse(rawTime).getTime();
+            serverTime = System.currentTimeMillis() - rawMills;
             String result;
             int time = (int) (serverTime / (1000 * 60));
             if (time < 0) {
@@ -1436,5 +1439,20 @@ public class Utils {
             e.printStackTrace();
             return rawTime;
         }
+    }
+
+    public static String getChatTime(boolean hasYear,long timesamp) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateStr = simpleDateFormat.format(new Date(timesamp));
+        return getFuzzyTime(dateStr);
+    }
+
+    public static void setAvatar(String avatar ,ImageView iv){
+        Glide.with(iv.getContext())
+                .load((!Utils.isEmpty(avatar)) ? avatar : R.drawable.default_avartar)
+                .dontAnimate()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .bitmapTransform(new GlideCircleTransform(iv.getContext()))
+                .into(iv);
     }
 }

@@ -13,9 +13,9 @@
         />
 
     <ImageView
+        android:id="@+id/ivHead"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:src="@drawable/icon_head"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="15dp"

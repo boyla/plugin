@@ -19,20 +19,34 @@ import android.util.Log;
 
 import com.kongzue.dialog.v2.DialogSettings;
 
+import org.greenrobot.eventbus.EventBus;
+
+import cn.bmob.imdemo.base.UniversalImageLoader;
+import cn.bmob.imdemo.event.RefreshEvent;
 import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.bean.BmobIMUserInfo;
+import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.listener.BmobIMMessageHandler;
+import cn.bmob.newim.listener.ConnectListener;
+import cn.bmob.newim.listener.ConnectStatusChangeListener;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.exception.BmobException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import top.wifistar.R;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
+import top.wifistar.im.IMMessageHandler;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.CacheUtils;
+import top.wifistar.utils.Utils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -121,22 +135,15 @@ public class App extends MultiDexApplication {
         realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
         Realm.setDefaultConfiguration(realmConfig);
         BaseRealmDao.realm = getRealm();
-//        if (getApplicationInfo().packageName
-//                .equals(getCurProcessName(getApplicationContext()))
-//                || "io.rong.push"
-//                .equals(getCurProcessName(getApplicationContext()))) {
-//
-//            /**
-//             * IMKit SDK调用第一步 初始化
-//             */
-//            RongIM.init(this);
-//        }
 
         //第一：默认初始化
         Bmob.initialize(this, "15210abb365601ec97b87f55b1efa0d4");
-        BmobIM.init(this);
-        BmobIM.registerDefaultMessageHandler(new BmobIMMessageHandler());
-
+        String packageName = getApplicationInfo().packageName;
+        String processName = getMyProcessName();
+        if (packageName.equals(processName)){
+            BmobIM.init(this);
+            BmobIM.registerDefaultMessageHandler(new IMMessageHandler(this));
+        }
 
         //第二：自v3.4.7版本开始,设置BmobConfig,允许设置请求超时时间、文件分片上传时每片的大小、文件的过期时间(单位为秒)，
         //BmobConfig config =new BmobConfig.Builder(this)
@@ -163,22 +170,8 @@ public class App extends MultiDexApplication {
         init();
         CacheUtils.getInstance().init(mContext);
 
-//        registerActivityLifecycleCallbacks(new LifeCycleHander());
-//
-//        MustacheManager.getInstance().init(getApplicationContext());
-//
-//        Map<String,String> mutexKeysMap1 = new HashMap<String, String>();
-//        mutexKeysMap1.put("32",MustacheManager.MUTEX_KEY_ONE_TO_ALL);
-//        MustacheManager.getInstance().getFilterBodyType().mutexKeysMap = mutexKeysMap1;
-//        Map<String,String> mutexKeysMap2 = new HashMap<String, String>();
-//        mutexKeysMap2.put("64",MustacheManager.MUTEX_KEY_ONE_TO_ALL);
-//        MustacheManager.getInstance().getFilterEthnicity().mutexKeysMap = mutexKeysMap2;
-//        MustacheManager.getInstance().getFilterSmoking().mutexKeysMap = mutexKeysMap2;
-
-
         new DataBaseSyncTask(getDefaultDBInstallDir(), DB_NAME).execute(0);
         DialogSettings.type = DialogSettings.TYPE_IOS;
-
     }
 
     private String getDefaultDBInstallDir() {
@@ -432,5 +425,65 @@ public class App extends MultiDexApplication {
 
     public Realm getRealm() {
         return Realm.getInstance(realmConfig);
+    }
+
+    /**
+     * 获取当前运行的进程名
+     * @return
+     */
+    public static String getMyProcessName() {
+        try {
+            File file = new File("/proc/" + android.os.Process.myPid() + "/" + "cmdline");
+            BufferedReader mBufferedReader = new BufferedReader(new FileReader(file));
+            String processName = mBufferedReader.readLine().trim();
+            mBufferedReader.close();
+            return processName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ConnectionStatus currentIMStatus;
+    public static void connectIM() {
+        User user = Utils.getCurrentShortUser();
+        if (user == null) {
+            Utils.makeSysToast("IM连接失败：未取得用户信息");
+            return;
+        }
+        BmobIM.connect(user.getObjectId(), new ConnectListener() {
+            @Override
+            public void done(String uid, BmobException e) {
+                if (e == null) {
+                    //TODO 连接成功后再进行修改本地用户信息的操作，并查询本地用户信息
+                    EventBus.getDefault().post(new RefreshEvent());
+                    //服务器连接成功就发送一个更新事件，同步更新会话及主页的小红点
+                    //TODO 会话：3.6、更新用户资料，用于在会话页面、聊天页面以及个人信息页面显示
+                    String url = "";
+                    if(!TextUtils.isEmpty(user.getHeadUrl())){
+                        url = user.getHeadUrl().split("_")[0];
+                    }
+                    BmobIM.getInstance().
+                            updateUserInfo(new BmobIMUserInfo(user.getObjectId(),
+                                    user.getName(), url));
+                } else {
+                    Utils.makeSysToast(e.getMessage());
+                }
+            }
+        });
+        //TODO 连接：3.3、监听连接状态，可通过BmobIM.getInstance().getCurrentStatus()来获取当前的长连接状态
+        BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
+            @Override
+            public void onChange(ConnectionStatus status) {
+                /*  DISCONNECT(0, "disconnect"),
+                    CONNECTING(1, "connecting"),
+                    CONNECTED(2, "connected"),
+                    NETWORK_UNAVAILABLE(-1, "Network is unavailable."),
+                    KICK_ASS(-2, "kick off by other user");
+                **/
+                currentIMStatus = status;
+                Utils.makeSysToast(status.getMsg());
+            }
+        });
     }
 }

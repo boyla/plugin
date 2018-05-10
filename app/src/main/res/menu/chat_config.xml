@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.cmcid.handset.UHFActivity">
+
+    <item
+        android:id="@+id/setting"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/user"
+        android:title="发布动态"/>
+
+</menu>

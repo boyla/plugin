@@ -15,8 +15,10 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.jaeger.library.StatusBarUtil;
 import com.shizhefei.view.indicator.FixedIndicatorView;
+
 import top.wifistar.R;
 import top.wifistar.customview.CircleImageView;
 
@@ -116,7 +118,7 @@ public abstract class ToolbarActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         initTopBar();
         int mStatusBarColor = getResources().getColor(R.color.primary);
-        StatusBarUtil.setColorNoTranslucent(this,mStatusBarColor);
+        StatusBarUtil.setColorNoTranslucent(this, mStatusBarColor);
         mContentView.getViewTreeObserver().addOnGlobalLayoutListener(keyboardLayoutListener);
     }
 
@@ -144,7 +146,7 @@ public abstract class ToolbarActivity extends BaseActivity {
             super.closeKeyBoard();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 ActivityCompat.finishAfterTransition(this);
-            }else{
+            } else {
                 finish();
             }
             return true;
@@ -285,5 +287,20 @@ public abstract class ToolbarActivity extends BaseActivity {
 
     public View getLeftMenu() {
         return null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //connected
+        if (App.currentIMStatus != null && App.currentIMStatus.getCode() == 2) {
+            return;
+        }else{
+            if(App.currentIMStatus == null){
+                App.connectIM();
+            }else if(App.currentIMStatus.getCode() == 1){
+                return;
+            }
+        }
     }
 }

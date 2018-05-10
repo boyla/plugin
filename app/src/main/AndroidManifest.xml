@@ -102,6 +102,8 @@
 
         <activity android:name=".activity.PublishMomentActivity"/>
 
+        <activity android:name=".activity.ChatActivity"/>
+
         <activity android:name="com.lidong.photopicker.PhotoPickerActivity"/>
 
         <activity android:name="com.lidong.photopicker.PhotoPreviewActivity"/>

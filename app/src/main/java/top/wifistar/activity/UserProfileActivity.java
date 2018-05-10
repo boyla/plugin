@@ -39,14 +39,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import cn.bmob.v3.BmobObject;
+import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
@@ -66,6 +65,7 @@ import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
+import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.FollowRealm;
 import top.wifistar.utils.EventUtils;
@@ -132,9 +132,11 @@ public class UserProfileActivity extends AppCompatActivity {
         BmobUtils.querySingleUser(shortUser.getObjectId(),new BmobUtils.BmobDoneListener<User>() {
             @Override
             public void onSuccess(User res) {
-                shortUser = res;
-                BaseRealmDao.insertOrUpdate(shortUser.toRealmObject());
-                showUserInfo(shortUser);
+                if(!shortUser.equals(res)){
+                    shortUser = res;
+                    BaseRealmDao.insertOrUpdate(shortUser.toRealmObject());
+                    showUserInfo(shortUser);
+                }
             }
 
             @Override
@@ -292,7 +294,13 @@ public class UserProfileActivity extends AppCompatActivity {
 
             });
             vSendMail.setOnClickListener((v) -> {
-                //TODO 私信
+                BmobIMConversation conversation = IMUtils.getConversationEntranceByShortUser(shortUser);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("c", conversation);
+                bundle.putSerializable("ShortUser",shortUser);
+                Intent intent = new Intent(this,ChatActivity.class);
+                intent.putExtras(bundle);
+                UserProfileActivity.this.startActivity(intent);
             });
         }
     }
