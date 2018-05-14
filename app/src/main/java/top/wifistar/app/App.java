@@ -29,7 +29,11 @@ import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.listener.BmobIMMessageHandler;
 import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.newim.listener.ConnectStatusChangeListener;
+import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobInstallation;
+import cn.bmob.v3.BmobInstallationManager;
+import cn.bmob.v3.InstallationListener;
 import cn.bmob.v3.exception.BmobException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -134,16 +138,29 @@ public class App extends MultiDexApplication {
         Realm.init(this);
         realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
         Realm.setDefaultConfiguration(realmConfig);
-        BaseRealmDao.realm = getRealm();
 
         //第一：默认初始化
         Bmob.initialize(this, "15210abb365601ec97b87f55b1efa0d4");
+        //IM
         String packageName = getApplicationInfo().packageName;
         String processName = getMyProcessName();
-        if (packageName.equals(processName)){
+        if (packageName.equals(processName)) {
             BmobIM.init(this);
             BmobIM.registerDefaultMessageHandler(new IMMessageHandler(this));
         }
+        // 使用推送服务时的初始化操作
+        BmobInstallationManager.getInstance().initialize(new InstallationListener<BmobInstallation>() {
+            @Override
+            public void done(BmobInstallation bmobInstallation, BmobException e) {
+                if (e == null) {
+                    Log.i(bmobInstallation.getObjectId() + " push started: ", bmobInstallation.getInstallationId());
+                } else {
+                    Log.e("push start exception: ", e.getMessage());
+                }
+            }
+        });
+// 启动推送服务
+        BmobPush.startWork(this);
 
         //第二：自v3.4.7版本开始,设置BmobConfig,允许设置请求超时时间、文件分片上传时每片的大小、文件的过期时间(单位为秒)，
         //BmobConfig config =new BmobConfig.Builder(this)
@@ -417,18 +434,9 @@ public class App extends MultiDexApplication {
         return APP_INSTANCE;
     }
 
-    @Override
-    public void onTerminate() {
-        getRealm().close();
-        super.onTerminate();
-    }
-
-    public Realm getRealm() {
-        return Realm.getInstance(realmConfig);
-    }
-
     /**
      * 获取当前运行的进程名
+     *
      * @return
      */
     public static String getMyProcessName() {
@@ -445,6 +453,7 @@ public class App extends MultiDexApplication {
     }
 
     public static ConnectionStatus currentIMStatus;
+
     public static void connectIM() {
         User user = Utils.getCurrentShortUser();
         if (user == null) {
@@ -460,7 +469,7 @@ public class App extends MultiDexApplication {
                     //服务器连接成功就发送一个更新事件，同步更新会话及主页的小红点
                     //TODO 会话：3.6、更新用户资料，用于在会话页面、聊天页面以及个人信息页面显示
                     String url = "";
-                    if(!TextUtils.isEmpty(user.getHeadUrl())){
+                    if (!TextUtils.isEmpty(user.getHeadUrl())) {
                         url = user.getHeadUrl().split("_")[0];
                     }
                     BmobIM.getInstance().
@@ -486,4 +495,5 @@ public class App extends MultiDexApplication {
             }
         });
     }
+
 }

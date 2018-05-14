@@ -92,6 +92,7 @@ public class UserProfileActivity extends AppCompatActivity {
     String follower;
     String followed;
     FollowRealm followRealm;
+    boolean isFromChat;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -125,6 +126,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
+        isFromChat = getIntent().getExtras().getBoolean("isFromChat",false);
         ivHead = (ImageView) findViewById(R.id.ivHead);
         mToolbar.setTitle("");
 
@@ -294,13 +296,19 @@ public class UserProfileActivity extends AppCompatActivity {
 
             });
             vSendMail.setOnClickListener((v) -> {
-                BmobIMConversation conversation = IMUtils.getConversationEntranceByShortUser(shortUser);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("c", conversation);
-                bundle.putSerializable("ShortUser",shortUser);
-                Intent intent = new Intent(this,ChatActivity.class);
-                intent.putExtras(bundle);
-                UserProfileActivity.this.startActivity(intent);
+                if(isFromChat){
+                    finish();
+                    overridePendingTransition(R.anim.activity_right_in, R.anim.activity_right_out);
+                }else{
+                    BmobIMConversation conversation = IMUtils.getConversationEntranceByShortUser(shortUser);
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("c", conversation);
+                    bundle.putSerializable("ShortUser",shortUser);
+                    bundle.putBoolean("isFromProfile",true);
+                    Intent intent = new Intent(this,ChatActivity.class);
+                    intent.putExtras(bundle);
+                    UserProfileActivity.this.startActivity(intent);
+                }
             });
         }
     }

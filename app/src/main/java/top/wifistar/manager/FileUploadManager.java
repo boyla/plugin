@@ -19,9 +19,6 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 
-import static cn.volley.Request$Method.POST;
-
-
 public class FileUploadManager {
 
     private static final String ENDPOINT = "http://192.168.1.21:8080";

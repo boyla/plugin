@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 
 import cn.bmob.v3.BmobObject;
 import io.realm.RealmObject;
+import top.wifistar.realm.IMUserRealm;
 import top.wifistar.realm.ToRealmObject;
 import top.wifistar.realm.UserRealm;
 
@@ -89,7 +90,30 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.startWord3 = startWord3;
 		realm.selfIntroduce = selfIntroduce;
 		realm.birth = birth;
-		realm.updateTime = System.currentTimeMillis();
+
+		return realm;
+	}
+
+	public IMUserRealm toIMRealm() {
+		IMUserRealm realm = new IMUserRealm();
+		realm.name = name;
+		realm.headUrl = headUrl;
+		realm.id = id;
+		realm.objectId = getObjectId();
+		realm.sex = sex;
+		realm.age = age;
+		realm.favorMoments = favorMoments;
+		realm.loaction = loaction;
+		realm.country = country;
+		realm.region = region;
+		realm.city = city;
+		realm.headBgUrl = headBgUrl;
+		realm.recentImgs = recentImgs;
+		realm.startWord1 = startWord1;
+		realm.startWord2 = startWord2;
+		realm.startWord3 = startWord3;
+		realm.selfIntroduce = selfIntroduce;
+		realm.birth = birth;
 
 		return realm;
 	}

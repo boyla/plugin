@@ -1,5 +1,6 @@
 package top.wifistar.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -30,6 +31,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.greysonparrelli.permiso.Permiso;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,10 @@ import top.wifistar.adapter.ChatMsgAdapter;
 import top.wifistar.adapter.viewholder.im.OnRecyclerViewListener;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.im.IMUtils;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.IMUserRealm;
+import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
 /**
@@ -93,6 +100,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     protected LinearLayoutManager layoutManager;
     BmobIMConversation mConversationManager;
     User shortUser;
+    boolean isFromProfile;
 
     @Override
     protected void initUI() {
@@ -115,6 +123,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
         BmobIMConversation conversationEntrance = (BmobIMConversation) getIntent().getExtras().getSerializable("c");
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
+        isFromProfile = getIntent().getExtras().getBoolean("isFromProfile");
         setCenterTitle(shortUser.getName());
         //TODO 消息：5.1、根据会话入口获取消息管理，聊天页面
         mConversationManager = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
@@ -235,6 +244,9 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         initRecordManager();
     }
 
+    public User getCurrentUser(){
+        return shortUser;
+    }
     /**
      * 初始化语音动画资源
      *
@@ -286,6 +298,10 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                 }
             }
         });
+    }
+
+    public boolean isFromProfile() {
+        return isFromProfile;
     }
 
     /**
@@ -419,7 +435,22 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         });
 
         btn_chat_send.setOnClickListener(v -> {
-            sendMessage();
+            Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+                @Override
+                public void onPermissionResult(Permiso.ResultSet resultSet) {
+                    if (resultSet.isPermissionGranted(Manifest.permission.READ_PHONE_STATE)) {
+                        sendMessage();
+                    } else {
+                        Utils.makeSysToast("需要读取手机状态权限，请到应用权限中进行设置");
+                    }
+                }
+
+                @Override
+                public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+                    Permiso.getInstance().showRationaleInDialog("需要权限", "需要读取手机状态权限，请到应用权限中进行设置", null, callback);
+                }
+            }, Manifest.permission.READ_PHONE_STATE);
+
         });
         layout_add.findViewById(cn.bmob.imdemo.R.id.tv_picture).setOnClickListener(v -> {
             sendLocalImageMessage();
@@ -478,11 +509,22 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         }
         //TODO 发送消息：6.1、发送文本消息
         BmobIMTextMessage msg = new BmobIMTextMessage();
+        msg.setBmobIMUserInfo(IMUtils.getIMUserInfoByUser(Utils.getCurrentShortUser()));
         msg.setContent(text);
         //可随意设置额外信息
         Map<String, Object> map = new HashMap<>();
         map.put("level", "1");
         msg.setExtraMap(map);
+        //save to local
+        IMUserRealm userToSave = shortUser.toIMRealm();
+        userToSave.updateTime = System.currentTimeMillis();
+        userToSave.unReadNum = 0;
+        userToSave.isInConversation = true;
+        userToSave.sendSuccess = false;
+        userToSave.lastMsg = text;
+        BaseRealmDao.insertOrUpdate(userToSave);
+        EventUtils.post(userToSave);
+        this.userToSave = userToSave;
         mConversationManager.sendMessage(msg, listener);
     }
 
@@ -603,6 +645,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     /**
      * 消息发送监听器
      */
+    IMUserRealm userToSave;
     public MessageSendListener listener = new MessageSendListener() {
 
         @Override
@@ -626,6 +669,12 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             scrollToBottom();
             if (e != null) {
                 Utils.makeSysToast(e.getMessage());
+            }else{
+                if(userToSave!=null){
+                    userToSave.sendSuccess = true;
+                    BaseRealmDao.insertOrUpdate(userToSave);
+                    EventUtils.post(userToSave);
+                }
             }
         }
     };
@@ -701,14 +750,21 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
     protected void onResume() {
+        super.onResume();
+        Permiso.getInstance().setActivity(this);
         //锁屏期间的收到的未读消息需要添加到聊天界面中
         addUnReadMessage();
         //添加页面消息监听器
         BmobIM.getInstance().addMessageListHandler(this);
         // 有可能锁屏期间，在聊天界面出现通知栏，这时候需要清除通知
         BmobNotificationManager.getInstance(this).cancelNotification();
-        super.onResume();
     }
 
     /**

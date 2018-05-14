@@ -1,7 +1,6 @@
 package top.wifistar.adapter.viewholder.im;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,7 +10,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
-import java.text.SimpleDateFormat;
 
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
@@ -20,6 +18,7 @@ import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.exception.BmobException;
 import top.wifistar.R;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.Utils;
 
@@ -106,7 +105,8 @@ public class SendTextHolder extends BaseViewHolder implements View.OnClickListen
         iv_avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                toast("点击" + info.getName() + "的头像");
+                User user = Utils.getCurrentShortUser();
+                Utils.jumpToProfile(context, user, iv_avatar);
             }
         });
 

@@ -8,7 +8,10 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.DeleteBatchListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
+import io.realm.RealmObject;
 import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.IMUserRealm;
+import top.wifistar.realm.UserRealm;
 
 /**
  * Created by boyla on 2017/9/29.

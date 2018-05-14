@@ -28,7 +28,7 @@ import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.RecyclerViewDivider;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.realm.BaseRealmDao;
-import top.wifistar.realm.UserRealm;
+import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.EventUtils;
 
 /**
@@ -46,7 +46,7 @@ public class ChatsFragment extends BaseFragment {
 
     private IMUsersAdapter mAdapter;
 
-    private List<UserRealm> datas = new ArrayList<>();
+    private List<IMUserRealm> datas = new ArrayList<>();
 
     private LinearLayoutManager linearLayoutManager;
 
@@ -113,7 +113,7 @@ public class ChatsFragment extends BaseFragment {
     }
 
     //    @Override
-    public void longClickItem(@NonNull final UserRealm item, final int position) {
+    public void longClickItem(@NonNull final IMUserRealm item, final int position) {
 //        new CustomAlertDialog(getActivity()).builder()
 //                .setMsg(R.string.Message_Confirm_Deletion)
 //                .setPositiveButton(R.string.Delete, new View.OnClickListener() {
@@ -136,10 +136,10 @@ public class ChatsFragment extends BaseFragment {
     }
 
 
-    public void clickItem(@NonNull UserRealm item, int position) {
+    public void clickItem(@NonNull IMUserRealm item, int position) {
 //        Intent intent = new Intent(getActivity(), ChatActivity.class);
 //        Bundle bundle = new Bundle();
-//        bundle.putParcelable(IntentExtraDataKeyConfig.EXTRA_MESSAGE_USER_BEAN, Parcels.wrap(UserRealm.class, item));
+//        bundle.putParcelable(IntentExtraDataKeyConfig.EXTRA_MESSAGE_USER_BEAN, Parcels.wrap(IMUserRealm.class, item));
 //        bundle.putBoolean(ChatActivity.WILLSHOWIME, false);
 //        intent.putExtras(bundle);
 //        startActivity(intent);
@@ -180,20 +180,20 @@ public class ChatsFragment extends BaseFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMsgReceived(Object event) {
-
-        mAdapter.notifyDataSetChanged();
-        if (xRecyclerView != null) {
-            xRecyclerView.scrollToPosition(View.SCROLL_INDICATOR_TOP);
-        }
+    public void onMsgReceived(IMUserRealm event) {
+        refreshConversations();
+//        if (xRecyclerView != null) {
+//            xRecyclerView.scrollToPosition(View.SCROLL_INDICATOR_TOP);
+//        }
     }
 
     private void loadConversationsData() {
-        RealmResults<UserRealm> dbData = (RealmResults<UserRealm>) BaseRealmDao.findAll(UserRealm.class, "updateTime");
+        datas.clear();
+        RealmResults<IMUserRealm> dbData = (RealmResults<IMUserRealm>) BaseRealmDao.findAll(IMUserRealm.class, "updateTime");
         if (!dbData.isEmpty()) {
             if (dbData.isLoaded()) {
-                List<UserRealm> tempUnReadData = new ArrayList<>();
-                for (UserRealm item : dbData) {
+                List<IMUserRealm> tempUnReadData = new ArrayList<>();
+                for (IMUserRealm item : dbData) {
                     if (item.isInConversation) {
                         if (item.unReadNum > 0) {
                             tempUnReadData.add(item);

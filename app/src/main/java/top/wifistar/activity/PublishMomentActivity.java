@@ -295,12 +295,6 @@ public class PublishMomentActivity extends ToolbarActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        Permiso.getInstance().setActivity(this);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
@@ -409,5 +403,11 @@ public class PublishMomentActivity extends ToolbarActivity {
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Permiso.getInstance().setActivity(this);
     }
 }

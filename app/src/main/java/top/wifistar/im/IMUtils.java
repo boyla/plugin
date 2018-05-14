@@ -47,11 +47,24 @@ public class IMUtils {
     }
 
     public static BmobIMConversation getConversationEntranceByShortUser(User shortUser) {
-        String url = "";
-        if(!TextUtils.isEmpty(shortUser.getHeadUrl())){
-            url = shortUser.getHeadUrl().split("_")[0];
+        BmobIMUserInfo info  = getIMUserInfoByUser(shortUser);
+        if(info==null){
+            return null;
         }
-        BmobIMUserInfo info  = new BmobIMUserInfo(shortUser.getObjectId(), shortUser.getName(), url);
         return getConversationEntrance(info);
+    }
+
+    public static BmobIMUserInfo getIMUserInfoByUser(User shortUser){
+        if(shortUser!=null){
+            String url = "";
+            if(!TextUtils.isEmpty(shortUser.getHeadUrl())){
+                url = shortUser.getHeadUrl().split("_")[0];
+            }
+            BmobIMUserInfo info = new BmobIMUserInfo(shortUser.getObjectId(), shortUser.getName(), url);
+            info.setId(System.currentTimeMillis());
+            return info;
+        }else{
+            return null;
+        }
     }
 }

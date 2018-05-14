@@ -17,8 +17,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+
+import io.realm.Realm;
 import top.wifistar.bean.User;
 import top.wifistar.corepage.CorePageManager;
+import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.CacheUtils;
 
@@ -40,6 +43,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected Bundle mSavedInstanceState;
 
     protected ACache myCache;
+
+    public static BaseActivity currentActivity;
+
+    public Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +78,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         //register network monitor receiver
         IntentFilter filter=new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
 
+        BaseRealmDao.realm = Realm.getDefaultInstance();
+        realm = BaseRealmDao.realm;
+
     }
 
     private void initCache() {
@@ -87,6 +97,12 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
     protected void getExtraData() {
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        currentActivity = this;
     }
 
     public boolean isFinished() {
@@ -168,6 +184,7 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
 //        this.unregisterReceiver(myReceiver);
         super.onDestroy();
+        realm.close();
     }
 
     @Override

@@ -20,7 +20,6 @@ import android.support.annotation.NonNull;
 
 
 import io.realm.RealmResults;
-import top.wifistar.bean.IMUserRealm;
 import top.wifistar.mvp.BasePresenter;
 import top.wifistar.mvp.BaseView;
 
@@ -42,7 +41,7 @@ public interface IMUsersContract {
 
         void reLogin();
 
-        RealmResults<IMUserRealm> loadIMUsers();
+//        RealmResults<IMUserRealm> loadIMUsers();
 
         void deleteIMUsers(Integer userId, String userName);
 

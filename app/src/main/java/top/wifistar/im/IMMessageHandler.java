@@ -15,13 +15,12 @@ import java.util.Map;
 
 import cn.bmob.imdemo.bean.AddFriendMessage;
 import cn.bmob.imdemo.bean.AgreeAddFriendMessage;
-import cn.bmob.imdemo.bean.User;
 import cn.bmob.imdemo.db.NewFriend;
 import cn.bmob.imdemo.db.NewFriendManager;
 import cn.bmob.imdemo.event.RefreshEvent;
 import cn.bmob.imdemo.model.UserModel;
-import cn.bmob.imdemo.model.i.UpdateCacheListener;
 import cn.bmob.imdemo.ui.MainActivity;
+import cn.bmob.imdemo.ui.SplashActivity;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
@@ -33,10 +32,18 @@ import cn.bmob.newim.listener.BmobIMMessageHandler;
 import cn.bmob.newim.notification.BmobNotificationManager;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
+import io.realm.Realm;
+import io.realm.RealmObject;
 import top.wifistar.R;
+import top.wifistar.activity.ChatActivity;
+import top.wifistar.activity.HomeActivity;
+import top.wifistar.app.BaseActivity;
+import top.wifistar.bean.bmob.BmobUtils;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.realm.BaseRealmDao;
-import top.wifistar.realm.FollowRealm;
-import top.wifistar.realm.UserRealm;
+import top.wifistar.realm.IMUserRealm;
+import top.wifistar.realm.IMUserRealm;
+import top.wifistar.utils.EventUtils;
 
 /**
  * Created by boyla on 2018/5/3.
@@ -80,31 +87,65 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      */
     private void executeMessage(final MessageEvent event) {
         //检测用户信息是否需要更新
-        UserRealm localUser = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", event.getFromUserInfo().getUserId()).findFirst().toBmobObject().toRealmObject();
-        if (localUser == null || TextUtils.isEmpty(localUser.objectId)) {
-            localUser = new UserRealm();
-        }
-        localUser.objectId = event.getFromUserInfo().getUserId();
-        localUser.name = event.getFromUserInfo().getName();
-        localUser.headUrl = event.getFromUserInfo().getAvatar();
+        final IMUserRealm rawUser = BaseRealmDao.realm.where(IMUserRealm.class).equalTo("objectId", event.getFromUserInfo().getUserId()).findFirst();
+        if (rawUser == null || TextUtils.isEmpty(rawUser.name)) {
+            //尝试网络获取
+            BmobUtils.querySingleUser(event.getFromUserInfo().getUserId(), new BmobUtils.BmobDoneListener<User>() {
+                @Override
+                public void onSuccess(User res) {
+                    handleMsg(res.toIMRealm(), event, false);
+                }
 
-        localUser.unReadNum += 1;
-        localUser.isInConversation = true;
-        localUser.updateTime = System.currentTimeMillis();
+                @Override
+                public void onFailure(String msg) {
+                    handleMsg(null, event, false);
+                }
+            });
+        } else {
+            handleMsg(rawUser, event, true);
+        }
+    }
+
+    private void handleMsg(IMUserRealm rawUser, MessageEvent event, boolean needParse) {
+        IMUserRealm copyUser = rawUser == null ? new IMUserRealm() : rawUser;
+        if(needParse && rawUser!=null){
+            copyUser = rawUser.toBmobObject().toIMRealm();
+        }
+        //不使用IM提供的用户信息，仅仅使用ID来查询BMOB
+//        copyUser.objectId = event.getFromUserInfo().getUserId();
+//        copyUser.name = event.getFromUserInfo().getName();
+//        copyUser.headUrl = event.getFromUserInfo().getAvatar();
+
+        copyUser.unReadNum = rawUser == null ? 1 : rawUser.unReadNum + 1;
+        if(BaseActivity.currentActivity instanceof ChatActivity){
+            copyUser.unReadNum = 0;
+        }
+        copyUser.isInConversation = true;
+        copyUser.updateTime = System.currentTimeMillis();
         String lastMsg;
-        if(event.getMessage().getMsgType().equals(BmobIMMessageType.TEXT.getType())){
+        if (event.getMessage().getMsgType().equals(BmobIMMessageType.TEXT.getType())) {
             lastMsg = event.getMessage().getContent();
-        }else if(event.getMessage().getMsgType().equals(BmobIMMessageType.IMAGE.getType())){
+        } else if (event.getMessage().getMsgType().equals(BmobIMMessageType.IMAGE.getType())) {
             lastMsg = "[图片]";
-        }else if(event.getMessage().getMsgType().equals(BmobIMMessageType.VOICE.getType())){
+        } else if (event.getMessage().getMsgType().equals(BmobIMMessageType.VOICE.getType())) {
             lastMsg = "[语音]";
-        }else if(event.getMessage().getMsgType().equals(BmobIMMessageType.LOCATION.getType())){
+        } else if (event.getMessage().getMsgType().equals(BmobIMMessageType.LOCATION.getType())) {
             lastMsg = "[位置]" + event.getMessage().getContent();
-        }else{//开发者自定义的消息类型，需要自行处理
+        } else {//开发者自定义的消息类型，需要自行处理
             lastMsg = "[未知]";
         }
-        localUser.lastMsg = lastMsg;
-        BaseRealmDao.insertOrUpdate(localUser);
+        copyUser.lastMsg = lastMsg;
+
+//        Realm realm = Realm.getDefaultInstance();
+//        realm.executeTransaction(new Realm.Transaction() {
+//            @Override
+//            public void execute(Realm realm) {
+//
+//            }
+//        });
+
+        BaseRealmDao.insertOrUpdate(copyUser);
+        EventUtils.post(copyUser);
 
         BmobIMConversation conversation = event.getConversation();
 
@@ -133,9 +174,8 @@ public class IMMessageHandler extends BmobIMMessageHandler {
     private void processSDKMessage(BmobIMMessage msg, MessageEvent event) {
         if (BmobNotificationManager.getInstance(context).isShowNotification()) {
             //如果需要显示通知栏，SDK提供以下两种显示方式：
-            Intent pendingIntent = new Intent(context, MainActivity.class);
+            Intent pendingIntent = new Intent(context, SplashActivity.class);
             pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
 
             //TODO 消息接收：8.5、多个用户的多条消息合并成一条通知：有XX个联系人发来了XX条消息
             //BmobNotificationManager.getInstance(context).showNotification(event, pendingIntent);
@@ -186,7 +226,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      * @param friend
      */
     private void showAddNotify(NewFriend friend) {
-        Intent pendingIntent = new Intent(context, MainActivity.class);
+        Intent pendingIntent = new Intent(context, HomeActivity.class);
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         //这里可以是应用图标，也可以将聊天头像转成bitmap
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
@@ -201,7 +241,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      * @param agree
      */
     private void showAgreeNotify(BmobIMUserInfo info, AgreeAddFriendMessage agree) {
-        Intent pendingIntent = new Intent(context, MainActivity.class);
+        Intent pendingIntent = new Intent(context, HomeActivity.class);
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
         BmobNotificationManager.getInstance(context).showNotification(largeIcon, info.getName(), agree.getMsg(), agree.getMsg(), pendingIntent);
@@ -215,16 +255,16 @@ public class IMMessageHandler extends BmobIMMessageHandler {
     private void addFriend(String uid) {
         User user = new User();
         user.setObjectId(uid);
-        UserModel.getInstance()
-                .agreeAddFriend(user, new SaveListener<String>() {
-                    @Override
-                    public void done(String s, BmobException e) {
-                        if (e == null) {
-                            Log.e("Bmob IM:  ", "success");
-                        } else {
-                            Log.e("Bmob IM:  ", e.getMessage());
-                        }
-                    }
-                });
+//        UserModel.getInstance()
+//                .agreeAddFriend(user, new SaveListener<String>() {
+//                    @Override
+//                    public void done(String s, BmobException e) {
+//                        if (e == null) {
+//                            Log.e("Bmob IM:  ", "success");
+//                        } else {
+//                            Log.e("Bmob IM:  ", e.getMessage());
+//                        }
+//                    }
+//                });
     }
 }

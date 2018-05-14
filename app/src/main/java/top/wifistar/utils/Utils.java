@@ -54,19 +54,17 @@ import com.bumptech.glide.request.target.Target;
 import com.scottyab.aescrypt.AESCrypt;
 
 import cn.bmob.imdemo.util.DisplayConfig;
-import cn.bmob.push.lib.util.LogUtil;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
-import cn.volley.toolbox.ImageLoader;
 import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
+import top.wifistar.activity.ChatActivity;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.activity.UserProfileActivity;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
-import top.wifistar.bean.IMUserRealm;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.BmobUtils;
@@ -1011,10 +1009,13 @@ public class Utils {
         }
     }
 
-    private static void jumpToProfile(Context context, User user, ImageView imageView) {
+    public static void jumpToProfile(Context context, User user, ImageView imageView) {
         Intent intent = new Intent(context, UserProfileActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("ShortUser", user);
+        if(context instanceof ChatActivity){
+            bundle.putBoolean("isFromChat", true);
+        }
         intent.putExtras(bundle);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // 创建一个包含过渡动画信息的 ActivityOptions 对象
@@ -1031,7 +1032,7 @@ public class Utils {
         if (profile == null || profile.sex == null) {
             return;
         } else if (!TextUtils.isEmpty(profile.headUrl)) {
-            Glide.with(context).load(profile.headUrl)
+            Glide.with(context).load(profile.headUrl.split("_")[0])
                     .bitmapTransform(new CropCircleTransformation(context))
                     .into(imageView);
         } else if (0 == profile.sex) {

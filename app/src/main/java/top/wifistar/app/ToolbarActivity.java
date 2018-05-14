@@ -292,15 +292,9 @@ public abstract class ToolbarActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //connected
-        if (App.currentIMStatus != null && App.currentIMStatus.getCode() == 2) {
-            return;
-        }else{
-            if(App.currentIMStatus == null){
-                App.connectIM();
-            }else if(App.currentIMStatus.getCode() == 1){
-                return;
-            }
+        //connect im
+        if (App.currentIMStatus == null || !(App.currentIMStatus.getCode() == 2 || App.currentIMStatus.getCode() == 1)) {
+            App.connectIM();
         }
     }
 }

@@ -66,7 +66,7 @@ public class BaseRealmDao {
     public static boolean insertOrUpdate(RealmObject object) {
         try {
             realm.beginTransaction();
-            realm.insertOrUpdate(object);
+            realm.copyToRealmOrUpdate(object);
             realm.commitTransaction();
             return true;
         } catch (Exception e) {

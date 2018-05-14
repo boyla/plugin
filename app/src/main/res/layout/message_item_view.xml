@@ -6,48 +6,21 @@
     android:layout_width="match_parent"
     android:layout_height="70dip"
     android:background="@drawable/item_background_light"
-    android:minHeight="?attr/listPreferredItemHeight"
     android:descendantFocusability="blocksDescendants"
+    android:minHeight="?attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:paddingBottom="3dp"
     android:paddingLeft="5dp"
     android:paddingTop="3dp">
 
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
-
-        <RelativeLayout
-            android:id="@+id/mrlHeader"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true">
-
-            <ImageView
-                android:id="@+id/imageView_avatar"
-                android:layout_width="55dp"
-                android:layout_height="55dp"
-                android:layout_centerVertical="true"
-                android:layout_margin="5dp"
-                android:contentDescription="@string/app_name"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:id="@+id/message_item_has_new_message"
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:layout_alignParentTop="@id/imageView_avatar"
-                android:layout_alignRight="@id/imageView_avatar"
-                android:layout_marginRight="-5dp"
-                android:background="@drawable/redminipoint"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="9dp"
-                android:visibility="gone" />
-        </RelativeLayout>
-    </RelativeLayout>
+    <ImageView
+        android:id="@+id/imageView_avatar"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerCrop" />
 
     <LinearLayout
         android:id="@+id/item_content"
@@ -96,7 +69,7 @@
                     android:layout_marginLeft="3dp"
                     android:textColor="@color/text_hint_color"
                     android:textSize="13sp"
-                    tools:text="Yesterday" />
+                    tools:text="16:52" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -120,14 +93,30 @@
             <TextView
                 android:id="@+id/textview_content"
                 style="@style/message_list_item_summary_text"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dip"
-                android:paddingTop="5dip"
-                android:singleLine="true"
                 android:linksClickable="false"
                 android:paddingRight="10dp"
+                android:singleLine="true"
                 tools:text="please help me" />
+
+            <TextView
+                android:id="@+id/message_item_has_new_message"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginRight="11dp"
+                android:background="@drawable/redminipoint"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="9sp"
+                android:text="99"
+                />
+                <!--
+                android:visibility="gone"
+                -->
+
         </LinearLayout>
 
 

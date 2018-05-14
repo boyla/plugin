@@ -36,13 +36,6 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	public String selfIntroduce;
     public String birth;
 
-    //just for chat page
-    public int unReadNum;
-    public boolean isInConversation = false;
-    public long updateTime;
-    public boolean sendSuccess = true;
-    public String lastMsg = "Hello dude.";
-
     @Override
 	public String toString() {
 		return "objectId = " + objectId
