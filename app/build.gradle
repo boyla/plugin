@@ -5,15 +5,15 @@ apply plugin: 'realm-android'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 //    aaptOptions.cruncherEnabled = false
 //    aaptOptions.useNewCruncher = false
 
     defaultConfig {
         applicationId "top.wifistar"
-        minSdkVersion 14
-        targetSdkVersion 24
+        minSdkVersion 16
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -105,4 +105,5 @@ dependencies {
     //    implementation "com.andkulikov:transitionseverywhere:1.6.9"
     implementation project(':IM')
     implementation 'com.kongzue.dialog:dialog:2.0.1'
+    implementation 'com.airbnb.android:lottie:2.5.4'
 }

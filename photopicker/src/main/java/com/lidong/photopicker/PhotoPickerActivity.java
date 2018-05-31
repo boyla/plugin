@@ -224,17 +224,17 @@ public class PhotoPickerActivity extends AppCompatActivity {
         mCxt = this;
         captureManager = new ImageCaptureManager(mCxt);
         // ActionBar Setting
-        Toolbar toolbar = (Toolbar) findViewById(R.id.pickerToolbar);
+        Toolbar toolbar =  findViewById(R.id.pickerToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getResources().getString(R.string.image));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mGridView = (GridView) findViewById(R.id.grid);
+        mGridView = findViewById(R.id.grid);
         mGridView.setNumColumns(getNumColnums());
 
         mPopupAnchorView = findViewById(R.id.photo_picker_footer);
-        btnAlbum = (Button) findViewById(R.id.btnAlbum);
-        btnPreview = (Button) findViewById(R.id.btnPreview);
+        btnAlbum = findViewById(R.id.btnAlbum);
+        btnPreview = findViewById(R.id.btnPreview);
     }
 
     @Override

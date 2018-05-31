@@ -6,19 +6,18 @@ import android.support.v7.widget.Toolbar
 import android.text.TextUtils
 import android.view.*
 import android.widget.*
-import com.flyco.dialog.entity.DialogMenuItem
-import com.flyco.dialog.widget.NormalListDialog
+import com.airbnb.lottie.LottieAnimationView
 import kotlinx.android.synthetic.main.activity_edit_info.*
 import top.wifistar.R
-import top.wifistar.adapter.SingleChoiceAdapter
 import top.wifistar.app.ToolbarActivity
 import top.wifistar.bean.BUser
 import top.wifistar.bean.bmob.BmobUtils
 import top.wifistar.bean.bmob.User
 import top.wifistar.utils.Utils
-import java.util.ArrayList
 import com.kongzue.dialog.listener.InputDialogOkButtonClickListener
 import com.kongzue.dialog.v2.InputDialog
+import android.animation.ValueAnimator
+
 
 
 class EditProfileActivity : ToolbarActivity() {
@@ -38,6 +37,12 @@ class EditProfileActivity : ToolbarActivity() {
             return
         }
         initText()
+        lavSwitch.setAnimation("lottie/sex.json")
+        if(mUser.sex!=0){
+            lavSwitch.progress = 1f
+        }else{
+            lavSwitch.progress = 0f
+        }
         setClickListener()
 
     }
@@ -60,14 +65,7 @@ class EditProfileActivity : ToolbarActivity() {
                 }
             })
         }
-        rlSex.setOnClickListener {
-            showSingleChoiceDialog("修改性别", arrayOf("女", "男"), mUser.sex, object : SingleChoiceDialogCallBack {
-                override fun onFinish(result: Int) {
-                    mUser.sex = result
-                    tvSex.text = if (mUser.sex == 0) "女" else "男"
-                }
-            })
-        }
+
         rlBirth.setOnClickListener {
             openDatePicker()
         }
@@ -106,6 +104,17 @@ class EditProfileActivity : ToolbarActivity() {
                 }
             })
         }
+        lavSwitch.setOnClickListener {
+            if(mUser.sex!=0){
+                startAnima(lavSwitch,1f,0f)
+                lavSwitch.progress = 0f
+                mUser.sex = 0
+            }else{
+                startAnima(lavSwitch,0f,1f)
+                lavSwitch.progress = 1f
+                mUser.sex = 1
+            }
+        }
     }
 
     private fun commitData() {
@@ -121,30 +130,12 @@ class EditProfileActivity : ToolbarActivity() {
         }).setDefaultInputHint(if (TextUtils.isEmpty(content)) "" else content)
     }
 
-    private fun showSingleChoiceDialog(title: String, strings: Array<String>, sex: Int, singleChoiceDialogCallBack: EditProfileActivity.SingleChoiceDialogCallBack) {
-        var mMenuItems = ArrayList<DialogMenuItem>()
-        for (item in strings) {
-            mMenuItems.add(DialogMenuItem(item, 0))
-        }
-        val singleChoiceDialog = NormalListDialog(mContext, SingleChoiceAdapter(mContext, mMenuItems)).titleBgColor(0x88FF571D2.toInt()).titleTextColor(0xFFFFFFFFF.toInt()).layoutAnimation(null)
-        singleChoiceDialog.title(title).show()
-        singleChoiceDialog.setOnOperItemClickL({ parent, view, position, id ->
-            singleChoiceDialogCallBack.onFinish(position)
-            singleChoiceDialog.dismiss()
-        })
-    }
-
     interface EditDialogCallBack {
         fun onFinish(result: String)
     }
 
-    interface SingleChoiceDialogCallBack {
-        fun onFinish(result: Int)
-    }
-
     private fun initText() {
         tvNickName.text = mUser.name
-        tvSex.text = if (mUser.sex == 0) "女" else "男"
         tvBirth.text = mUser.birth
         tvEmail.text = BUser.getCurrentUser().email
         tvSignature1.text = mUser.startWord1
@@ -186,5 +177,11 @@ class EditProfileActivity : ToolbarActivity() {
         val datePicker = dialog.datePicker
         datePicker.maxDate = System.currentTimeMillis()
         dialog.show()
+    }
+
+    fun startAnima(animationView: LottieAnimationView, start:Float, end:Float){
+        val animator = ValueAnimator.ofFloat(start, end)
+        animator.addUpdateListener { animation -> animationView.progress = animation?.animatedValue as Float }
+        animator.start()
     }
 }

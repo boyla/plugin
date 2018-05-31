@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/activity_bg"
     android:fitsSystemWindows="true">
 
@@ -14,7 +15,7 @@
         <RelativeLayout
             android:id="@+id/rlNick"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
@@ -54,43 +55,33 @@
             android:layout_height="2px"
             android:background="@color/divider_line_default_color" />
 
-        <RelativeLayout
-            android:id="@+id/rlSex"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingBottom="15dp"
+            android:orientation="horizontal"
             android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="15dp">
+            android:paddingRight="10dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="性别"
                 android:textColor="@color/base_color_text_grey"
+                android:layout_gravity="center_vertical"
                 android:textSize="18sp" />
 
-            <ImageView
-                android:id="@+id/iv_edit_user_info_arrow_sex"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/ic_keyboard_arrow_right_blue_grey_900_24dp" />
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/lavSwitch"
+                android:layout_width="60dp"
+                android:layout_height="100dp"
+                android:layout_marginRight="5dp"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="5dp" />
 
-            <TextView
-                android:id="@+id/tvSex"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="10dp"
-                android:layout_toLeftOf="@+id/iv_edit_user_info_arrow_sex"
-                android:text="女"
-                android:textColor="@color/base_color_text_black"
-                android:textSize="16sp" />
-        </RelativeLayout>
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
@@ -100,7 +91,7 @@
         <RelativeLayout
             android:id="@+id/rlBirth"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
@@ -143,7 +134,7 @@
         <RelativeLayout
             android:id="@+id/rlEmail"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:paddingBottom="15dp"
             android:paddingLeft="10dp"
@@ -183,7 +174,7 @@
         <RelativeLayout
             android:id="@+id/rlSignature1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:paddingBottom="15dp"
             android:paddingLeft="10dp"
@@ -229,7 +220,7 @@
         <RelativeLayout
             android:id="@+id/rlSignature2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
@@ -275,7 +266,7 @@
         <RelativeLayout
             android:id="@+id/rlSignature3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
@@ -321,7 +312,7 @@
         <RelativeLayout
             android:id="@+id/rlSelfIntro"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="#FFFFFF"
             android:clickable="true"
             android:focusable="true"
