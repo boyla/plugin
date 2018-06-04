@@ -41,6 +41,7 @@ import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.bean.bmob.Comment;
 //import top.wifistar.bean.demo.Favor;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.customview.CircleVideoView;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.PraiseListView;
@@ -429,8 +430,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             setUserToHolder(moment, holder);
             return;
         }
-        //TODO first query from db, if no data query Bmob
-        Utils.queryShortUser(moment.getUser().getObjectId(), new Utils.QueryUsesrCallBack() {
+        Utils.queryShortUser(moment.getUser().getObjectId(), new NetUserRequest.NetRequestCallBack() {
 
             @Override
             public void onSuccess(User user) {
@@ -439,8 +439,8 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             }
 
             @Override
-            public void onFailure(Exception e) {
-                Utils.showToast("获取用户失败：" + e.getMessage());
+            public void onFailure(String e) {
+                Utils.showToast("获取用户失败：" + e);
             }
         });
     }

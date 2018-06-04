@@ -18,13 +18,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.QueryListener;
 import top.wifistar.app.App;
 import top.wifistar.bean.bmob.Comment;
 import top.wifistar.R;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.utils.UrlUtils;
 import top.wifistar.utils.Utils;
 
@@ -122,7 +120,7 @@ public class CommentListView extends LinearLayout {
         final CircleMovementMethod circleMovementMethod = new CircleMovementMethod(itemSelectorColor, itemSelectorColor);
         final Comment bean = mDatas.get(position);
         String userId = bean.getUser().getObjectId().trim();
-        Utils.QueryUsesrCallBack queryUsesrCallBack = new Utils.QueryUsesrCallBack() {
+        NetUserRequest.NetRequestCallBack queryUsesrCallBack = new NetUserRequest.NetRequestCallBack() {
             @Override
             public void onSuccess(User user) {
                 bean.setUser(user);
@@ -164,8 +162,8 @@ public class CommentListView extends LinearLayout {
             }
 
             @Override
-            public void onFailure(Exception e) {
-                Utils.showToast("获取用户失败");
+            public void onFailure(String e) {
+                Utils.showToast("获取用户失败:"+e);
             }
         };
         if(TextUtils.isEmpty(bean.user.getName())){

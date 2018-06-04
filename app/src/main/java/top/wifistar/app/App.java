@@ -85,7 +85,7 @@ public class App extends MultiDexApplication {
 
     public static LinkedList<Activity> activityStack = new LinkedList<Activity>();
 
-    private static Handler mHandler;
+    public static Handler mHandler;
 
     public static UserProfile currentUserProfile;
 

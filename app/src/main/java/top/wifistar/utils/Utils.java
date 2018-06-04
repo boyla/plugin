@@ -53,7 +53,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
 import com.scottyab.aescrypt.AESCrypt;
 
-import cn.bmob.imdemo.util.DisplayConfig;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
@@ -68,6 +67,8 @@ import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.BmobUtils;
+import top.wifistar.chain.user.NetUserRequest;
+import top.wifistar.chain.user.UserChainHandler;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.realm.BaseRealmDao;
@@ -86,7 +87,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -994,14 +994,14 @@ public class Utils {
 
         if (needJumpPage) {
             imageView.setOnClickListener(v -> {
-                queryShortUserFromDB(shortProfile.getObjectId(), new QueryUsesrCallBack() {
+                queryShortUser(shortProfile.getObjectId(), new NetUserRequest.NetRequestCallBack() {
                     @Override
                     public void onSuccess(User user) {
                         jumpToProfile(context, user, imageView);
                     }
 
                     @Override
-                    public void onFailure(Exception e) {
+                    public void onFailure(String msg) {
                         jumpToProfile(context, shortProfile, imageView);
                     }
                 });
@@ -1312,25 +1312,20 @@ public class Utils {
         }
     }
 
-    public interface QueryUsesrCallBack {
-        void onSuccess(User user);
-
-        void onFailure(Exception e);
-    }
 
     static Map<String, User> cacheUsers = new ConcurrentHashMap<>();
-
-    public static void queryShortUser(String shortUserObjId, QueryUsesrCallBack callBack) {
-        //First, find user in cache
-        User cachedUser = cacheUsers.get(shortUserObjId);
-        if (cachedUser != null && !TextUtils.isEmpty(cachedUser.getName())) {
-            callBack.onSuccess(cachedUser);
-            return;
+    static UserChainHandler userChainHandler = new UserChainHandler();
+    public static void queryShortUser(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
+        //First, find user in local
+        User local = userChainHandler.getUserByLocal(shortUserObjId);
+        if (local != null && !TextUtils.isEmpty(local.getName())) {
+            callBack.onSuccess(local);
+        }else{
+            App.getHandler().postDelayed(() -> queryShortUser(shortUserObjId,callBack),444);
         }
-        queryShortUserFromDB(shortUserObjId, callBack);
     }
 
-    public static void queryShortUserFromDB(String shortUserObjId, QueryUsesrCallBack callBack) {
+    public static void queryShortUserFromDB(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", shortUserObjId).findAll();
         if (dbData.isEmpty()) {
             //didn't find in db, query Bmob
@@ -1343,7 +1338,7 @@ public class Utils {
                         cacheUsers.put(shortUserObjId, user);
                         callBack.onSuccess(user);
                     } else {
-                        callBack.onFailure(e);
+                        callBack.onFailure(e.getMessage());
                     }
                 }
             });
