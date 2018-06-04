@@ -36,6 +36,9 @@ public class UserChainHandler {
                 if (request instanceof DBUserRequest) {
                     memRequest.insertOrUpdate(temp);
                 }
+                if (callBack != null){
+                    callBack.onSuccess(temp);
+                }
                 return temp;
             } else {
                 if (request instanceof NetUserRequest) {

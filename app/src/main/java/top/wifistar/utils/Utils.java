@@ -944,6 +944,8 @@ public class Utils {
             mCustomLogo.setVisibility(View.INVISIBLE);
             setUserAvatar(user, mCustomLogo);
             mCustomLogo.setVisibility(View.VISIBLE);
+        }else{
+            App.getHandler().postDelayed(()->{setUserAvatar(mCustomLogo);},444);
         }
     }
 
@@ -1316,13 +1318,7 @@ public class Utils {
     static Map<String, User> cacheUsers = new ConcurrentHashMap<>();
     static UserChainHandler userChainHandler = new UserChainHandler();
     public static void queryShortUser(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
-        //First, find user in local
-        User local = userChainHandler.getUserByLocal(shortUserObjId);
-        if (local != null && !TextUtils.isEmpty(local.getName())) {
-            callBack.onSuccess(local);
-        }else{
-            App.getHandler().postDelayed(() -> queryShortUser(shortUserObjId,callBack),444);
-        }
+        userChainHandler.getUserByLocal(shortUserObjId,callBack);
     }
 
     public static void queryShortUserFromDB(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
