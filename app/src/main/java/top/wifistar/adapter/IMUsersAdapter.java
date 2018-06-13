@@ -146,7 +146,6 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("c", conversation);
                         bundle.putSerializable("ShortUser",shortUser);
-                        bundle.putBoolean("isFromProfile",true);
                         Intent intent = new Intent(itemView.getContext(),ChatActivity.class);
                         intent.putExtras(bundle);
 
