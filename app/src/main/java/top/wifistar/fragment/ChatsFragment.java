@@ -206,8 +206,12 @@ public class ChatsFragment extends BaseFragment {
                     datas.addAll(0, tempUnReadData);
                 }
             }
+            progressCombineView.showContent();
             mAdapter.notifyDataSetChanged();
             xRecyclerView.refreshComplete();
+        }else{
+            xRecyclerView.refreshComplete();
+            progressCombineView.showCustom();
         }
     }
 

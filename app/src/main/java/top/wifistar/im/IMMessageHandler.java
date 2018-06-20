@@ -40,10 +40,12 @@ import top.wifistar.activity.HomeActivity;
 import top.wifistar.app.BaseActivity;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.EventUtils;
+import top.wifistar.utils.Utils;
 
 /**
  * Created by boyla on 2018/5/3.
@@ -89,11 +91,11 @@ public class IMMessageHandler extends BmobIMMessageHandler {
         //检测用户信息是否需要更新
         final IMUserRealm rawUser = BaseRealmDao.realm.where(IMUserRealm.class).equalTo("objectId", event.getFromUserInfo().getUserId()).findFirst();
         if (rawUser == null || TextUtils.isEmpty(rawUser.name)) {
-            //尝试网络获取
-            BmobUtils.querySingleUser(event.getFromUserInfo().getUserId(), new BmobUtils.BmobDoneListener<User>() {
+            //获取用户信息
+            Utils.queryShortUser(event.getFromUserInfo().getUserId(), new NetUserRequest.NetRequestCallBack() {
                 @Override
-                public void onSuccess(User res) {
-                    handleMsg(res.toIMRealm(), event, false);
+                public void onSuccess(User user) {
+                    handleMsg(user.toIMRealm(), event, false);
                 }
 
                 @Override
