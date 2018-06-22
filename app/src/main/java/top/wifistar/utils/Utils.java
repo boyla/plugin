@@ -1321,6 +1321,10 @@ public class Utils {
         userChainHandler.getUserByLocal(shortUserObjId,callBack);
     }
 
+    public static void updateUser(User user){
+        userChainHandler.updateUser(user);
+    }
+
     public static void queryShortUserFromDB(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", shortUserObjId).findAll();
         if (dbData.isEmpty()) {

@@ -17,6 +17,7 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.kongzue.dialog.v2.DialogSettings;
 
 import org.greenrobot.eventbus.EventBus;
@@ -93,9 +94,12 @@ public class App extends MultiDexApplication {
     public static int conn_attempt_times = 0;
 
     public static Boolean isApplicationToBackground = true;
-//    public NoticeBean cache_noticeBean = new NoticeBean();
-//
-//    public DbUtils countryDbUtils;
+
+    public static String WIFI_HOST;
+
+    public static boolean SELF_WLAN_SERVER_AVALIABLE;
+
+    public static Gson gson = new Gson();
 
     public static final ExecutorService pool = Executors.newFixedThreadPool(5);
     RealmConfiguration realmConfig;

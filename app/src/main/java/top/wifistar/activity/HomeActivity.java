@@ -3,13 +3,11 @@ package top.wifistar.activity;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -17,23 +15,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import cn.bmob.imdemo.event.RefreshEvent;
-import cn.bmob.newim.BmobIM;
-import cn.bmob.newim.bean.BmobIMUserInfo;
-import cn.bmob.newim.core.ConnectionStatus;
-import cn.bmob.newim.listener.ConnectListener;
-import cn.bmob.newim.listener.ConnectStatusChangeListener;
-import cn.bmob.v3.exception.BmobException;
-import top.wifistar.bean.bmob.User;
+import top.wifistar.app.App;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.event.RefreshAvatarsEvent;
+import top.wifistar.httpserver.NetUtils;
+import top.wifistar.httpserver.ServerManager;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
+import static top.wifistar.app.App.SELF_WLAN_SERVER_AVALIABLE;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_BLOG_DISCOVER;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CHATS;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CONNECTIONS;
@@ -49,6 +43,7 @@ public class HomeActivity extends ToolbarActivity {
     boolean isFirstIn = true;
     public List<ImageView> selfAvatarsInMomentList = new ArrayList<>();
     public static HomeActivity INSTANCE;
+    ServerManager mServerManager;
 
     @Override
     protected void initUI() {
@@ -62,6 +57,12 @@ public class HomeActivity extends ToolbarActivity {
         EventUtils.registerEventBus(this);
         refreshPage();
         selfAvatarsInMomentList.add(mCustomLogo);
+        //LAN server
+        mServerManager = new ServerManager(this);
+        mServerManager.register();
+        mServerManager.startService();
+        NetUtils.userJson = App.gson.toJson(Utils.getCurrentShortUser());
+        new Thread(() -> NetUtils.scan()).start();
     }
 
     @Override
@@ -88,6 +89,7 @@ public class HomeActivity extends ToolbarActivity {
     @Override
     protected void onDestroy() {
         EventUtils.unregisterEventBus(this);
+        mServerManager.unRegister();
         super.onDestroy();
     }
 
@@ -203,6 +205,31 @@ public class HomeActivity extends ToolbarActivity {
 
     public OnSharedViewListener getSharedViewListener() {
         return sharedViewListener;
+    }
+
+    public void onServerStart(String ip) {
+        SELF_WLAN_SERVER_AVALIABLE = true;
+        System.out.println("Self WLAN server started on " + ip);
+    }
+
+    public void onServerError(String msg) {
+        SELF_WLAN_SERVER_AVALIABLE = false;
+        System.out.println("Self WLAN server error: " + msg);
+        refreshServer();
+    }
+
+    public void onServerStop() {
+        SELF_WLAN_SERVER_AVALIABLE = false;
+        System.out.println("Self WLAN server stopped");
+        refreshServer();
+    }
+
+    private void refreshServer() {
+        if(!SELF_WLAN_SERVER_AVALIABLE){
+            System.out.println("Restart WLAN server...");
+            mServerManager.stopService();
+            App.getHandler().postDelayed(()->mServerManager.startService(),2222);
+        }
     }
 
     public interface OnSharedViewListener {

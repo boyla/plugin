@@ -2,12 +2,9 @@ package top.wifistar.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,23 +13,17 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.util.Date;
 import java.util.List;
 
-import cn.bmob.imdemo.util.Util;
 import cn.bmob.newim.bean.BmobIMConversation;
-import io.realm.Realm;
 import top.wifistar.R;
 import top.wifistar.activity.ChatActivity;
-import top.wifistar.activity.UserProfileActivity;
 import top.wifistar.app.BaseActivity;
 import top.wifistar.bean.bmob.User;
-import top.wifistar.customview.BadgeView;
-import top.wifistar.im.IMUser;
+import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
-import top.wifistar.utils.TimeUtils;
 import top.wifistar.utils.Utils;
 
 public class IMUsersAdapter extends BaseRecycleViewAdapter {
@@ -97,15 +88,23 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
         }
 
         textViewHolder.mTime.setText(Utils.getFuzzyTime2(imUser.updateTime));
-        if(!TextUtils.isEmpty(imUser.lastMsg)){
-            showMessageContent(imUser.lastMsg,textViewHolder.mMessageInfo);
+        if (!TextUtils.isEmpty(imUser.lastMsg)) {
+            showMessageContent(imUser.lastMsg, textViewHolder.mMessageInfo);
         }
-        if(imUser.unReadNum>0){
-            textViewHolder.mNewPoint.setText(""+imUser.unReadNum);
+        if (imUser.unReadNum > 0) {
+            textViewHolder.mNewPoint.setText("" + imUser.unReadNum);
             textViewHolder.mNewPoint.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             textViewHolder.mNewPoint.setVisibility(View.GONE);
         }
+        boolean found = false;
+        for(User user: NetUtils.usersInWiFi){
+            if (user.getObjectId().equals(imUser.objectId)) {
+                found = true;
+                break;
+            }
+        }
+        textViewHolder.tvWiFi.setVisibility(found ? View.VISIBLE : View.GONE);
     }
 
     private void showMessageContent(String str, TextView textView) {
@@ -117,12 +116,12 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
         LinearLayout mLinearLayout;
         ImageView mHeadImg;
         TextView mNewPoint;
-        View mViewGender;
         TextView mUserName;
         TextView mMessageInfo;
         TextView mTime;
         ImageView message_send_failed;
         RelativeLayout rlHeader;
+        TextView tvWiFi;
         public User shortUser;
         public IMUserRealm imUser;
 
@@ -132,7 +131,7 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
             mHeadImg = (ImageView) itemView.findViewById(R.id.imageView_avatar);
             mNewPoint = (TextView) itemView.findViewById(R.id.message_item_has_new_message);
             mUserName = (TextView) itemView.findViewById(R.id.textview_username);
-            mViewGender = itemView.findViewById(R.id.imageview_gender);
+            tvWiFi = itemView.findViewById(R.id.tvWiFi);
             mMessageInfo = (TextView) itemView.findViewById(R.id.textview_content);
             mTime = (TextView) itemView.findViewById(R.id.textview_time);
             mLinearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout_item);
@@ -141,21 +140,21 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(shortUser!=null  && !TextUtils.isEmpty(shortUser.getObjectId())){
+                    if (shortUser != null && !TextUtils.isEmpty(shortUser.getObjectId())) {
                         BmobIMConversation conversation = IMUtils.getConversationEntranceByShortUser(shortUser);
                         Bundle bundle = new Bundle();
                         bundle.putSerializable("c", conversation);
-                        bundle.putSerializable("ShortUser",shortUser);
-                        Intent intent = new Intent(itemView.getContext(),ChatActivity.class);
+                        bundle.putSerializable("ShortUser", shortUser);
+                        Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                         intent.putExtras(bundle);
 
-                        BaseRealmDao.realm = ((BaseActivity)itemView.getContext()).realm;
+                        BaseRealmDao.realm = ((BaseActivity) itemView.getContext()).realm;
                         BaseRealmDao.realm.beginTransaction();
                         imUser.unReadNum = 0;
                         BaseRealmDao.realm.commitTransaction();
                         mNewPoint.setVisibility(View.GONE);
                         itemView.getContext().startActivity(intent);
-                    }else{
+                    } else {
                         Utils.makeSysToast("未获取用户信息");
                     }
                 }
@@ -164,8 +163,8 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
             mHeadImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(shortUser!=null){
-                        Utils.jumpToProfile(mHeadImg.getContext(),shortUser,mHeadImg);
+                    if (shortUser != null) {
+                        Utils.jumpToProfile(mHeadImg.getContext(), shortUser, mHeadImg);
                     }
                 }
             });

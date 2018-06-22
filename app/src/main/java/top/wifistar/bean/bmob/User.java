@@ -31,6 +31,7 @@ public class User extends BmobObject implements ToRealmObject {
 	public String startWord3;
 	public String selfIntroduce;
 	public String birth;
+	public boolean isHost = false;
 
 	public User(){}
 

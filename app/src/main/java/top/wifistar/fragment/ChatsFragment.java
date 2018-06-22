@@ -23,13 +23,18 @@ import io.realm.RealmResults;
 import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.adapter.IMUsersAdapter;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.OnTouchXRecyclerView;
 import top.wifistar.customview.ProgressCombineView;
 import top.wifistar.customview.RecyclerViewDivider;
 import top.wifistar.event.BottomMenuItemClickEvent;
+import top.wifistar.event.EurekaEvent;
+import top.wifistar.httpserver.NetUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.EventUtils;
+
+import static top.wifistar.httpserver.NetUtils.usersInWiFi;
 
 /**
  * Created by hasee on 2017/4/8.
@@ -187,6 +192,35 @@ public class ChatsFragment extends BaseFragment {
 //        }
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onNewGuy(EurekaEvent event) {
+        User user = event.user;
+        if (user == null) {
+            return;
+        }
+        addUser(user);
+        mAdapter.notifyDataSetChanged();
+//        if (xRecyclerView != null) {
+//            xRecyclerView.scrollToPosition(View.SCROLL_INDICATOR_TOP);
+//        }
+    }
+
+    private void addUser(User user) {
+        boolean found = false;
+        for (IMUserRealm item : datas) {
+            if (item.objectId.equals(user.getObjectId())) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            IMUserRealm realm = user.toIMRealm();
+            realm.updateTime = System.currentTimeMillis();
+            realm.lastMsg = "TA在你身边";
+            datas.add(0,realm);
+        }
+    }
+
     private void loadConversationsData() {
         datas.clear();
         RealmResults<IMUserRealm> dbData = (RealmResults<IMUserRealm>) BaseRealmDao.findAll(IMUserRealm.class, "updateTime");
@@ -206,6 +240,12 @@ public class ChatsFragment extends BaseFragment {
                     datas.addAll(0, tempUnReadData);
                 }
             }
+        }
+
+        for(User item: NetUtils.usersInWiFi){
+            addUser(item);
+        }
+        if(datas.size()>0){
             progressCombineView.showContent();
             mAdapter.notifyDataSetChanged();
             xRecyclerView.refreshComplete();

@@ -43,14 +43,18 @@
                 android:layout_height="wrap_content"
                 tools:text="Bill Gates" />
 
-            <ImageView
-                android:id="@+id/imageview_gender"
-                android:layout_width="13dp"
-                android:layout_height="13dp"
-                android:layout_centerVertical="true"
+            <TextView
+                android:id="@+id/tvWiFi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:text="WiFi"
+                android:textSize="8sp"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_wifi"
                 android:layout_marginLeft="7dp"
-                android:layout_toRightOf="@id/textview_username"
-                android:contentDescription="@string/app_name" />
+                android:layout_toRightOf="@id/textview_username" />
 
             <LinearLayout
                 android:id="@+id/linearlayout_time"
