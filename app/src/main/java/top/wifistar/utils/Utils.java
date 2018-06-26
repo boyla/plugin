@@ -1118,9 +1118,6 @@ public class Utils {
         if (BUser.getCurrentUser() == null) {
             return null;
         }
-        if(BaseRealmDao.realm == null){
-            BaseRealmDao.realm = Realm.getDefaultInstance();
-        }
         String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", id).findAll();
         if (dbData.isLoaded()) {

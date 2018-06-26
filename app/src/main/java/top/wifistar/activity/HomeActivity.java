@@ -104,22 +104,7 @@ public class HomeActivity extends ToolbarActivity {
     }
 
     public void refreshTopAvatar() {
-        User currentUser = Utils.getCurrentShortUser();
-        if(currentUser.isGenerate){
-            Utils.queryUserByNet(currentUser.getObjectId(), new NetUserRequest.NetRequestCallBack() {
-                @Override
-                public void onSuccess(User user) {
-                    Utils.setUserAvatar(mCustomLogo);
-                }
-
-                @Override
-                public void onFailure(String msg) {
-                    Utils.makeSysToast(msg);
-                }
-            });
-        }else{
-            Utils.setUserAvatar(mCustomLogo);
-        }
+        Utils.setUserAvatar(mCustomLogo);
     }
 
     public void reSetAvatarList() {

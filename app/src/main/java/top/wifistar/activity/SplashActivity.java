@@ -568,7 +568,6 @@ public class SplashActivity extends BaseActivity {
             nickName = App.currentUserProfile.getNickName();
         }
         User user = new User(nickName, App.currentUserProfile.getAvatar() + "");
-        user.isGenerate = true;
         user.id = profileId;
         user.sex = App.currentUserProfile.getSex();
         user.save(new SaveListener<String>() {
@@ -578,7 +577,6 @@ public class SplashActivity extends BaseActivity {
                     Utils.showToast(e.getMessage());
                 } else {
                     user.setObjectId(objId);
-                    user.isGenerate = false;
                     BaseRealmDao.insertOrUpdate(user.toRealmObject());
                     ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                 }
