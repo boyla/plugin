@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.bmob.imdemo.ui.MainActivity;
 import cn.bmob.imdemo.util.Util;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMAudioMessage;
@@ -397,7 +398,21 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 
         btn_chat_emo.setOnClickListener(v -> {
             if (layout_more.getVisibility() == View.GONE) {
-                showEditState(true);
+                Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+                    @Override
+                    public void onPermissionResult(Permiso.ResultSet resultSet) {
+                        if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            showEditState(true);
+                        } else {
+                            Toast.makeText(ChatActivity.this,"发送文件需要权限，请到应用权限中进行设置",Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    @Override
+                    public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+                        Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "发送文件需要权限，请到应用权限中进行设置", null, callback);
+                    }
+                }, Manifest.permission.READ_EXTERNAL_STORAGE);
+
             } else {
                 if (layout_add.getVisibility() == View.VISIBLE) {
                     layout_add.setVisibility(View.GONE);

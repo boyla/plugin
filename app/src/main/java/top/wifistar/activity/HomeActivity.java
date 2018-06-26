@@ -28,6 +28,7 @@ import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.httpserver.ServerManager;
 import top.wifistar.utils.EventUtils;
+import top.wifistar.utils.UpdateUtils;
 import top.wifistar.utils.Utils;
 
 import static top.wifistar.app.App.SELF_WLAN_SERVER_AVALIABLE;
@@ -66,6 +67,11 @@ public class HomeActivity extends ToolbarActivity {
         mServerManager.startService();
         NetUtils.userJson = App.gson.toJson(Utils.getCurrentShortUser());
         new Thread(() -> NetUtils.scan()).start();
+        try {
+            UpdateUtils.check4Update(this);
+        } catch (Exception e) {
+            System.out.println("Update exception:" + e.getMessage());
+        }
     }
 
     @Override
