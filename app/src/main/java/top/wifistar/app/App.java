@@ -193,6 +193,7 @@ public class App extends MultiDexApplication {
 
         new DataBaseSyncTask(getDefaultDBInstallDir(), DB_NAME).execute(0);
         DialogSettings.type = DialogSettings.TYPE_IOS;
+
     }
 
     private String getDefaultDBInstallDir() {

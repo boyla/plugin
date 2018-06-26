@@ -56,6 +56,7 @@ import com.scottyab.aescrypt.AESCrypt;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
@@ -1117,6 +1118,9 @@ public class Utils {
         if (BUser.getCurrentUser() == null) {
             return null;
         }
+        if(BaseRealmDao.realm == null){
+            BaseRealmDao.realm = Realm.getDefaultInstance();
+        }
         String id = ACache.get(App.getInstance()).getAsString("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId());
         RealmResults<UserRealm> dbData = BaseRealmDao.realm.where(UserRealm.class).equalTo("objectId", id).findAll();
         if (dbData.isLoaded()) {
@@ -1319,6 +1323,10 @@ public class Utils {
     static UserChainHandler userChainHandler = new UserChainHandler();
     public static void queryShortUser(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
         userChainHandler.getUserByLocal(shortUserObjId,callBack);
+    }
+
+    public static void queryUserByNet(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
+        userChainHandler.getUserByNet(shortUserObjId,callBack);
     }
 
     public static void updateUser(User user){

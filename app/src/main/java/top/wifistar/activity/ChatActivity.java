@@ -121,6 +121,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
         ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
         ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
+        layout_emo = bindViewById(cn.bmob.imdemo.R.id.layout_emo);
         BmobIMConversation conversationEntrance = (BmobIMConversation) getIntent().getExtras().getSerializable("c");
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
         isFromProfile = getIntent().getExtras().getBoolean("isFromProfile");

@@ -35,6 +35,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	public String startWord3;
 	public String selfIntroduce;
     public String birth;
+	public boolean isGenerate;
 
     @Override
 	public String toString() {
@@ -69,6 +70,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 		user.startWord3 = startWord3;
 		user.selfIntroduce = selfIntroduce;
 		user.birth = birth;
+		user.isGenerate = isGenerate;
 
 		return user;
 	}

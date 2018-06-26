@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 
 import top.wifistar.app.App;
+import top.wifistar.bean.bmob.User;
+import top.wifistar.chain.user.NetUserRequest;
+import top.wifistar.chain.user.UserChainHandler;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
@@ -50,8 +53,8 @@ public class HomeActivity extends ToolbarActivity {
         super.setContentView(R.layout.activity_main);
         INSTANCE = this;
         refreshTopAvatar();
-        topReminder = (TopReminder) findViewById(R.id.topReminder);
-        bottomMenuView = (BottomMenuView) findViewById(R.id.bottomMenuView);
+        topReminder = findViewById(R.id.topReminder);
+        bottomMenuView = findViewById(R.id.bottomMenuView);
         editTextBodyLl = findViewById(R.id.editTextBodyLl);
         setToolbarTitle();
         EventUtils.registerEventBus(this);
@@ -101,7 +104,22 @@ public class HomeActivity extends ToolbarActivity {
     }
 
     public void refreshTopAvatar() {
-        Utils.setUserAvatar(mCustomLogo);
+        User currentUser = Utils.getCurrentShortUser();
+        if(currentUser.isGenerate){
+            Utils.queryUserByNet(currentUser.getObjectId(), new NetUserRequest.NetRequestCallBack() {
+                @Override
+                public void onSuccess(User user) {
+                    Utils.setUserAvatar(mCustomLogo);
+                }
+
+                @Override
+                public void onFailure(String msg) {
+                    Utils.makeSysToast(msg);
+                }
+            });
+        }else{
+            Utils.setUserAvatar(mCustomLogo);
+        }
     }
 
     public void reSetAvatarList() {

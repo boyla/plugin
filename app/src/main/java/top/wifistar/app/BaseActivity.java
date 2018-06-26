@@ -52,6 +52,10 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        BaseRealmDao.realm = Realm.getDefaultInstance();
+
+        realm = BaseRealmDao.realm;
+
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(null);
 //        getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -77,9 +81,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
         //register network monitor receiver
         IntentFilter filter=new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-
-        BaseRealmDao.realm = Realm.getDefaultInstance();
-        realm = BaseRealmDao.realm;
 
     }
 

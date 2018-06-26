@@ -336,7 +336,7 @@ public class SplashActivity extends BaseActivity {
                     ACache.get(context).put("CURRENT_USER_" + bmobUser.getObjectId(), bmobUser);
                     ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
                     App.currentUserProfile = profile;
-                    generateNewUser(profileId);
+                    generateNewUserAndSave(profileId);
                 }
             }
         });
@@ -510,7 +510,7 @@ public class SplashActivity extends BaseActivity {
                                         }
                                     }
                                 });
-                                generateNewUser(profileId);
+                                generateNewUserAndSave(profileId);
                                 ACache.get(context).put("CURRENT_USER_" + bmobUser.getObjectId(), bmobUser);
                                 ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
                                 loadingDialog.dismiss();
@@ -529,7 +529,7 @@ public class SplashActivity extends BaseActivity {
                             ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), userProfile);
                             loadingDialog.dismiss();
                             count++;
-                            updateUserAndJump(null);
+                            checkJump();
                         }
                     });
 
@@ -539,12 +539,13 @@ public class SplashActivity extends BaseActivity {
                         @Override
                         public void done(List<User> list, BmobException e) {
                             if (e == null && list != null && list.size() > 0) {
+                                Utils.updateUser(list.get(0));
                                 String objId = list.get(0).getObjectId();
                                 ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                                 count++;
-                                updateUserAndJump(list.get(0));
+                                checkJump();
                             } else {
-                                generateNewUser(bmobUser.getProfileId());
+                                generateNewUserAndSave(bmobUser.getProfileId());
                                 goToMain();
                             }
                         }
@@ -554,20 +555,20 @@ public class SplashActivity extends BaseActivity {
         });
     }
 
-    private void updateUserAndJump(User user) {
+    private void checkJump() {
         if (count == 2) {
-            Utils.updateUserFromProfile(user);
             goToMain();
         }
     }
 
-    private void generateNewUser(String profileId) {
+    private void generateNewUserAndSave(String profileId) {
         //generate a user and save, then cache the obj id
         String nickName = "";
         if (App.currentUserProfile != null && !TextUtils.isEmpty(App.currentUserProfile.getNickName())) {
             nickName = App.currentUserProfile.getNickName();
         }
         User user = new User(nickName, App.currentUserProfile.getAvatar() + "");
+        user.isGenerate = true;
         user.id = profileId;
         user.sex = App.currentUserProfile.getSex();
         user.save(new SaveListener<String>() {
@@ -577,6 +578,7 @@ public class SplashActivity extends BaseActivity {
                     Utils.showToast(e.getMessage());
                 } else {
                     user.setObjectId(objId);
+                    user.isGenerate = false;
                     BaseRealmDao.insertOrUpdate(user.toRealmObject());
                     ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
                 }
