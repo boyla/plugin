@@ -140,7 +140,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(item.getItemId() == R.id.setting){
+                if (item.getItemId() == R.id.setting) {
                     Utils.makeSysToast("Settings");
                 }
                 return true;
@@ -151,9 +151,15 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     private void initSwipeLayout() {
         sw_refresh.setEnabled(true);
         layoutManager = new LinearLayoutManager(this);
+        layoutManager.setStackFromEnd(true);
         rc_view.setLayoutManager(layoutManager);
         adapter = new ChatMsgAdapter(this, mConversationManager);
         rc_view.setAdapter(adapter);
+        rc_view.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (bottom < oldBottom) {
+                rc_view.postDelayed(() -> rc_view.scrollToPosition(adapter.getCount() - 1), 100);
+            }
+        });
         ll_chat.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -164,45 +170,36 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             }
         });
         //下拉加载
-        sw_refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                BmobIMMessage msg = adapter.getFirstMessage();
-                queryMessages(msg);
-            }
+        sw_refresh.setOnRefreshListener(() -> {
+            BmobIMMessage msg = adapter.getFirstMessage();
+            queryMessages(msg);
         });
         //设置RecyclerView的点击事件
         adapter.setOnRecyclerViewListener(new OnRecyclerViewListener() {
             @Override
-            public void onItemClick(int position) {
-
-            }
+            public void onItemClick(int position) {}
 
             @Override
             public boolean onItemLongClick(int position) {
-                Utils.showSimpleDialog(ChatActivity.this,"要删除该消息吗？",new DialogInterface.OnClickListener(){
+                Utils.showSimpleDialog(ChatActivity.this, "要删除该消息吗？", new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //TODO 消息：5.3、删除指定聊天消息
                         mConversationManager.deleteMessage(adapter.getItem(position));
                         adapter.remove(position);
-                    }
-                });
+                    }});
                 return true;
             }
         });
     }
 
     private void initBottomView() {
-        edit_msg.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_UP) {
-                    scrollToBottom();
-                }
-                return false;
+        edit_msg.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_UP) {
+                scrollToBottom();
             }
+            return false;
         });
         edit_msg.addTextChangedListener(new TextWatcher() {
 
@@ -244,9 +241,10 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         initRecordManager();
     }
 
-    public User getCurrentUser(){
+    public User getCurrentUser() {
         return shortUser;
     }
+
     /**
      * 初始化语音动画资源
      *
@@ -402,9 +400,10 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                         if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                             showEditState(true);
                         } else {
-                            Toast.makeText(ChatActivity.this,"发送文件需要权限，请到应用权限中进行设置",Toast.LENGTH_LONG).show();
+                            Toast.makeText(ChatActivity.this, "发送文件需要权限，请到应用权限中进行设置", Toast.LENGTH_LONG).show();
                         }
                     }
+
                     @Override
                     public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
                         Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "发送文件需要权限，请到应用权限中进行设置", null, callback);
@@ -683,8 +682,8 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             scrollToBottom();
             if (e != null) {
                 Utils.makeSysToast(e.getMessage());
-            }else{
-                if(userToSave!=null){
+            } else {
+                if (userToSave != null) {
                     userToSave.sendSuccess = true;
                     BaseRealmDao.insertOrUpdate(userToSave);
                     EventUtils.post(userToSave);

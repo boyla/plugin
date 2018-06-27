@@ -106,7 +106,8 @@
 
         <activity android:name=".activity.PublishMomentActivity"/>
 
-        <activity android:name=".activity.ChatActivity"/>
+        <activity android:name=".activity.ChatActivity"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity android:name="com.lidong.photopicker.PhotoPickerActivity"/>
 
