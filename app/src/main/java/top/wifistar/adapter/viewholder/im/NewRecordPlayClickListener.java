@@ -11,10 +11,10 @@ import android.widget.ImageView;
 import java.io.File;
 import java.io.FileInputStream;
 
-import cn.bmob.imdemo.R;
 import cn.bmob.newim.bean.BmobIMAudioMessage;
 import cn.bmob.newim.core.BmobDownloadManager;
 import cn.bmob.v3.BmobUser;
+import top.wifistar.R;
 
 public class NewRecordPlayClickListener implements View.OnClickListener {
 
@@ -113,9 +113,9 @@ public class NewRecordPlayClickListener implements View.OnClickListener {
 
 	private void stopRecordAnimation() {
 		if (message.getFromId().equals(currentObjectId)) {
-			iv_voice.setImageResource(R.mipmap.voice_left3);
+			iv_voice.setImageResource(R.drawable.voice_left3);
 		} else {
-			iv_voice.setImageResource(R.mipmap.voice_right3);
+			iv_voice.setImageResource(R.drawable.voice_right3);
 		}
 		if (anim != null) {
 			anim.stop();

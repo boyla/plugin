@@ -244,5 +244,9 @@
 -keep class org.parceler.** { *; }
 -keep class sun.nio.** { *; }
 
+-keepclassmembers class **.R$* {
+    public static <fields>;
+    public static final int *;
+}
 
 

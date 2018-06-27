@@ -13,14 +13,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
-
 import java.text.SimpleDateFormat;
-import cn.bmob.imdemo.base.ImageLoaderFactory;
 import cn.bmob.newim.bean.BmobIMImageMessage;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import top.wifistar.R;
 import top.wifistar.utils.GlideCircleTransform;
+import top.wifistar.utils.Utils;
 
 /**
  * 接收到的文本类型
@@ -49,7 +48,13 @@ public class ReceiveImageHolder extends BaseViewHolder {
     BmobIMMessage msg = (BmobIMMessage)o;
     //用户信息的获取必须在buildFromDB之前，否则会报错'Entity is detached from DAO context'
     final BmobIMUserInfo info = msg.getBmobIMUserInfo();
-    ImageLoaderFactory.getLoader().loadAvator(iv_avatar,info != null ? info.getAvatar() : null, R.mipmap.head);
+    String avatarUrl = info != null ? info.getAvatar() : null;
+    Glide.with(context)
+            .load(!Utils.isEmpty(avatarUrl) ? avatarUrl : R.drawable.default_avartar)
+            .dontAnimate()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .bitmapTransform(new GlideCircleTransform(context))
+            .into(iv_avatar);
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
     String time = dateFormat.format(msg.getCreateTime());
     tv_time.setText(time);

@@ -107,6 +107,15 @@
     <color name="chat_bottom_divider">#ffa1a1a1</color>
     <color name="base_color_bg_gray">#e3e3e3</color>
     <color name="divider_line_default_color">#d9d9d9</color>
+    <color name="color_msg_system_time_bg">#20000000</color>
+    <color name="color_chat_send_status">#818181</color>
+    <color name="base_color_text_white">#ffffff</color>
+    <color name="color_99">#999999</color>
+    <color name="color_1e1e1e">#1e1e1e</color>
+    <color name="color_b4">#b4b4b4</color>
+    <color name="color_emote_divder">#ffa1a1a1</color>
+    <color name="color_line">#dadada</color>
+
 
 
 </resources>

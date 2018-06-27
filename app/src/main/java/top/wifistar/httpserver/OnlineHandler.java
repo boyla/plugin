@@ -49,7 +49,7 @@ public class OnlineHandler implements RequestHandler {
         String userJson = URLDecoder.decode(params.get("user"), "utf-8");
         User user = App.gson.fromJson(userJson, User.class);
         App.getHandler().post(() ->{
-            if(!Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())){
+            if(Utils.getCurrentShortUser()!=null && !Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())){
                 Utils.updateUser(user);
                 NetUtils.usersInWiFi.add(user);
                 EventUtils.post(new EurekaEvent(user));

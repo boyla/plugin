@@ -1020,7 +1020,7 @@ public class Utils {
             bundle.putBoolean("isFromChat", true);
         }
         intent.putExtras(bundle);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && imageView!=null) {
             // 创建一个包含过渡动画信息的 ActivityOptions 对象
             Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, imageView, App.getApp().getString(R.string.transition_name_head_img)).toBundle();
             // 使用 Intent 跳转界面，并传递共享对象信息
@@ -1353,6 +1353,14 @@ public class Utils {
             cacheUsers.put(shortUserObjId, user);
             callBack.onSuccess(user);
         }
+    }
+
+    public static boolean checkSdCard() {
+        if (android.os.Environment.getExternalStorageState().equals(
+                android.os.Environment.MEDIA_MOUNTED))
+            return true;
+        else
+            return false;
     }
 
     interface GetCacheGlideFileCallBack {

@@ -38,7 +38,7 @@
                 android:layout_height="100dp"
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/action_settings"
-                android:src="@mipmap/chat_icon_voice1" />
+                android:src="@drawable/chat_icon_voice1" />
 
             <TextView
                 android:id="@+id/tv_voice_tips"

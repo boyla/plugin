@@ -16,18 +16,12 @@ import android.os.Message;
 import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.google.gson.Gson;
 import com.kongzue.dialog.v2.DialogSettings;
-
 import org.greenrobot.eventbus.EventBus;
-
-import cn.bmob.imdemo.base.UniversalImageLoader;
-import cn.bmob.imdemo.event.RefreshEvent;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.ConnectionStatus;
-import cn.bmob.newim.listener.BmobIMMessageHandler;
 import cn.bmob.newim.listener.ConnectListener;
 import cn.bmob.newim.listener.ConnectStatusChangeListener;
 import cn.bmob.push.BmobPush;
@@ -42,6 +36,7 @@ import top.wifistar.R;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
+import top.wifistar.event.RefreshEvent;
 import top.wifistar.im.IMMessageHandler;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;

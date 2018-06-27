@@ -37,8 +37,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.bmob.imdemo.ui.MainActivity;
-import cn.bmob.imdemo.util.Util;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMAudioMessage;
 import cn.bmob.newim.bean.BmobIMConversation;
@@ -105,24 +103,24 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 
     @Override
     protected void initUI() {
-        super.setContentView(cn.bmob.imdemo.R.layout.activity_chat);
-        ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
-        sw_refresh = bindViewById(cn.bmob.imdemo.R.id.sw_refresh);
-        rc_view = bindViewById(cn.bmob.imdemo.R.id.rc_view);
-        edit_msg = bindViewById(cn.bmob.imdemo.R.id.edit_msg);
-        btn_chat_add = bindViewById(cn.bmob.imdemo.R.id.btn_chat_add);
-        btn_chat_emo = bindViewById(cn.bmob.imdemo.R.id.btn_chat_emo);
-        btn_speak = bindViewById(cn.bmob.imdemo.R.id.btn_speak);
-        btn_chat_voice = bindViewById(cn.bmob.imdemo.R.id.btn_chat_voice);
-        btn_chat_keyboard = bindViewById(cn.bmob.imdemo.R.id.btn_chat_keyboard);
-        btn_chat_send = bindViewById(cn.bmob.imdemo.R.id.btn_chat_send);
-        layout_more = bindViewById(cn.bmob.imdemo.R.id.layout_more);
-        layout_add = bindViewById(cn.bmob.imdemo.R.id.layout_add);
-        ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
-        ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
-        ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
-        ll_chat = bindViewById(cn.bmob.imdemo.R.id.ll_chat);
-        layout_emo = bindViewById(cn.bmob.imdemo.R.id.layout_emo);
+        super.setContentView(R.layout.activity_chat);
+        ll_chat = bindViewById(R.id.ll_chat);
+        sw_refresh = bindViewById(R.id.sw_refresh);
+        rc_view = bindViewById(R.id.rc_view);
+        edit_msg = bindViewById(R.id.edit_msg);
+        btn_chat_add = bindViewById(R.id.btn_chat_add);
+        btn_chat_emo = bindViewById(R.id.btn_chat_emo);
+        btn_speak = bindViewById(R.id.btn_speak);
+        btn_chat_voice = bindViewById(R.id.btn_chat_voice);
+        btn_chat_keyboard = bindViewById(R.id.btn_chat_keyboard);
+        btn_chat_send = bindViewById(R.id.btn_chat_send);
+        layout_more = bindViewById(R.id.layout_more);
+        layout_add = bindViewById(R.id.layout_add);
+        ll_chat = bindViewById(R.id.ll_chat);
+        ll_chat = bindViewById(R.id.ll_chat);
+        ll_chat = bindViewById(R.id.ll_chat);
+        ll_chat = bindViewById(R.id.ll_chat);
+        layout_emo = bindViewById(R.id.layout_emo);
         BmobIMConversation conversationEntrance = (BmobIMConversation) getIntent().getExtras().getSerializable("c");
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
         isFromProfile = getIntent().getExtras().getBoolean("isFromProfile");
@@ -258,11 +256,11 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
      */
     private void initVoiceAnimRes() {
         drawable_Anims = new Drawable[]{
-                getResources().getDrawable(cn.bmob.imdemo.R.mipmap.chat_icon_voice2),
-                getResources().getDrawable(cn.bmob.imdemo.R.mipmap.chat_icon_voice3),
-                getResources().getDrawable(cn.bmob.imdemo.R.mipmap.chat_icon_voice4),
-                getResources().getDrawable(cn.bmob.imdemo.R.mipmap.chat_icon_voice5),
-                getResources().getDrawable(cn.bmob.imdemo.R.mipmap.chat_icon_voice6)};
+                getResources().getDrawable(R.drawable.chat_icon_voice2),
+                getResources().getDrawable(R.drawable.chat_icon_voice3),
+                getResources().getDrawable(R.drawable.chat_icon_voice4),
+                getResources().getDrawable(R.drawable.chat_icon_voice5),
+                getResources().getDrawable(R.drawable.chat_icon_voice6)};
     }
 
     private void initRecordManager() {
@@ -317,14 +315,14 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (!Util.checkSdCard()) {
+                    if (!Utils.checkSdCard()) {
                         Utils.makeSysToast("发送语音需要sdcard支持！");
                         return false;
                     }
                     try {
                         v.setPressed(true);
                         layout_record.setVisibility(View.VISIBLE);
-                        tv_voice_tips.setText(getString(cn.bmob.imdemo.R.string.voice_cancel_tips));
+                        tv_voice_tips.setText(getString(R.string.voice_cancel_tips));
                         // 开始录音
                         recordManager.startRecording(mConversationManager.getConversationId());
                     } catch (Exception e) {
@@ -333,10 +331,10 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                     return true;
                 case MotionEvent.ACTION_MOVE: {
                     if (event.getY() < 0) {
-                        tv_voice_tips.setText(getString(cn.bmob.imdemo.R.string.voice_cancel_tips));
+                        tv_voice_tips.setText(getString(R.string.voice_cancel_tips));
                         tv_voice_tips.setTextColor(Color.RED);
                     } else {
-                        tv_voice_tips.setText(getString(cn.bmob.imdemo.R.string.voice_up_tips));
+                        tv_voice_tips.setText(getString(R.string.voice_up_tips));
                         tv_voice_tips.setTextColor(Color.WHITE);
                     }
                     return true;
@@ -380,7 +378,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             toast = new Toast(this);
         }
         View view = LayoutInflater.from(this).inflate(
-                cn.bmob.imdemo.R.layout.include_chat_voice_short, null);
+                R.layout.include_chat_voice_short, null);
         toast.setView(view);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.setDuration(Toast.LENGTH_SHORT);
@@ -468,13 +466,13 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             }, Manifest.permission.READ_PHONE_STATE);
 
         });
-        layout_add.findViewById(cn.bmob.imdemo.R.id.tv_picture).setOnClickListener(v -> {
+        layout_add.findViewById(R.id.tv_picture).setOnClickListener(v -> {
             sendLocalImageMessage();
         });
-        layout_add.findViewById(cn.bmob.imdemo.R.id.tv_camera).setOnClickListener(v -> {
+        layout_add.findViewById(R.id.tv_camera).setOnClickListener(v -> {
             sendRemoteImageMessage();
         });
-        layout_add.findViewById(cn.bmob.imdemo.R.id.tv_location).setOnClickListener(v -> {
+        layout_add.findViewById(R.id.tv_location).setOnClickListener(v -> {
             sendLocationMessage();
         });
     }

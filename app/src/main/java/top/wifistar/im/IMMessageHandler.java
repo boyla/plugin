@@ -13,14 +13,6 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.List;
 import java.util.Map;
 
-import cn.bmob.imdemo.bean.AddFriendMessage;
-import cn.bmob.imdemo.bean.AgreeAddFriendMessage;
-import cn.bmob.imdemo.db.NewFriend;
-import cn.bmob.imdemo.db.NewFriendManager;
-import cn.bmob.imdemo.event.RefreshEvent;
-import cn.bmob.imdemo.model.UserModel;
-import cn.bmob.imdemo.ui.MainActivity;
-import cn.bmob.imdemo.ui.SplashActivity;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMMessage;
@@ -30,17 +22,16 @@ import cn.bmob.newim.event.MessageEvent;
 import cn.bmob.newim.event.OfflineMessageEvent;
 import cn.bmob.newim.listener.BmobIMMessageHandler;
 import cn.bmob.newim.notification.BmobNotificationManager;
-import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.SaveListener;
-import io.realm.Realm;
-import io.realm.RealmObject;
+
 import top.wifistar.R;
 import top.wifistar.activity.ChatActivity;
 import top.wifistar.activity.HomeActivity;
+import top.wifistar.activity.SplashActivity;
 import top.wifistar.app.BaseActivity;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.chain.user.NetUserRequest;
+import top.wifistar.event.RefreshEvent;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.realm.IMUserRealm;
@@ -205,21 +196,21 @@ public class IMMessageHandler extends BmobIMMessageHandler {
         //发送页面刷新的广播
         EventBus.getDefault().post(new RefreshEvent());
         //处理消息
-        if (type.equals(AddFriendMessage.ADD)) {//接收到的添加好友的请求
-            NewFriend friend = AddFriendMessage.convert(msg);
-            //本地好友请求表做下校验，本地没有的才允许显示通知栏--有可能离线消息会有些重复
-            long id = NewFriendManager.getInstance(context).insertOrUpdateNewFriend(friend);
-            if (id > 0) {
-                showAddNotify(friend);
-            }
-        } else if (type.equals(AgreeAddFriendMessage.AGREE)) {//接收到的对方同意添加自己为好友,此时需要做的事情：1、添加对方为好友，2、显示通知
-            AgreeAddFriendMessage agree = AgreeAddFriendMessage.convert(msg);
-            addFriend(agree.getFromId());//添加消息的发送方为好友
-            //这里应该也需要做下校验--来检测下是否已经同意过该好友请求，我这里省略了
-            showAgreeNotify(info, agree);
-        } else {
-            Toast.makeText(context, "接收到的自定义消息：" + msg.getMsgType() + "," + msg.getContent() + "," + msg.getExtra(), Toast.LENGTH_SHORT).show();
-        }
+//        if (type.equals(AddFriendMessage.ADD)) {//接收到的添加好友的请求
+//            NewFriend friend = AddFriendMessage.convert(msg);
+//            //本地好友请求表做下校验，本地没有的才允许显示通知栏--有可能离线消息会有些重复
+//            long id = NewFriendManager.getInstance(context).insertOrUpdateNewFriend(friend);
+//            if (id > 0) {
+//                showAddNotify(friend);
+//            }
+//        } else if (type.equals(AgreeAddFriendMessage.AGREE)) {//接收到的对方同意添加自己为好友,此时需要做的事情：1、添加对方为好友，2、显示通知
+//            AgreeAddFriendMessage agree = AgreeAddFriendMessage.convert(msg);
+//            addFriend(agree.getFromId());//添加消息的发送方为好友
+//            //这里应该也需要做下校验--来检测下是否已经同意过该好友请求，我这里省略了
+//            showAgreeNotify(info, agree);
+//        } else {
+//            Toast.makeText(context, "接收到的自定义消息：" + msg.getMsgType() + "," + msg.getContent() + "," + msg.getExtra(), Toast.LENGTH_SHORT).show();
+//        }
     }
 
     /**
@@ -227,14 +218,14 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      *
      * @param friend
      */
-    private void showAddNotify(NewFriend friend) {
-        Intent pendingIntent = new Intent(context, HomeActivity.class);
-        pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        //这里可以是应用图标，也可以将聊天头像转成bitmap
-        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-        BmobNotificationManager.getInstance(context).showNotification(largeIcon,
-                friend.getName(), friend.getMsg(), friend.getName() + "请求添加你为朋友", pendingIntent);
-    }
+//    private void showAddNotify(NewFriend friend) {
+//        Intent pendingIntent = new Intent(context, HomeActivity.class);
+//        pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        //这里可以是应用图标，也可以将聊天头像转成bitmap
+//        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+//        BmobNotificationManager.getInstance(context).showNotification(largeIcon,
+//                friend.getName(), friend.getMsg(), friend.getName() + "请求添加你为朋友", pendingIntent);
+//    }
 
     /**
      * 显示对方同意添加自己为好友的通知
@@ -242,12 +233,12 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      * @param info
      * @param agree
      */
-    private void showAgreeNotify(BmobIMUserInfo info, AgreeAddFriendMessage agree) {
-        Intent pendingIntent = new Intent(context, HomeActivity.class);
-        pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-        BmobNotificationManager.getInstance(context).showNotification(largeIcon, info.getName(), agree.getMsg(), agree.getMsg(), pendingIntent);
-    }
+//    private void showAgreeNotify(BmobIMUserInfo info, AgreeAddFriendMessage agree) {
+//        Intent pendingIntent = new Intent(context, HomeActivity.class);
+//        pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
+//        BmobNotificationManager.getInstance(context).showNotification(largeIcon, info.getName(), agree.getMsg(), agree.getMsg(), pendingIntent);
+//    }
 
     /**
      * TODO 好友管理：9.11、收到同意添加好友后添加好友

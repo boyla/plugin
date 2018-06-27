@@ -8,12 +8,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import cn.bmob.imdemo.R;
-import cn.bmob.imdemo.adapter.OnRecyclerViewListener;
-import cn.bmob.imdemo.adapter.base.BaseViewHolder;
-import cn.bmob.imdemo.base.ImageLoaderFactory;
-import cn.bmob.imdemo.bean.User;
-import cn.bmob.imdemo.ui.UserInfoActivity;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+
+import top.wifistar.R;
+import top.wifistar.bean.bmob.User;
+import top.wifistar.utils.GlideCircleTransform;
+import top.wifistar.utils.Utils;
 
 public class SearchUserHolder extends BaseViewHolder {
 
@@ -35,14 +36,20 @@ public class SearchUserHolder extends BaseViewHolder {
   @Override
   public void bindData(Object o) {
     final User user =(User)o;
-    ImageLoaderFactory.getLoader().loadAvator(avatar,user.getAvatar(), R.mipmap.head);
-    name.setText(user.getUsername());
+    String avatarUrl = user != null ? user.getHeadUrl() : null;
+    Glide.with(context)
+            .load(!Utils.isEmpty(avatarUrl) ? avatarUrl : R.drawable.default_avartar)
+            .dontAnimate()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .bitmapTransform(new GlideCircleTransform(context))
+            .into(avatar);
+    name.setText(user.getName());
     btn_add.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {//查看个人详情
           Bundle bundle = new Bundle();
           bundle.putSerializable("u", user);
-          startActivity(UserInfoActivity.class,bundle);
+          Utils.jumpToProfile(context,user,null);
         }
     });
   }
