@@ -38,7 +38,6 @@ import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
 import top.wifistar.event.RefreshEvent;
 import top.wifistar.im.IMMessageHandler;
-import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.CacheUtils;
 import top.wifistar.utils.Utils;
@@ -188,7 +187,6 @@ public class App extends MultiDexApplication {
 
         new DataBaseSyncTask(getDefaultDBInstallDir(), DB_NAME).execute(0);
         DialogSettings.type = DialogSettings.TYPE_IOS;
-
     }
 
     private String getDefaultDBInstallDir() {

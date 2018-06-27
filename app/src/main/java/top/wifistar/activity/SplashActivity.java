@@ -51,6 +51,10 @@ import top.wifistar.utils.ACache;
 import top.wifistar.utils.ProgressDialogUtil;
 import top.wifistar.utils.Utils;
 
+import static top.wifistar.utils.ACache.CURRENT_USER_CACHE;
+import static top.wifistar.utils.ACache.PROFILE_CACHE;
+import static top.wifistar.utils.ACache.SHORT_USER_ID_CACHE;
+
 
 public class SplashActivity extends BaseActivity {
 
@@ -77,11 +81,11 @@ public class SplashActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_splash);
-        flStart = (FrameLayout) findViewById(R.id.flStart);
-        flWords = (FrameLayout) findViewById(R.id.flWords);
-        tvWelcome = (TextView) flWords.findViewById(R.id.tvWelcome);
-        ivBackground = (ImageView) findViewById(R.id.ivBackground);
-        topReminder = (TopReminder) findViewById(R.id.topReminder);
+        flStart = findViewById(R.id.flStart);
+        flWords = findViewById(R.id.flWords);
+        tvWelcome = flWords.findViewById(R.id.tvWelcome);
+        ivBackground = findViewById(R.id.ivBackground);
+        topReminder = findViewById(R.id.topReminder);
         context = this;
         setSplashWord();
         String cacheToken = ACache.get(this).getAsString("token");
@@ -108,7 +112,6 @@ public class SplashActivity extends BaseActivity {
         } else {
             canLogin = true;
         }
-
     }
 
     private void setSplashWord() {
@@ -136,7 +139,7 @@ public class SplashActivity extends BaseActivity {
 
 
     private void goToMain() {
-        App.currentUserProfile = (UserProfile) ACache.get(context).getAsObject("CURRENT_USER_PROFILE_" + BUser.getCurrentUser().getObjectId());
+        App.currentUserProfile = (UserProfile) ACache.get(context).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
         HomeActivity.isFirstLogin = true;
         startActivity(new Intent(context, HomeActivity.class));
         finish();
@@ -333,8 +336,8 @@ public class SplashActivity extends BaseActivity {
                             }
                         }
                     });
-                    ACache.get(context).put("CURRENT_USER_" + bmobUser.getObjectId(), bmobUser);
-                    ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
+                    ACache.get(context).put(CURRENT_USER_CACHE + bmobUser.getObjectId(), bmobUser);
+                    ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), profile);
                     App.currentUserProfile = profile;
                     generateNewUserAndSave(profileId);
                 }
@@ -501,6 +504,7 @@ public class SplashActivity extends BaseActivity {
                             if (e != null) {
                                 Utils.showToast(topReminder, e.getMessage());
                             } else {
+                                App.currentUserProfile = profile;
                                 bmobUser.setProfileId(profileId);
                                 bmobUser.update(bmobUser.getObjectId(), new UpdateListener() {
                                     @Override
@@ -511,8 +515,8 @@ public class SplashActivity extends BaseActivity {
                                     }
                                 });
                                 generateNewUserAndSave(profileId);
-                                ACache.get(context).put("CURRENT_USER_" + bmobUser.getObjectId(), bmobUser);
-                                ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), profile);
+                                ACache.get(context).put(CURRENT_USER_CACHE + bmobUser.getObjectId(), bmobUser);
+                                ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), profile);
                                 loadingDialog.dismiss();
                                 goToMain();
                             }
@@ -526,7 +530,7 @@ public class SplashActivity extends BaseActivity {
                         @Override
                         public void done(UserProfile userProfile, BmobException e) {
                             App.currentUserProfile = userProfile;
-                            ACache.get(context).put("CURRENT_USER_PROFILE_" + bmobUser.getObjectId(), userProfile);
+                            ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), userProfile);
                             loadingDialog.dismiss();
                             count++;
                             checkJump();
@@ -541,7 +545,7 @@ public class SplashActivity extends BaseActivity {
                             if (e == null && list != null && list.size() > 0) {
                                 Utils.updateUser(list.get(0));
                                 String objId = list.get(0).getObjectId();
-                                ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
+                                ACache.get(context).put(SHORT_USER_ID_CACHE + BUser.getCurrentUser().getObjectId(), objId);
                                 count++;
                                 checkJump();
                             } else {
@@ -578,7 +582,7 @@ public class SplashActivity extends BaseActivity {
                 } else {
                     user.setObjectId(objId);
                     BaseRealmDao.insertOrUpdate(user.toRealmObject());
-                    ACache.get(context).put("SHORT_USER_ID_" + BUser.getCurrentUser().getObjectId(), objId);
+                    ACache.get(context).put(SHORT_USER_ID_CACHE + BUser.getCurrentUser().getObjectId(), objId);
                 }
             }
         });

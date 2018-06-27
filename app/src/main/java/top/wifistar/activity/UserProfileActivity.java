@@ -56,6 +56,7 @@ import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 
 import top.wifistar.app.App;
+import top.wifistar.bean.BUser;
 import top.wifistar.bean.LocationBean;
 import top.wifistar.bean.CNLocationBean;
 import top.wifistar.bean.bmob.BmobUtils;
@@ -68,8 +69,11 @@ import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.FollowRealm;
+import top.wifistar.utils.ACache;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
+
+import static top.wifistar.utils.ACache.PROFILE_CACHE;
 
 
 /**
@@ -126,15 +130,15 @@ public class UserProfileActivity extends AppCompatActivity {
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
-        isFromChat = getIntent().getExtras().getBoolean("isFromChat",false);
+        isFromChat = getIntent().getExtras().getBoolean("isFromChat", false);
         ivHead = (ImageView) findViewById(R.id.ivHead);
         mToolbar.setTitle("");
 
         showUserInfo(shortUser);
-        BmobUtils.querySingleUser(shortUser.getObjectId(),new BmobUtils.BmobDoneListener<User>() {
+        BmobUtils.querySingleUser(shortUser.getObjectId(), new BmobUtils.BmobDoneListener<User>() {
             @Override
             public void onSuccess(User res) {
-                if(!shortUser.equals(res)){
+                if (!shortUser.equals(res)) {
                     shortUser = res;
                     BaseRealmDao.insertOrUpdate(shortUser.toRealmObject());
                     showUserInfo(shortUser);
@@ -143,7 +147,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(String msg) {
-                Log.d("querySingleBmob failed:",msg);
+                Log.d("querySingleBmob failed:", msg);
             }
         });
 
@@ -214,6 +218,9 @@ public class UserProfileActivity extends AppCompatActivity {
             new Thread(() -> {
                 LocationBean locationBean = getLocationByIp(isChinese);
                 if (locationBean != null) {
+                    if (TextUtils.isEmpty(locationBean.getCountry_name())) {
+                        return;
+                    }
                     shortUser.country = locationBean.getCountry_name();
                     shortUser.region = locationBean.getRegion_name();
                     shortUser.city = locationBean.getCity();
@@ -228,7 +235,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                     tvInfo.post(() -> {
                         tvInfo.setText(getAgeByBirth(shortUser.birth) + ", " + shortUser.loaction);
-                        BmobUtils.updateUser(shortUser);
+                        Utils.updateUser(shortUser);
                     });
                 }
             }).start();
@@ -238,7 +245,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
             initFollow();
             tvAddFan.setOnClickListener((v) -> {
-                WaitDialog waitDialog = WaitDialog.show(this,"请稍后...");
+                WaitDialog waitDialog = WaitDialog.show(this, "请稍后...");
                 if (followRealm != null && followRealm.isFollowing) {
                     //取消关注
                     Follow follow = followRealm.toBmobObject();
@@ -257,7 +264,7 @@ public class UserProfileActivity extends AppCompatActivity {
                     });
                 } else {
                     //添加关注
-                    if(followRealm==null){
+                    if (followRealm == null) {
                         Follow follow = new Follow();
                         follow.follower = follower;
                         follow.followed = followed;
@@ -275,7 +282,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 }
                             }
                         });
-                    }else{
+                    } else {
                         Follow follow = followRealm.toBmobObject();
                         follow.isFollowing = true;
                         follow.update(new UpdateListener() {
@@ -296,16 +303,16 @@ public class UserProfileActivity extends AppCompatActivity {
 
             });
             vSendMail.setOnClickListener((v) -> {
-                if(isFromChat){
+                if (isFromChat) {
                     finish();
                     overridePendingTransition(R.anim.activity_right_in, R.anim.activity_right_out);
-                }else{
+                } else {
                     BmobIMConversation conversation = IMUtils.getConversationEntranceByShortUser(shortUser);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("c", conversation);
-                    bundle.putSerializable("ShortUser",shortUser);
-                    bundle.putBoolean("isFromProfile",true);
-                    Intent intent = new Intent(this,ChatActivity.class);
+                    bundle.putSerializable("ShortUser", shortUser);
+                    bundle.putBoolean("isFromProfile", true);
+                    Intent intent = new Intent(this, ChatActivity.class);
                     intent.putExtras(bundle);
                     UserProfileActivity.this.startActivity(intent);
                 }
@@ -337,7 +344,7 @@ public class UserProfileActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date birthDate;
         try {
-             birthDate = sdf.parse(birthStr);
+            birthDate = sdf.parse(birthStr);
         } catch (Exception e) {
             e.printStackTrace();
             return age;
@@ -367,24 +374,24 @@ public class UserProfileActivity extends AppCompatActivity {
         //from realm
         followRealm = BaseRealmDao.realm.where(FollowRealm.class).equalTo("follower", follower).equalTo("followed", followed).findFirst();
         //from bmob
-        if(followRealm==null){
+        if (followRealm == null) {
             BmobQuery<Follow> query = new BmobQuery<>();
             query.addWhereEqualTo("follower", follower);
             query.addWhereEqualTo("followed", followed);
             query.findObjects(new FindListener<Follow>() {
                 @Override
                 public void done(List<Follow> list, BmobException e) {
-                    if(e==null && list.size()>0){
+                    if (e == null && list.size() > 0) {
                         Follow follow = list.get(0);
-                        if(follow.isFollowing){
+                        if (follow.isFollowing) {
                             tvAddFan.setText("已关注");
                         }
                         BaseRealmDao.insertOrUpdate(follow.toRealmObject());
                     }
                 }
             });
-        }else{
-            if(followRealm.isFollowing){
+        } else {
+            if (followRealm.isFollowing) {
                 tvAddFan.setText("已关注");
             }
         }
@@ -698,6 +705,7 @@ public class UserProfileActivity extends AppCompatActivity {
         Permiso.getInstance().setActivity(this);
         if (isSelfProfile()) {
             shortUser = Utils.getCurrentShortUser();
+            App.currentUserProfile = (UserProfile) ACache.get(this).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
             UserProfile userProfile = App.currentUserProfile;
             tvName.setText(shortUser.getName());
             userProfile.nickName = shortUser.getName();

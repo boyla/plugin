@@ -238,15 +238,18 @@
 -dontnote rx.internal.util.PlatformDependent
 
 # Bmob IM
--keep class cn.bmob.imdemo.** { *; }
+-keep class cn.bmob.** { *; }
+-dontwarn cn.bmob.**
 # parceler
 -keep class java.beans.** { *; }
--keep class org.parceler.** { *; }
+-keep class org.** { *; }
 -keep class sun.nio.** { *; }
 
 -keepclassmembers class **.R$* {
     public static <fields>;
     public static final int *;
 }
-
+-dontwarn org.**
+-dontwarn android.net.**
+-dontwarn javax.annotation.**
 

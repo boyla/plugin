@@ -52,6 +52,12 @@ import android.graphics.drawable.Drawable;
  * @author Michael Yang（www.yangfuhai.com） update at 2013.08.07
  */
 public class ACache {
+
+    public static final String PROFILE_CACHE = "CURRENT_USER_PROFILE_";
+    public static final String SHORT_USER_ID_CACHE = "SHORT_USER_ID_";
+    public static final String CURRENT_USER_CACHE = "CURRENT_USER_";
+
+
     public static final int TIME_HOUR = 60 * 60;
     public static final int TIME_DAY = TIME_HOUR * 24;
     private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb

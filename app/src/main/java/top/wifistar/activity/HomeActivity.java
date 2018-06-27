@@ -16,9 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 import top.wifistar.app.App;
-import top.wifistar.bean.bmob.User;
-import top.wifistar.chain.user.NetUserRequest;
-import top.wifistar.chain.user.UserChainHandler;
+import top.wifistar.bean.BUser;
+import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.app.ToolbarActivity;
@@ -27,6 +26,7 @@ import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.httpserver.ServerManager;
+import top.wifistar.utils.ACache;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.UpdateUtils;
 import top.wifistar.utils.Utils;
@@ -36,6 +36,7 @@ import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_BLOG_DISCOV
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CHATS;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CONNECTIONS;
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_MOMENTS;
+import static top.wifistar.utils.ACache.PROFILE_CACHE;
 
 public class HomeActivity extends ToolbarActivity {
 
@@ -54,6 +55,8 @@ public class HomeActivity extends ToolbarActivity {
         super.setContentView(R.layout.activity_main);
         INSTANCE = this;
         refreshTopAvatar();
+        if (BUser.getCurrentUser() != null)
+            App.currentUserProfile = (UserProfile) ACache.get(this).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
         topReminder = findViewById(R.id.topReminder);
         bottomMenuView = findViewById(R.id.bottomMenuView);
         editTextBodyLl = findViewById(R.id.editTextBodyLl);
@@ -234,10 +237,10 @@ public class HomeActivity extends ToolbarActivity {
     }
 
     private void refreshServer() {
-        if(!SELF_WLAN_SERVER_AVALIABLE){
+        if (!SELF_WLAN_SERVER_AVALIABLE) {
             System.out.println("Restart WLAN server...");
             mServerManager.stopService();
-            App.getHandler().postDelayed(()->mServerManager.startService(),2222);
+            App.getHandler().postDelayed(() -> mServerManager.startService(), 2222);
         }
     }
 

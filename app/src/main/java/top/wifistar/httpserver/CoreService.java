@@ -19,6 +19,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import com.yanzhenjie.andserver.AndServer;
 import com.yanzhenjie.andserver.Server;
 import com.yanzhenjie.andserver.filter.HttpCacheFilter;
@@ -62,6 +63,9 @@ public class CoreService extends Service {
         @Override
         public void onStarted() {
             String hostAddress = mServer.getInetAddress().getHostAddress();
+            if(TextUtils.isEmpty(hostAddress)){
+                hostAddress = "127.0.0.1";
+            }
             ServerManager.serverStart(CoreService.this, hostAddress);
         }
 
