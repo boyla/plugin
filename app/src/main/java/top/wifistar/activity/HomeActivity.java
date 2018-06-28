@@ -5,7 +5,6 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -16,11 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 import top.wifistar.app.App;
+import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
-import top.wifistar.app.ToolbarActivity;
 import top.wifistar.customview.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.event.RefreshAvatarsEvent;
@@ -38,15 +37,13 @@ import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_CONNECTIONS
 import static top.wifistar.fragment.FragmentPageConfig.FRAGMENT_PAGE_MOMENTS;
 import static top.wifistar.utils.ACache.PROFILE_CACHE;
 
-public class HomeActivity extends ToolbarActivity {
+public class HomeActivity extends BottomInputActivity {
 
     TopReminder topReminder;
     BottomMenuView bottomMenuView;
-    View editTextBodyLl;
     int lastBottomItem = BottomMenuView.Item_None;
     protected String currentPageStr = null;
     boolean isFirstIn = true;
-    public List<ImageView> selfAvatarsInMomentList = new ArrayList<>();
     public static HomeActivity INSTANCE;
     ServerManager mServerManager;
 
@@ -195,29 +192,6 @@ public class HomeActivity extends ToolbarActivity {
         }
     }
 
-    public void showBottomInput(int visibility) {
-        editTextBodyLl.setVisibility(visibility);
-    }
-
-    public EditText getBottomEditText() {
-        return (EditText) editTextBodyLl.findViewById(R.id.circleEt);
-    }
-
-    public ImageView getBottomImageView() {
-        return (ImageView) editTextBodyLl.findViewById(R.id.sendIv);
-    }
-
-    @Override
-    public void onActivityReenter(int resultCode, Intent data) {
-        super.onActivityReenter(resultCode, data);
-        if (resultCode == RESULT_OK && data != null) {
-            exitPosition = data.getIntExtra("exit_position", enterPosition);
-        }
-    }
-
-    public OnSharedViewListener getSharedViewListener() {
-        return sharedViewListener;
-    }
 
     public void onServerStart(String ip) {
         SELF_WLAN_SERVER_AVALIABLE = true;
@@ -244,38 +218,7 @@ public class HomeActivity extends ToolbarActivity {
         }
     }
 
-    public interface OnSharedViewListener {
-        void onSharedViewListener(View[] views, int enterPosition);
-    }
 
-    private View[] sharedViews;
-    private int exitPosition;
-    private int enterPosition;
-    private OnSharedViewListener sharedViewListener = new OnSharedViewListener() {
-        @Override
-        public void onSharedViewListener(View[] views, int enterPosition) {
-            sharedViews = views;
-            setCallback(enterPosition);
-        }
-    };
 
-    @TargetApi(21)
-    private void setCallback(final int enterPosition) {
-        this.enterPosition = enterPosition;
-        setExitSharedElementCallback(new android.support.v4.app.SharedElementCallback() {
-            @Override
-            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-                if (exitPosition != enterPosition &&
-                        names.size() > 0 && exitPosition < sharedViews.length) {
-                    names.clear();
-                    sharedElements.clear();
-                    View view = sharedViews[exitPosition];
-                    names.add(view.getTransitionName());
-                    sharedElements.put(view.getTransitionName(), view);
-                }
-                setExitSharedElementCallback((android.support.v4.app.SharedElementCallback) null);
-                sharedViews = null;
-            }
-        });
-    }
+
 }

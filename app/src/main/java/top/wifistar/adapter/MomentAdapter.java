@@ -33,6 +33,7 @@ import top.wifistar.adapter.viewholder.TextViewHolder;
 import top.wifistar.adapter.viewholder.URLViewHolder;
 import top.wifistar.adapter.viewholder.VideoViewHolder;
 import top.wifistar.app.App;
+import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.ActionItem;
@@ -69,6 +70,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     private MomentsPresenter presenter;
     private Context context;
     private HomeActivity.OnSharedViewListener sharedViewListener;
+    public User user;
 
     public void setCirclePresenter(MomentsPresenter presenter) {
         this.presenter = presenter;
@@ -79,9 +81,10 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
 
-    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener) {
+    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener,User user) {
         this.context = context;
         this.sharedViewListener = sharedViewListener;
+        this.user = user;
     }
 
     @Override
@@ -109,19 +112,15 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         if (viewType == TYPE_HEAD) {
             View headView = LayoutInflater.from(parent.getContext()).inflate(R.layout.head_circle, parent, false);
             viewHolder = new HeaderViewHolder(headView);
-            TextView tvName = (TextView) headView.findViewById(R.id.tvName);
-            ImageView ivBg = (ImageView) headView.findViewById(R.id.ivBg);
-            UserProfile profile = App.currentUserProfile;
-            if (profile != null && !TextUtils.isEmpty(profile.getNickName())) {
-                tvName.setText(profile.getNickName());
-            }
-            // TODO: change moment title background
-            User shortUser = Utils.getCurrentShortUser();
-            if (TextUtils.isEmpty(shortUser.headBgUrl)) {
+            TextView tvName = headView.findViewById(R.id.tvName);
+            ImageView ivBg = headView.findViewById(R.id.ivBg);
+            tvName.setText(user.getName());
+
+            if (TextUtils.isEmpty(user.headBgUrl)) {
                 ivBg.setImageResource(R.drawable.splash);
             } else {
                 ivBg.setImageResource(R.color.darkgray);
-                Glide.with(context).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
+                Glide.with(context).load(user.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
             }
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_moment, parent, false);
@@ -203,7 +202,9 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                                 //imagesize是作为loading时的图片size
                                 ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
                                 ImagePagerActivity.startImagePagerActivity(((ImageViewHolder) holder).multiImageView, context, photos, viewHolder.getAdapterPosition(), picPosition, imageSize);
-                                sharedViewListener.onSharedViewListener(((ImageViewHolder) holder).multiImageView.getSharedViews(), picPosition);
+                                if(sharedViewListener!=null){
+                                    sharedViewListener.onSharedViewListener(((ImageViewHolder) holder).multiImageView.getSharedViews(), picPosition);
+                                }
                             });
                         } else {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.GONE);
@@ -449,7 +450,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         User user = moment.getUser();
         //如果头像是用户自己，保存至列表
         if (Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())) {
-            ((HomeActivity) context).selfAvatarsInMomentList.add(holder.headIv);
+            ((BottomInputActivity) context).selfAvatarsInMomentList.add(holder.headIv);
         }
         holder.nameTv.setText(user.getName());
         Utils.setUserAvatar(user, holder.headIv);

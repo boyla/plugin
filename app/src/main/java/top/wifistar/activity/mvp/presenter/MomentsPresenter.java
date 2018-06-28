@@ -1,5 +1,6 @@
 package top.wifistar.activity.mvp.presenter;
 
+import android.text.TextUtils;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -41,11 +42,61 @@ public class MomentsPresenter implements MomentsContract.Presenter {
         this.view = view;
     }
 
-    public void loadData(int loadType) {
+    public void loadData(int loadType, String userId) {
         if (loadType == TYPE_PULLDOWNREFRESH) {
             NO_MORE_DATA = false;
             SKIP = 0;
         }
+        if(TextUtils.isEmpty(userId)){
+            queryBySubscribe(loadType);
+        }else{
+            queryByUser(loadType,userId);
+        }
+
+
+    }
+
+    private void queryByUser(int loadType, String userId) {
+        if (Utils.isNetworkConnected()) {
+            //TODO 有待优化，根据订阅的时间节点请求Bmob
+            BmobQuery<Moment> query = new BmobQuery<>();
+            query.addWhereEqualTo("user", userId);
+            query.setLimit(PAGE_LIMIT);
+            query.setSkip(SKIP);
+            query.order("-createdAt")
+                    .findObjects(new FindListener<Moment>() {
+                        @Override
+                        public void done(List<Moment> data, BmobException e) {
+                            if (e == null) {
+                                if (data != null) {
+                                    SKIP += data.size();
+                                    if (view != null) {
+                                        view.update2loadData(loadType, data);
+                                    }
+                                }
+                            } else {
+                                Utils.showToast(e.getMessage());
+                            }
+                        }
+                    });
+        } else {
+            RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class, "createAt");
+            if (!dbData.isEmpty()) {
+                if (dbData.isLoaded()) {
+                    // 完成查询
+                    NO_MORE_DATA = true;
+                    List<Moment> data = new ArrayList<>();
+                    for (MomentRealm momentRealm : dbData) {
+                        data.add(momentRealm.toBmobObject());
+                    }
+                    view.update2loadData(loadType, data);
+                }
+            }
+
+        }
+    }
+
+    private void queryBySubscribe(int loadType) {
         if (Utils.isNetworkConnected()) {
             //TODO 有待优化，根据订阅的时间节点请求Bmob
             BmobQuery<Moment> query = new BmobQuery<>();
@@ -68,7 +119,7 @@ public class MomentsPresenter implements MomentsContract.Presenter {
                         }
                     });
         } else {
-            RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class,"createAt");
+            RealmResults<MomentRealm> dbData = (RealmResults<MomentRealm>) BaseRealmDao.findAll(MomentRealm.class, "createAt");
             if (!dbData.isEmpty()) {
                 if (dbData.isLoaded()) {
                     // 完成查询
@@ -82,7 +133,6 @@ public class MomentsPresenter implements MomentsContract.Presenter {
             }
 
         }
-
     }
 
 
@@ -93,13 +143,13 @@ public class MomentsPresenter implements MomentsContract.Presenter {
      * @Title: deleteMoment
      * @Description: 删除动态
      */
-    public void deleteMoment(final String momentId,int position) {
+    public void deleteMoment(final String momentId, int position) {
         momentsModel.deleteMoment(momentId, new IDataRequestListener() {
 
             @Override
             public void onSuccess() {
                 if (view != null) {
-                    view.update2DeleteMoment(momentId,position);
+                    view.update2DeleteMoment(momentId, position);
                 }
             }
         });

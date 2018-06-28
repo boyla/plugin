@@ -76,7 +76,9 @@ public abstract class BaseFragment extends Fragment implements View.OnClickListe
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-        mContentView = createView(inflater, container, savedInstanceState);
+        if(mContentView == null){
+            mContentView = createView(inflater, container, savedInstanceState);
+        }
 
         mContext = mActivity = getActivity();
 

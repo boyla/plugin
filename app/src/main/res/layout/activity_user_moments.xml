@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <top.wifistar.customview.TopReminder
+            android:id="@+id/topReminder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            reminderTheme="warningTheme" />
+
+        <FrameLayout
+            android:id="@+id/flContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/editTextBodyLl"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:layout_gravity="bottom"
+        android:background="#f6f6f6"
+        android:orientation="horizontal"
+        android:focusable="true"
+        android:clickable="true"
+        android:visibility="gone"
+        >
+        <EditText
+            android:id="@+id/circleEt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textColor="@color/text_black"
+            android:textColorHint="@color/text_hint_color"
+            android:layout_weight="1"
+            android:hint="说点什么..." />
+        <ImageView
+            android:id="@+id/sendIv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:contentDescription="@null"
+            android:src="@drawable/selector_send" />
+    </LinearLayout>
+</FrameLayout>

@@ -744,6 +744,14 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
                 Glide.with(this).load(urls[i].split("_wh_")[0]).into(ivList[i]);
             }
+            llMoments.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(UserProfileActivity.this,UserMomentsActivity.class);
+                    intent.putExtra("user",shortUser);
+                    startActivity(intent);
+                }
+            });
         }
 
         if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {

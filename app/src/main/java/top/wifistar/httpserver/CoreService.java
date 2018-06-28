@@ -98,6 +98,10 @@ public class CoreService extends Service {
     private void startServer() {
         if (mServer != null) {
             if (mServer.isRunning()) {
+                if(mServer.getInetAddress()==null){
+                    System.out.println("getInetAddress null, failed to start WLAN server");
+                    return;
+                }
                 String hostAddress = mServer.getInetAddress().getHostAddress();
                 ServerManager.serverStart(CoreService.this, hostAddress);
             } else {

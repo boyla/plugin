@@ -1,5 +1,6 @@
 package top.wifistar.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -40,10 +41,12 @@ import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
 import top.wifistar.adapter.MomentAdapter;
 import top.wifistar.app.App;
+import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
+import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.OnTouchXRecyclerView;
 import top.wifistar.customview.ProgressCombineView;
@@ -85,7 +88,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     private RelativeLayout bodyLayout;
     private LinearLayoutManager layoutManager;
     private TitleBar titleBar;
-    private HomeActivity homeActivity;
+    private BottomInputActivity activity;
     public static MomentsFragment momentsFragment;
 
     public final static int TYPE_PULLDOWNREFRESH = 1;
@@ -97,6 +100,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     ProgressCombineView progressCombineView;
     public String selectMomentId;
     public User replyUser;
+    User currentUser;
 
     @Override
     protected View createView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -109,15 +113,24 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         recyclerView = bindViewById(R.id.xRecyclerView);
         progressCombineView = bindViewById(R.id.progressCombineView);
         edittextbody = getActivity().findViewById(R.id.editTextBodyLl);
-        homeActivity = (HomeActivity) getActivity();
-        editText = homeActivity.getBottomEditText();
-        sendIv = homeActivity.getBottomImageView();
+        if (getActivity() instanceof BottomInputActivity) {
+            activity = (BottomInputActivity) getActivity();
+            editText = activity.getBottomEditText();
+            sendIv = activity.getBottomImageView();
+        }
+
         presenter = new MomentsPresenter(this);
-        momentAdapter = new MomentAdapter(getActivity(), ((HomeActivity) getActivity()).getSharedViewListener());
+        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(),currentUser);
+
+        if (currentUser==null) {
+            currentUser = Utils.getCurrentShortUser();
+        }
+        momentAdapter.user = currentUser;
+
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        recyclerView.onTouchListener = () -> homeActivity.showBottomInput(View.GONE);
+        recyclerView.onTouchListener = () -> activity.showBottomInput(View.GONE);
         momentAdapter.setCirclePresenter(presenter);
         recyclerView.setAdapter(momentAdapter);
         //优化更新item时的闪烁
@@ -137,7 +150,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                         Utils.makeSysToast("评论内容不能为空...");
                         return;
                     }
-                    homeActivity.showBottomInput(View.GONE);
+                    activity.showBottomInput(View.GONE);
                     if (TextUtils.isEmpty(selectMomentId)) {
                         return;
                     }
@@ -157,8 +170,10 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         recyclerView.setLoadingListener(new XRecyclerView.LoadingListener() {
             @Override
             public void onRefresh() {
-                ((HomeActivity) mContext).reSetAvatarList();
-                presenter.loadData(TYPE_PULLDOWNREFRESH);
+                if (mContext instanceof HomeActivity) {
+                    ((HomeActivity) mContext).reSetAvatarList();
+                }
+                presenter.loadData(TYPE_PULLDOWNREFRESH, currentUser.getObjectId());
             }
 
             @Override
@@ -166,7 +181,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 if (NO_MORE_DATA) {
                     recyclerView.loadMoreComplete();
                 } else {
-                    presenter.loadData(TYPE_PULLUPMORE);
+                    presenter.loadData(TYPE_PULLUPMORE, currentUser.getObjectId());
                 }
             }
         });
@@ -175,7 +190,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
-        inflater.inflate(R.menu.add_moment, menu);
+        if (getActivity() instanceof HomeActivity) {
+            inflater.inflate(R.menu.add_moment, menu);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -220,7 +237,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 Moment moment = moments.remove(i);
                 RealmUtils.deleteFromRealmByObjId(moment.toRealmObject());
                 momentAdapter.notifyItemRemoved(position);
-                if(position != moments.size()){
+                if (position != moments.size()) {
                     momentAdapter.notifyItemRangeChanged(position, moments.size() - position);
                 }
                 if (!TextUtils.isEmpty(moment.getPhotos())) {
@@ -328,7 +345,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     @Override
     public void updateEditTextBodyVisible(int visibility, CommentConfig commentConfig) {
         this.commentConfig = commentConfig;
-        homeActivity.showBottomInput(visibility);
+        activity.showBottomInput(visibility);
         measureCircleItemHighAndCommentItemOffset(commentConfig);
 
         if (View.VISIBLE == visibility) {
@@ -507,5 +524,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             ((Moment) momentAdapter.getDatas().get(0)).setPhotos(event.moment.getPhotos());
             BaseRealmDao.insertOrUpdate(((Moment) momentAdapter.getDatas().get(0)).toRealmObject());
         }
+    }
+
+    public void setUser(User user) {
+        currentUser = user;
     }
 }
