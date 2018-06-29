@@ -1,6 +1,5 @@
 package top.wifistar.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -46,7 +45,6 @@ import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
-import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.OnTouchXRecyclerView;
 import top.wifistar.customview.ProgressCombineView;
@@ -118,15 +116,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             editText = activity.getBottomEditText();
             sendIv = activity.getBottomImageView();
         }
-
         presenter = new MomentsPresenter(this);
         momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(),currentUser);
-
-        if (currentUser==null) {
-            currentUser = Utils.getCurrentShortUser();
-        }
         momentAdapter.user = currentUser;
-
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -173,7 +165,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 if (mContext instanceof HomeActivity) {
                     ((HomeActivity) mContext).reSetAvatarList();
                 }
-                presenter.loadData(TYPE_PULLDOWNREFRESH, currentUser.getObjectId());
+                presenter.loadData(TYPE_PULLDOWNREFRESH, currentUser==null?null:currentUser.getObjectId());
             }
 
             @Override
@@ -181,7 +173,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 if (NO_MORE_DATA) {
                     recyclerView.loadMoreComplete();
                 } else {
-                    presenter.loadData(TYPE_PULLUPMORE, currentUser.getObjectId());
+                    presenter.loadData(TYPE_PULLUPMORE, currentUser==null?null:currentUser.getObjectId());
                 }
             }
         });

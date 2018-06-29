@@ -19,10 +19,9 @@ import com.kongzue.dialog.v2.InputDialog
 import android.animation.ValueAnimator
 
 
-
 class EditProfileActivity : ToolbarActivity() {
 
-    lateinit var mUser: User
+    lateinit var mUser:User
 
     override fun initTopBar() {
         mToolbar.setNavigationIcon(R.drawable.back)
@@ -32,15 +31,12 @@ class EditProfileActivity : ToolbarActivity() {
         super.setContentView(R.layout.activity_edit_info)
         setCenterTitle("编辑个人资料")
 
-        mUser = Utils.getCurrentShortUser()
-        if (mUser == null) {
-            return
-        }
+        mUser = Utils.getCurrentShortUser() ?: return
         initText()
         lavSwitch.setAnimation("lottie/sex.json")
-        if(mUser.sex!=0){
+        if (mUser.sex != 0) {
             lavSwitch.progress = 1f
-        }else{
+        } else {
             lavSwitch.progress = 0f
         }
         setClickListener()
@@ -105,12 +101,12 @@ class EditProfileActivity : ToolbarActivity() {
             })
         }
         lavSwitch.setOnClickListener {
-            if(mUser.sex!=0){
-                startAnima(lavSwitch,1f,0f)
+            if (mUser.sex != 0) {
+                startAnima(lavSwitch, 1f, 0f)
                 lavSwitch.progress = 0f
                 mUser.sex = 0
-            }else{
-                startAnima(lavSwitch,0f,1f)
+            } else {
+                startAnima(lavSwitch, 0f, 1f)
                 lavSwitch.progress = 1f
                 mUser.sex = 1
             }
@@ -179,7 +175,7 @@ class EditProfileActivity : ToolbarActivity() {
         dialog.show()
     }
 
-    fun startAnima(animationView: LottieAnimationView, start:Float, end:Float){
+    fun startAnima(animationView: LottieAnimationView, start: Float, end: Float) {
         val animator = ValueAnimator.ofFloat(start, end)
         animator.addUpdateListener { animation -> animationView.progress = animation?.animatedValue as Float }
         animator.start()

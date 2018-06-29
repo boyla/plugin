@@ -1,19 +1,12 @@
 package top.wifistar.activity;
 
 
-import android.annotation.TargetApi;
-import android.content.Intent;
+
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
-
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import top.wifistar.app.App;
 import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.BUser;

@@ -114,13 +114,18 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             viewHolder = new HeaderViewHolder(headView);
             TextView tvName = headView.findViewById(R.id.tvName);
             ImageView ivBg = headView.findViewById(R.id.ivBg);
-            tvName.setText(user.getName());
-
-            if (TextUtils.isEmpty(user.headBgUrl)) {
+            User temp;
+            if(user==null){
+                temp = Utils.getCurrentShortUser();
+            }else{
+                temp = user;
+            }
+            tvName.setText(temp.getName());
+            if (TextUtils.isEmpty(temp.headBgUrl)) {
                 ivBg.setImageResource(R.drawable.splash);
             } else {
                 ivBg.setImageResource(R.color.darkgray);
-                Glide.with(context).load(user.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
+                Glide.with(context).load(temp.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
             }
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_moment, parent, false);
