@@ -39,6 +39,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,6 +67,7 @@ import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.CircleImageView;
 import top.wifistar.customview.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
+import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.FollowRealm;
@@ -524,7 +526,11 @@ public class UserProfileActivity extends AppCompatActivity {
         LocationBean locationBean = null;
         String urlStr, encodeType;
         if (isChinese) {
-            urlStr = "http://int.dpool.sina.com.cn/iplookup/iplookup.php?format=js";
+            String ip = NetUtils.getNetIp();
+            if (TextUtils.isEmpty(ip)) {
+                return null;
+            }
+            urlStr = "https://api.map.baidu.com/location/ip?ak=uNOHbNz7voYgAC7tQGbivelu&mcode=C6:98:66:BB:4C:5C:C7:BC:79:F3:A6:8B:2E:FF:8F:1A:78:92:DC:2A;com.qf.homework&ip=" + ip;
             encodeType = "utf-8";
         } else {
             urlStr = "https://freegeoip.net/json/";
@@ -548,19 +554,25 @@ public class UserProfileActivity extends AppCompatActivity {
                 StringBuilder strber = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    strber.append(line + "\n");
+                    strber.append(line);
                 }
-                String res = strber.toString();
+                String res = Utils.unicodeToString(strber.toString());
                 if (!isChinese) {
                     locationBean = new Gson().fromJson(res, LocationBean.class);
                 } else {
-                    String cnStr = convert(res).replace(";", "").split(" = ")[1];
-                    CNLocationBean CNLocationBean = new Gson().fromJson(cnStr, CNLocationBean.class);
-                    if (CNLocationBean != null) {
-                        locationBean = new LocationBean();
-                        locationBean.setCountry_name(CNLocationBean.getCountry());
-                        locationBean.setRegion_name(CNLocationBean.getProvince());
-                        locationBean.setCity(CNLocationBean.getCity());
+                    CNLocationBean cn = new Gson().fromJson(res, CNLocationBean.class);
+                    if (cn != null && !TextUtils.isEmpty(cn.getAddress())) {
+                        String[] address = cn.getAddress().split("\\|");
+                        if (address.length > 0) {
+                            locationBean = new LocationBean();
+                            locationBean.setCountry_name(address[0]);
+                            if (address.length > 1) {
+                                locationBean.setRegion_name(address[1]);
+                                if (address.length > 2) {
+                                    locationBean.setCity(address[2]);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -747,8 +759,8 @@ public class UserProfileActivity extends AppCompatActivity {
             llMoments.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(UserProfileActivity.this,UserMomentsActivity.class);
-                    intent.putExtra("user",shortUser);
+                    Intent intent = new Intent(UserProfileActivity.this, UserMomentsActivity.class);
+                    intent.putExtra("user", shortUser);
                     startActivity(intent);
                 }
             });

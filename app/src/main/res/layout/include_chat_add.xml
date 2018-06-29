@@ -16,6 +16,7 @@
         android:gravity="center"
         android:drawableTop="@drawable/btn_chat_add_picture_selector"
         android:text="@string/picture"
+        android:textColor="@color/text_gray"
         />
     <TextView 
         android:id="@+id/tv_camera"
@@ -26,6 +27,7 @@
         android:layout_height="wrap_content"
         android:drawableTop="@drawable/btn_chat_add_camera_selector"
         android:text="@string/camera"
+        android:textColor="@color/text_gray"
         />
     <TextView 
         android:id="@+id/tv_location"
@@ -35,6 +37,7 @@
         android:gravity="center"
         android:layout_height="wrap_content"
         android:drawableTop="@drawable/btn_chat_add_location_selector"
+        android:textColor="@color/text_gray"
         android:text="@string/location"
         />
 

@@ -7,106 +7,164 @@ package top.wifistar.bean;
 public class CNLocationBean {
 
     /**
-     * ret : 1
-     * start : -1
-     * end : -1
-     * country : 中国
-     * province : 四川
-     * city : 成都
-     * district :
-     * isp :
-     * type :
-     * desc :
+     * address : CN|四川|成都|None|CHINANET|0|0
+     * content : {"address_detail":{"province":"四川省","city":"成都市","district":"","street":"","street_number":"","city_code":75},"address":"四川省成都市","point":{"y":"3569251.03","x":"11584914.3"}}
+     * status : 0
      */
 
-    private int ret;
-    private int start;
-    private int end;
-    private String country;
-    private String province;
-    private String city;
-    private String district;
-    private String isp;
-    private String type;
-    private String desc;
+    private String address;
+    private ContentBean content;
+    private int status;
 
-    public int getRet() {
-        return ret;
+    public String getAddress() {
+        return address;
     }
 
-    public void setRet(int ret) {
-        this.ret = ret;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
-    public int getStart() {
-        return start;
+    public ContentBean getContent() {
+        return content;
     }
 
-    public void setStart(int start) {
-        this.start = start;
+    public void setContent(ContentBean content) {
+        this.content = content;
     }
 
-    public int getEnd() {
-        return end;
+    public int getStatus() {
+        return status;
     }
 
-    public void setEnd(int end) {
-        this.end = end;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
-    public String getCountry() {
-        return country;
-    }
+    public static class ContentBean {
+        /**
+         * address_detail : {"province":"四川省","city":"成都市","district":"","street":"","street_number":"","city_code":75}
+         * address : 四川省成都市
+         * point : {"y":"3569251.03","x":"11584914.3"}
+         */
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
+        private AddressDetailBean address_detail;
+        private String address;
+        private PointBean point;
 
-    public String getProvince() {
-        return province;
-    }
+        public AddressDetailBean getAddress_detail() {
+            return address_detail;
+        }
 
-    public void setProvince(String province) {
-        this.province = province;
-    }
+        public void setAddress_detail(AddressDetailBean address_detail) {
+            this.address_detail = address_detail;
+        }
 
-    public String getCity() {
-        return city;
-    }
+        public String getAddress() {
+            return address;
+        }
 
-    public void setCity(String city) {
-        this.city = city;
-    }
+        public void setAddress(String address) {
+            this.address = address;
+        }
 
-    public String getDistrict() {
-        return district;
-    }
+        public PointBean getPoint() {
+            return point;
+        }
 
-    public void setDistrict(String district) {
-        this.district = district;
-    }
+        public void setPoint(PointBean point) {
+            this.point = point;
+        }
 
-    public String getIsp() {
-        return isp;
-    }
+        public static class AddressDetailBean {
+            /**
+             * province : 四川省
+             * city : 成都市
+             * district :
+             * street :
+             * street_number :
+             * city_code : 75
+             */
 
-    public void setIsp(String isp) {
-        this.isp = isp;
-    }
+            private String province;
+            private String city;
+            private String district;
+            private String street;
+            private String street_number;
+            private int city_code;
 
-    public String getType() {
-        return type;
-    }
+            public String getProvince() {
+                return province;
+            }
 
-    public void setType(String type) {
-        this.type = type;
-    }
+            public void setProvince(String province) {
+                this.province = province;
+            }
 
-    public String getDesc() {
-        return desc;
-    }
+            public String getCity() {
+                return city;
+            }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+            public void setCity(String city) {
+                this.city = city;
+            }
+
+            public String getDistrict() {
+                return district;
+            }
+
+            public void setDistrict(String district) {
+                this.district = district;
+            }
+
+            public String getStreet() {
+                return street;
+            }
+
+            public void setStreet(String street) {
+                this.street = street;
+            }
+
+            public String getStreet_number() {
+                return street_number;
+            }
+
+            public void setStreet_number(String street_number) {
+                this.street_number = street_number;
+            }
+
+            public int getCity_code() {
+                return city_code;
+            }
+
+            public void setCity_code(int city_code) {
+                this.city_code = city_code;
+            }
+        }
+
+        public static class PointBean {
+            /**
+             * y : 3569251.03
+             * x : 11584914.3
+             */
+
+            private String y;
+            private String x;
+
+            public String getY() {
+                return y;
+            }
+
+            public void setY(String y) {
+                this.y = y;
+            }
+
+            public String getX() {
+                return x;
+            }
+
+            public void setX(String x) {
+                this.x = x;
+            }
+        }
     }
 }
