@@ -8,11 +8,8 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
-
+import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,22 +29,16 @@ import cn.bmob.v3.InstallationListener;
 import cn.bmob.v3.exception.BmobException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import top.wifistar.R;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
 import top.wifistar.event.RefreshEvent;
 import top.wifistar.im.IMMessageHandler;
-import top.wifistar.utils.ACache;
 import top.wifistar.utils.CacheUtils;
 import top.wifistar.utils.Utils;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -186,6 +177,9 @@ public class App extends MultiDexApplication {
         CacheUtils.getInstance().init(mContext);
 
         DialogSettings.type = DialogSettings.TYPE_IOS;
+        //In this way the VM ignores the file URI exposure
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
 

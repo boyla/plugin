@@ -2,7 +2,12 @@ package com.lidong.photopicker;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -11,28 +16,37 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.jaeger.library.StatusBarUtil;
 import com.lidong.photopicker.widget.ViewPagerFixed;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
  * Created by foamtrace on 2015/8/25.
  */
-public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPagerAdapter.PhotoViewClickListener{
+public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPagerAdapter.PhotoViewClickListener {
 
     public static final String EXTRA_PHOTOS = "extra_photos";
     public static final String EXTRA_CURRENT_ITEM = "extra_current_item";
+    private static final int PHOTO_REQUEST_CUT = 3;
 
-    /** 选择结果，返回为 ArrayList&lt;String&gt; 图片路径集合  */
+    /**
+     * 选择结果，返回为 ArrayList&lt;String&gt; 图片路径集合
+     */
     public static final String EXTRA_RESULT = "preview_result";
 
-    /** 预览请求状态码 */
+    /**
+     * 预览请求状态码
+     */
     public static final int REQUEST_PREVIEW = 99;
 
     private ArrayList<String> paths;
     private ViewPagerFixed mViewPager;
+    private TextView tvCrop;
     private PhotoPagerAdapter mPagerAdapter;
     private int currentItem = 0;
 
@@ -42,13 +56,13 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPage
 
         setContentView(R.layout.activity_image_preview);
         int mStatusBarColor = getResources().getColor(R.color.primary);
-        StatusBarUtil.setColorNoTranslucent(this,mStatusBarColor);
+        StatusBarUtil.setColorNoTranslucent(this, mStatusBarColor);
 
         initViews();
 
         paths = new ArrayList<>();
         ArrayList<String> pathArr = getIntent().getStringArrayListExtra(EXTRA_PHOTOS);
-        if(pathArr != null){
+        if (pathArr != null) {
             paths.addAll(pathArr);
         }
 
@@ -77,11 +91,18 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPage
             }
         });
         updateActionBarTitle();
+        tvCrop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startPhotoZoom(Uri.fromFile(new File(paths.get(mViewPager.getCurrentItem()))));
+            }
+        });
     }
 
-    private void initViews(){
+    private void initViews() {
         mViewPager = (ViewPagerFixed) findViewById(R.id.vp_photos);
         Toolbar mToolbar = (Toolbar) findViewById(R.id.pickerToolbar);
+        tvCrop = findViewById(R.id.tvCrop);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
@@ -120,36 +141,38 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPage
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if(item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
 
         // 删除当前照片
-        if(item.getItemId() == R.id.action_discard){
+        if (item.getItemId() == R.id.action_discard) {
             final int index = mViewPager.getCurrentItem();
-            final String deletedPath =  paths.get(index);
+            final String deletedPath = paths.get(index);
             Snackbar snackbar = Snackbar.make(getWindow().getDecorView().findViewById(android.R.id.content), R.string.deleted_a_photo,
                     Snackbar.LENGTH_LONG);
-            if(paths.size() <= 1){
+            if (paths.size() <= 1) {
                 // 最后一张照片弹出删除提示
                 // show confirm dialog
                 new AlertDialog.Builder(this)
                         .setTitle(R.string.confirm_to_delete)
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
                                 paths.remove(index);
                                 onBackPressed();
                             }
                         })
                         .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override public void onClick(DialogInterface dialogInterface, int i) {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();
                             }
                         })
                         .show();
-            }else{
+            } else {
                 snackbar.show();
                 paths.remove(index);
                 mPagerAdapter.notifyDataSetChanged();
@@ -169,5 +192,48 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPage
             });
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //图片裁切
+    Uri uriTempFile;
+    String filePath;
+
+    private void startPhotoZoom(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        // crop为true是设置在开启的intent中设置显示的view可以剪裁
+        intent.putExtra("crop", "true");
+
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+
+        // outputX,outputY 是剪裁图片的宽高
+        intent.putExtra("outputX", 300);
+        intent.putExtra("outputY", 300);
+//        intent.putExtra("return-data", true);
+        intent.putExtra("noFaceDetection", true);
+        System.out.println("22================");
+
+        filePath = Environment.getExternalStorageDirectory().getPath() + "/WS_CROP_" + System.currentTimeMillis() + ".jpg";
+        uriTempFile = Uri.parse("file://" + "/" + filePath);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uriTempFile);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+
+        startActivityForResult(intent, PHOTO_REQUEST_CUT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == PHOTO_REQUEST_CUT) {
+                if (data != null)
+                        if (uriTempFile != null) {
+                            paths.set(mViewPager.getCurrentItem(),filePath);
+                            mPagerAdapter.notifyDataSetChanged();
+                        }
+            }
+        }
     }
 }
