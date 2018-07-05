@@ -3,6 +3,7 @@ package top.wifistar.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -32,7 +33,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greysonparrelli.permiso.Permiso;
+import com.lidong.photopicker.ImageCaptureManager;
+import com.lidong.photopicker.PhotoPickerActivity;
+import com.lidong.photopicker.SelectModel;
+import com.lidong.photopicker.intent.PhotoPickerIntent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,6 +70,7 @@ import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.EventUtils;
+import top.wifistar.utils.IntentUtils;
 import top.wifistar.utils.Utils;
 
 /**
@@ -100,6 +107,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     BmobIMConversation mConversationManager;
     User shortUser;
     boolean isFromProfile;
+    public static final int REQUEST_CAMERA_CODE = 101;
 
     @Override
     protected void initUI() {
@@ -466,10 +474,10 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 
         });
         layout_add.findViewById(R.id.tv_picture).setOnClickListener(v -> {
-            sendLocalImageMessage();
+            sendLocalImage();
         });
         layout_add.findViewById(R.id.tv_camera).setOnClickListener(v -> {
-            sendRemoteImageMessage();
+            sendPicFromCamera();
         });
         layout_add.findViewById(R.id.tv_location).setOnClickListener(v -> {
             sendLocationMessage();
@@ -544,21 +552,40 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     /**
      * 发送本地图片文件
      */
-    public void sendLocalImageMessage() {
-        //TODO 发送消息：6.2、发送本地图片消息
-        //正常情况下，需要调用系统的图库或拍照功能获取到图片的本地地址，开发者只需要将本地的文件地址传过去就可以发送文件类型的消息
-        BmobIMImageMessage image = new BmobIMImageMessage("/storage/emulated/0/netease/cloudmusic/网易云音乐相册/小梦大半_1371091013186741.jpg");
-        mConversationManager.sendMessage(image, listener);
+    private ArrayList<String> imagePaths = new ArrayList<>();
+    private void sendLocalImage() {
+        Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+            @Override
+            public void onPermissionResult(Permiso.ResultSet resultSet) {
+                if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    PhotoPickerIntent intent = new PhotoPickerIntent(ChatActivity.this);
+                    intent.setSelectModel(SelectModel.SINGLE);
+                    intent.setShowCarema(true); // 是否显示拍照
+                    intent.setMaxTotal(1); // 最多选择照片数量，默认为6
+                    intent.setSelectedPaths(imagePaths); // 已选中的照片地址， 用于回显选中状态
+                    startActivityForResult(intent, REQUEST_CAMERA_CODE);
+                } else {
+                    Utils.makeSysToast("打开相册需要文件读取权限，请到应用权限中进行设置");
+                }
+            }
+
+            @Override
+            public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+                Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "打开相册需要文件读取权限，请到应用权限中进行设置", null, callback);
+            }
+        }, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     /**
      * 直接发送远程图片地址
      */
-    public void sendRemoteImageMessage() {
+    public void sendPicFromCamera() {
         //TODO 发送消息：6.3、发送远程图片消息
-        BmobIMImageMessage image = new BmobIMImageMessage();
-        image.setRemoteUrl("https://avatars3.githubusercontent.com/u/11643472?v=4&u=df609c8370b3ef7a567457eafd113b3ba6ba3bb6&s=400");
-        mConversationManager.sendMessage(image, listener);
+//        BmobIMImageMessage image = new BmobIMImageMessage();
+//        image.setRemoteUrl("https://avatars3.githubusercontent.com/u/11643472?v=4&u=df609c8370b3ef7a567457eafd113b3ba6ba3bb6&s=400");
+//        mConversationManager.sendMessage(image, listener);
+
+        IntentUtils.openCamera(this);
     }
 
 
@@ -835,5 +862,20 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chat_config, menu);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode==RESULT_OK){
+            if(requestCode==REQUEST_CAMERA_CODE){
+                ArrayList<String> list = data.getStringArrayListExtra(PhotoPickerActivity.EXTRA_RESULT);
+                BmobIMImageMessage image = new BmobIMImageMessage(list.get(0));
+                mConversationManager.sendMessage(image, listener);
+            }else if(requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO){
+                BmobIMImageMessage image = new BmobIMImageMessage(IntentUtils.photoFile.getAbsolutePath());
+                mConversationManager.sendMessage(image, listener);
+            }
+        }
     }
 }

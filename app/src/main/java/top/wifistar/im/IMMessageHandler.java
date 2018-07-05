@@ -80,6 +80,13 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      */
     private void executeMessage(final MessageEvent event) {
         //检测用户信息是否需要更新
+        if(BaseRealmDao.realm==null){
+            try {
+                Thread.sleep(777);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         final IMUserRealm rawUser = BaseRealmDao.realm.where(IMUserRealm.class).equalTo("objectId", event.getFromUserInfo().getUserId()).findFirst();
         if (rawUser == null || TextUtils.isEmpty(rawUser.name)) {
             //获取用户信息
