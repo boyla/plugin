@@ -73,20 +73,6 @@ public class ChatMsgAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             e.printStackTrace();
         }
         this.c = c;
-        BaseViewHolder.conversationId = c.getConversationId();
-        Utils.queryShortUser(c.getConversationId(), new NetUserRequest.NetRequestCallBack() {
-            @Override
-            public void onSuccess(User user) {
-                BaseViewHolder.conversationIcon = user.getHeadUrl().split("_")[0];
-                BaseViewHolder.conversationName = user.getName();
-            }
-
-            @Override
-            public void onFailure(String msg) {
-
-            }
-        });
-
     }
 
     public int findPosition(BmobIMMessage message) {

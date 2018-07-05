@@ -63,6 +63,7 @@ import cn.bmob.newim.notification.BmobNotificationManager;
 import cn.bmob.v3.exception.BmobException;
 import top.wifistar.R;
 import top.wifistar.adapter.ChatMsgAdapter;
+import top.wifistar.adapter.viewholder.im.BaseViewHolder;
 import top.wifistar.adapter.viewholder.im.OnRecyclerViewListener;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.User;
@@ -131,6 +132,8 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         layout_emo = bindViewById(R.id.layout_emo);
         BmobIMConversation conversationEntrance = (BmobIMConversation) getIntent().getExtras().getSerializable("c");
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
+        BaseViewHolder.setLeftUser(shortUser);
+        BaseViewHolder.setRightUser(Utils.getCurrentShortUser());
         isFromProfile = getIntent().getExtras().getBoolean("isFromProfile");
         setCenterTitle(shortUser.getName());
         //TODO 消息：5.1、根据会话入口获取消息管理，聊天页面
@@ -159,7 +162,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     private void initSwipeLayout() {
         sw_refresh.setEnabled(true);
         layoutManager = new LinearLayoutManager(this);
-        layoutManager.setStackFromEnd(true);
+//        layoutManager.setStackFromEnd(true);
         rc_view.setLayoutManager(layoutManager);
         adapter = new ChatMsgAdapter(this, mConversationManager);
         rc_view.setAdapter(adapter);

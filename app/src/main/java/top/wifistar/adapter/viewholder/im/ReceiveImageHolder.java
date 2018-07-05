@@ -18,6 +18,8 @@ import cn.bmob.newim.bean.BmobIMImageMessage;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import top.wifistar.R;
+import top.wifistar.activity.ChatActivity;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.Utils;
 
@@ -37,35 +39,30 @@ public class ReceiveImageHolder extends BaseViewHolder {
   }
 
   private void initView(View itemView) {
-    iv_avatar = (ImageView) itemView.findViewById(R.id.iv_avatar);
-    tv_time = (TextView) itemView.findViewById(R.id.tv_time);
-    iv_picture = (ImageView) itemView.findViewById(R.id.iv_picture);
-    progress_load = (ProgressBar) itemView.findViewById(R.id.progress_load);
+    iv_avatar = itemView.findViewById(R.id.iv_avatar);
+    tv_time = itemView.findViewById(R.id.tv_time);
+    iv_picture = itemView.findViewById(R.id.iv_picture);
+    progress_load = itemView.findViewById(R.id.progress_load);
   }
 
   @Override
   public void bindData(Object o) {
-    BmobIMMessage msg = (BmobIMMessage)o;
-    //用户信息的获取必须在buildFromDB之前，否则会报错'Entity is detached from DAO context'
-    final BmobIMUserInfo info = msg.getBmobIMUserInfo();
-    String avatarUrl = info != null ? info.getAvatar() : null;
+    final BmobIMMessage message = (BmobIMMessage) o;
+    String time = Utils.getFuzzyTime2(message.getCreateTime());
+    tv_time.setText(time);
     Glide.with(context)
-            .load(!Utils.isEmpty(avatarUrl) ? avatarUrl : R.drawable.default_avartar)
+            .load(!Utils.isEmpty(conversationIcon) ? conversationIcon : R.drawable.default_avartar)
             .dontAnimate()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .bitmapTransform(new GlideCircleTransform(context))
             .into(iv_avatar);
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
-    String time = dateFormat.format(msg.getCreateTime());
-    tv_time.setText(time);
     //可使用buildFromDB方法转化为指定类型的消息
-    final BmobIMImageMessage message = BmobIMImageMessage.buildFromDB(false,msg);
+    final BmobIMImageMessage imageMessage = BmobIMImageMessage.buildFromDB(false,message);
     //显示图片
     Glide.with(context)
-            .load(message.getRemoteUrl())
+            .load(imageMessage.getRemoteUrl())
             .dontAnimate()
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .bitmapTransform(new GlideCircleTransform(context))
             .error(R.drawable.loading_failed)
             .into(new GlideDrawableImageViewTarget(iv_picture) {
               @Override
@@ -94,17 +91,19 @@ public class ReceiveImageHolder extends BaseViewHolder {
             });
 
 
-    iv_avatar.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        toast("点击" + info.getName() + "的头像");
+    iv_avatar.setOnClickListener(v -> {
+      if(((ChatActivity) context).isFromProfile()){
+        ((ChatActivity) context).finish();
+      }else{
+        User user = ((ChatActivity) context).getCurrentUser();
+        Utils.jumpToProfile(context, user, iv_avatar);
       }
     });
 
     iv_picture.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        toast("点击图片:"+message.getRemoteUrl()+"");
+        toast("点击图片:"+imageMessage.getRemoteUrl()+"");
         if(onRecyclerViewListener!=null){
           onRecyclerViewListener.onItemClick(getAdapterPosition());
         }

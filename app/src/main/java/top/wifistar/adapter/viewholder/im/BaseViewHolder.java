@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import top.wifistar.bean.bmob.User;
+
 
 public abstract class BaseViewHolder<T> extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
 
@@ -16,6 +18,7 @@ public abstract class BaseViewHolder<T> extends RecyclerView.ViewHolder implemen
   public static String conversationIcon;
   public static String conversationId;
   public static String conversationName;
+  private static User leftUser,rightUser;
 
 
   public BaseViewHolder(Context context, ViewGroup root, int layoutRes,OnRecyclerViewListener listener) {
@@ -65,4 +68,22 @@ public abstract class BaseViewHolder<T> extends RecyclerView.ViewHolder implemen
     return true;
   }
 
+  public static User getLeftUser() {
+    return leftUser;
+  }
+
+  public static void setLeftUser(User leftUser) {
+    BaseViewHolder.leftUser = leftUser;
+    conversationIcon = leftUser.getHeadUrl().split("_")[0];
+    conversationId = leftUser.getObjectId();
+    conversationName = leftUser.getName();
+  }
+
+  public static User getRightUser() {
+    return rightUser;
+  }
+
+  public static void setRightUser(User rightUser) {
+    BaseViewHolder.rightUser = rightUser;
+  }
 }

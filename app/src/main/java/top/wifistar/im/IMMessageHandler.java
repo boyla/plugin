@@ -82,7 +82,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
         //检测用户信息是否需要更新
         if(BaseRealmDao.realm==null){
             try {
-                Thread.sleep(777);
+                Thread.sleep(1777);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

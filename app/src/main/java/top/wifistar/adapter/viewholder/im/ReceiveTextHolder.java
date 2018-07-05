@@ -71,14 +71,11 @@ public class ReceiveTextHolder extends BaseViewHolder {
             }
         });
 
-        tv_message.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                if (onRecyclerViewListener != null) {
-                    onRecyclerViewListener.onItemLongClick(getAdapterPosition());
-                }
-                return true;
+        tv_message.setOnLongClickListener(v -> {
+            if (onRecyclerViewListener != null) {
+                onRecyclerViewListener.onItemLongClick(getAdapterPosition());
             }
+            return true;
         });
     }
 

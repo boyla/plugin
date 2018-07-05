@@ -28,8 +28,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="@dimen/margin_5"
-            android:background="@drawable/default_avartar"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop"
+             />
 
         <ImageView
             android:id="@+id/iv_picture"

@@ -27,8 +27,7 @@
             android:layout_height="@dimen/height_50"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/default_avartar"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/iv_picture"

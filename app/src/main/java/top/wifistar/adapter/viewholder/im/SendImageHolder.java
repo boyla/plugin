@@ -18,6 +18,8 @@ import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.exception.BmobException;
 import top.wifistar.R;
+import top.wifistar.activity.ChatActivity;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.Utils;
 
@@ -56,19 +58,16 @@ public class SendImageHolder extends BaseViewHolder {
 
     @Override
     public void bindData(Object o) {
-        BmobIMMessage msg = (BmobIMMessage) o;
-        //用户信息的获取必须在buildFromDB之前，否则会报错'Entity is detached from DAO context'
-        final BmobIMUserInfo info = msg.getBmobIMUserInfo();
-        String avatarUrl = info != null ? info.getAvatar() : null;
+        final BmobIMMessage msg = (BmobIMMessage) o;
+        String time = Utils.getFuzzyTime2(msg.getCreateTime());
+        tv_time.setText(time);
+        String avatarUrl = getRightUser().getHeadUrl().split("_")[0];
         Glide.with(context)
                 .load(!Utils.isEmpty(avatarUrl) ? avatarUrl : R.drawable.default_avartar)
                 .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .bitmapTransform(new GlideCircleTransform(context))
                 .into(iv_avatar);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
-        String time = dateFormat.format(msg.getCreateTime());
-        tv_time.setText(time);
         //
         final BmobIMImageMessage message = BmobIMImageMessage.buildFromDB(true, msg);
         int status = message.getSendStatus();
@@ -92,15 +91,15 @@ public class SendImageHolder extends BaseViewHolder {
                 .load(TextUtils.isEmpty(message.getRemoteUrl()) ? message.getLocalPath() : message.getRemoteUrl())
                 .dontAnimate()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .bitmapTransform(new GlideCircleTransform(context))
                 .error(R.drawable.default_avartar)
                 .into(iv_picture);
 //    ViewUtil.setPicture(TextUtils.isEmpty(message.getRemoteUrl()) ? message.getLocalPath():message.getRemoteUrl(), R.mipmap.ic_launcher, iv_picture,null);
 
-        iv_avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toast("点击" + info.getName() + "的头像");
+        iv_avatar.setOnClickListener(v -> {
+            if(((ChatActivity) context).isFromProfile()){
+                ((ChatActivity) context).finish();
+            }else{
+                Utils.jumpToProfile(context, getRightUser(), iv_avatar);
             }
         });
         iv_picture.setOnClickListener(new View.OnClickListener() {
