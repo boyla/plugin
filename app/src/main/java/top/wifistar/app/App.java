@@ -354,7 +354,7 @@ public class App extends MultiDexApplication {
 
     public static void connectIM() {
         User user = Utils.getCurrentShortUser();
-        if (user == null) {
+        if (user == null || TextUtils.isEmpty(user.getName())) {
             Utils.makeSysToast("未取得用户信息,请重新登陆");
             return;
         }

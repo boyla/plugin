@@ -56,7 +56,6 @@ import com.scottyab.aescrypt.AESCrypt;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
-import io.realm.Realm;
 import io.realm.RealmResults;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
 import top.wifistar.R;
@@ -1124,8 +1123,12 @@ public class Utils {
             // 完成查询
             if (!dbData.isEmpty()) {
                 UserRealm userRealm = dbData.first();
-                if (userRealm != null)
+                if (userRealm != null){
+                    if(TextUtils.isEmpty(userRealm.name)){
+                        queryUserByNet(id,null);
+                    }
                     return userRealm.toBmobObject();
+                }
             }
         }
         return null;
@@ -1319,7 +1322,7 @@ public class Utils {
     static Map<String, User> cacheUsers = new ConcurrentHashMap<>();
     static UserChainHandler userChainHandler = new UserChainHandler();
     public static void queryShortUser(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
-        userChainHandler.getUserByLocal(shortUserObjId,callBack);
+        userChainHandler.getUserFromChain(shortUserObjId,callBack);
     }
 
     public static void queryUserByNet(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {

@@ -168,7 +168,7 @@ public class HomeActivity extends BottomInputActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(false);
+            moveTaskToBack(true);
             return true;
         }
         return super.onKeyDown(keyCode, event);

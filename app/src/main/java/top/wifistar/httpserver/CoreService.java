@@ -40,20 +40,23 @@ public class CoreService extends Service {
 
     @Override
     public void onCreate() {
-        // More usage documentation: http://yanzhenjie.github.io/AndServer
+            initServer();
+    }
 
-            mServer = AndServer.serverBuilder()
-                    .inetAddress(NetUtils.getLocalIPAddress()) // Bind IP address.
-                    .port(9595)
-                    .timeout(10, TimeUnit.SECONDS)
-                    .website(new AssetsWebsite(getAssets(), "web"))
-                    .registerHandler("/download", new FileHandler())
-                    .registerHandler("/image", new ImageHandler())
-                    .registerHandler("/atService", new ServerHandler())
-                    .registerHandler("/isOnline", new OnlineHandler())
-                    .filter(new HttpCacheFilter())
-                    .listener(mListener)
-                    .build();
+    private void initServer() {
+        // More usage documentation: http://yanzhenjie.github.io/AndServer
+        mServer = AndServer.serverBuilder()
+                .inetAddress(NetUtils.getLocalIPAddress()) // Bind IP address.
+                .port(9595)
+                .timeout(10, TimeUnit.SECONDS)
+                .website(new AssetsWebsite(getAssets(), "web"))
+                .registerHandler("/download", new FileHandler())
+                .registerHandler("/image", new ImageHandler())
+                .registerHandler("/atService", new ServerHandler())
+                .registerHandler("/isOnline", new OnlineHandler())
+                .filter(new HttpCacheFilter())
+                .listener(mListener)
+                .build();
     }
 
     /**
@@ -62,6 +65,9 @@ public class CoreService extends Service {
     private Server.ServerListener mListener = new Server.ServerListener() {
         @Override
         public void onStarted() {
+            if(mServer==null || mServer.getInetAddress()==null){
+                return;
+            }
             String hostAddress = mServer.getInetAddress().getHostAddress();
             if(TextUtils.isEmpty(hostAddress)){
                 hostAddress = "127.0.0.1";

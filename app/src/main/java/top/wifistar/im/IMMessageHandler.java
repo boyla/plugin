@@ -68,7 +68,9 @@ public class IMMessageHandler extends BmobIMMessageHandler {
             Log.i("Bmob IM:  ", "用户" + entry.getKey() + "发来" + size + "条消息");
             for (int i = 0; i < size; i++) {
                 //处理每条消息
-                executeMessage(list.get(i));
+                if(BaseRealmDao.realm!=null){
+                    executeMessage(list.get(i));
+                }
             }
         }
     }
@@ -79,14 +81,6 @@ public class IMMessageHandler extends BmobIMMessageHandler {
      * @param event
      */
     private void executeMessage(final MessageEvent event) {
-        //检测用户信息是否需要更新
-        if(BaseRealmDao.realm==null){
-            try {
-                Thread.sleep(1777);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         final IMUserRealm rawUser = BaseRealmDao.realm.where(IMUserRealm.class).equalTo("objectId", event.getFromUserInfo().getUserId()).findFirst();
         if (rawUser == null || TextUtils.isEmpty(rawUser.name)) {
             //获取用户信息
@@ -174,7 +168,12 @@ public class IMMessageHandler extends BmobIMMessageHandler {
     private void processSDKMessage(BmobIMMessage msg, MessageEvent event) {
         if (BmobNotificationManager.getInstance(context).isShowNotification()) {
             //如果需要显示通知栏，SDK提供以下两种显示方式：
-            Intent pendingIntent = new Intent(context, SplashActivity.class);
+            Intent pendingIntent;
+            if(HomeActivity.INSTANCE==null){
+                pendingIntent = new Intent(context, SplashActivity.class);
+            }else{
+                pendingIntent = new Intent(context, HomeActivity.class);
+            }
             pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
             //TODO 消息接收：8.5、多个用户的多条消息合并成一条通知：有XX个联系人发来了XX条消息

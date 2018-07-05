@@ -25,15 +25,15 @@ public class UserChainHandler {
         allNodes.add(netRequest);
     }
 
-    public User getUserByLocal(String userId) {
-        return getUserByLocal(userId,null);
+    public User getUserFromChain(String userId) {
+        return getUserFromChain(userId,null);
     }
 
-    public User getUserByLocal(String userId,NetUserRequest.NetRequestCallBack callBack) {
-        for (UserRequest request : allNodes) {
-            User temp = request.handleRequest(userId);
+    public User getUserFromChain(String userId, NetUserRequest.NetRequestCallBack callBack) {
+        for (UserRequest requestNode : allNodes) {
+            User temp = requestNode.handleRequest(userId);
             if (temp != null) {
-                if (request instanceof DBUserRequest) {
+                if (requestNode instanceof DBUserRequest) {
                     memRequest.insertOrUpdate(temp);
                 }
                 if (callBack != null){
@@ -41,7 +41,7 @@ public class UserChainHandler {
                 }
                 return temp;
             } else {
-                if (request instanceof NetUserRequest) {
+                if (requestNode instanceof NetUserRequest) {
                     getUserByNet(userId,callBack);
                 }
             }
