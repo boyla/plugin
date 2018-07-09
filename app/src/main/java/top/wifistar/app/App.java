@@ -123,6 +123,7 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
+        AppCrashHandler.getInstance().init(this);
         APP_INSTANCE = this;
         Realm.init(this);
         realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
