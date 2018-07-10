@@ -1,11 +1,13 @@
 package top.wifistar.activity.mvp.modle;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import cn.bmob.v3.datatype.BmobRelation;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
+import top.wifistar.activity.mvp.listener.AddCommentListener;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.app.App;
 import top.wifistar.bean.BUser;
@@ -101,7 +103,7 @@ public class MomentsModel {
         });
     }
 
-    public void addComment(String content, final String momentId, final User toReplyUser, final IDataRequestListener listener) {
+    public void addComment(String content, final String momentId, final User toReplyUser, final AddCommentListener listener) {
         Comment comment = new Comment();
         comment.setUser(Utils.getCurrentShortUser());
         comment.setMomentId(momentId);
@@ -111,8 +113,13 @@ public class MomentsModel {
         }
         comment.save(new SaveListener<String>() {
             @Override
-            public void done(String s, BmobException e) {
-                listener.onSuccess();
+            public void done(String objId, BmobException e) {
+                if(e==null){
+                    comment.setObjectId(objId);
+                    listener.onSuccess(comment);
+                }else{
+                    Utils.makeSysToast(e.getMessage());
+                }
             }
         });
     }
@@ -123,7 +130,7 @@ public class MomentsModel {
         comment.delete(new UpdateListener() {
             @Override
             public void done(BmobException e) {
-                if(e==null || e.getErrorCode()==101){
+                if(TextUtils.isEmpty(commentId) || e==null || e.getErrorCode()==101){
                     listener.onSuccess();
                 }
             }

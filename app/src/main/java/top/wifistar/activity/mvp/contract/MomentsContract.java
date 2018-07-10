@@ -22,7 +22,7 @@ public interface MomentsContract {
 
         void update2DeleteFavort(int dataPosition);
 
-        void update2AddComment(String content, String momentId, User toReplyUserId);
+        void update2AddComment(Comment comment);
 
         void update2DeleteComment(int circlePosition, String commentId);
 

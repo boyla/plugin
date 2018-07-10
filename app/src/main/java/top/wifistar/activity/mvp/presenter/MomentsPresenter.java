@@ -11,8 +11,10 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import io.realm.RealmResults;
 import top.wifistar.activity.mvp.contract.MomentsContract;
+import top.wifistar.activity.mvp.listener.AddCommentListener;
 import top.wifistar.activity.mvp.listener.IDataRequestListener;
 import top.wifistar.activity.mvp.modle.MomentsModel;
+import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.bean.bmob.User;
@@ -201,12 +203,12 @@ public class MomentsPresenter implements MomentsContract.Presenter {
      */
     public void addComment(final String content, final String momentId, final User toReplyUser) {
 
-        momentsModel.addComment(content, momentId, toReplyUser, new IDataRequestListener() {
+        momentsModel.addComment(content, momentId, toReplyUser, new AddCommentListener() {
 
             @Override
-            public void onSuccess() {
+            public void onSuccess(Comment comment) {
                 if (view != null) {
-                    view.update2AddComment(content, momentId, toReplyUser);
+                    view.update2AddComment(comment);
                 }
             }
         });

@@ -296,17 +296,10 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     }
 
     @Override
-    public void update2AddComment(String content, String momentId, User replyUser) {
-        if (!TextUtils.isEmpty(momentId)) {
+    public void update2AddComment(Comment comment) {
+        if (comment!=null && !TextUtils.isEmpty(comment.getMomentId())) {
             for (Moment item : ((List<Moment>) momentAdapter.getDatas())) {
-                if (momentId.equals(item.getObjectId())) {
-                    Comment comment = new Comment();
-                    comment.setContent(content);
-                    comment.setMomentId(momentId);
-                    comment.setUser(Utils.getCurrentShortUser());
-                    if (replyUser != null) {
-                        comment.setToReplyUser(replyUser);
-                    }
+                if (comment.getMomentId().equals(item.getObjectId())) {
                     item.getComments().add(comment);
                     momentAdapter.notifyDataSetChanged();
                     break;
