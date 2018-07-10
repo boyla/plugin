@@ -116,30 +116,30 @@ public class CommentListView extends LinearLayout {
         }
         View convertView = layoutInflater.inflate(R.layout.item_comment, null, false);
 
-        TextView commentTv = (TextView) convertView.findViewById(R.id.commentTv);
+        TextView commentTv = convertView.findViewById(R.id.commentTv);
         final CircleMovementMethod circleMovementMethod = new CircleMovementMethod(itemSelectorColor, itemSelectorColor);
-        final Comment bean = mDatas.get(position);
-        String userId = bean.getUser().getObjectId().trim();
+        final Comment comment = mDatas.get(position);
+        String userId = comment.getUser().getObjectId().trim();
         NetUserRequest.NetRequestCallBack queryUsesrCallBack = new NetUserRequest.NetRequestCallBack() {
             @Override
             public void onSuccess(User user) {
-                bean.setUser(user);
-                String name = bean.getUser().getName();
+                comment.setUser(user);
+                String name = comment.getUser().getName();
                 String toReplyName = "";
-                if (bean.getToReplyUser() != null) {
-                    toReplyName = bean.getToReplyUser().getName();
+                if (comment.getToReplyUser() != null) {
+                    toReplyName = comment.getToReplyUser().getName();
                 }
 
                 SpannableStringBuilder builder = new SpannableStringBuilder();
-                builder.append(setClickableSpan(name, bean.getUser().getObjectId()));
+                builder.append(setClickableSpan(name, comment.getUser().getObjectId()));
 
                 if (!TextUtils.isEmpty(toReplyName)) {
                     builder.append(" 回复 ");
-                    builder.append(setClickableSpan(toReplyName, bean.getToReplyUser().getObjectId()));
+                    builder.append(setClickableSpan(toReplyName, comment.getToReplyUser().getObjectId()));
                 }
                 builder.append(": ");
                 //转换表情字符
-                String contentBodyStr = bean.getContent();
+                String contentBodyStr = comment.getContent();
                 builder.append(UrlUtils.formatUrlString(contentBodyStr));
                 commentTv.setText(builder);
                 commentTv.setMovementMethod(circleMovementMethod);
@@ -166,10 +166,10 @@ public class CommentListView extends LinearLayout {
                 Utils.showToast("获取用户失败:"+e);
             }
         };
-        if(TextUtils.isEmpty(bean.user.getName())){
+        if(TextUtils.isEmpty(comment.user.getName())){
             Utils.queryShortUser(userId,queryUsesrCallBack);
         }else{
-            queryUsesrCallBack.onSuccess(bean.user);
+            queryUsesrCallBack.onSuccess(comment.user);
         }
         return convertView;
     }
@@ -186,7 +186,17 @@ public class CommentListView extends LinearLayout {
         subjectSpanText.setSpan(new SpannableClickable(itemColor) {
                                     @Override
                                     public void onClick(View widget) {
-                                        Toast.makeText(App.getApp(), textStr + " &id = " + id, Toast.LENGTH_SHORT).show();
+                                        Utils.queryShortUser(id, new NetUserRequest.NetRequestCallBack() {
+                                            @Override
+                                            public void onSuccess(User user) {
+                                                Utils.jumpToProfile(CommentListView.this.getContext(),user,null);
+                                            }
+
+                                            @Override
+                                            public void onFailure(String msg) {
+                                                Utils.makeSysToast(msg);
+                                            }
+                                        });
                                     }
                                 }, 0, subjectSpanText.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);

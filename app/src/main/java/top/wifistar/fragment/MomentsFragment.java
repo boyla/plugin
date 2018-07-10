@@ -117,8 +117,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             sendIv = activity.getBottomImageView();
         }
         presenter = new MomentsPresenter(this);
-        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(),currentUser);
-        momentAdapter.user = currentUser;
+        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(),currentUser,this);
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -147,6 +146,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                         return;
                     }
                     presenter.addComment(content, selectMomentId, replyUser);
+                    replyUser = null;
                 }
                 updateEditTextBodyVisible(View.GONE, null);
             }
@@ -401,11 +401,13 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
         if (selectCircleItem != null) {
             selectCircleItemH = selectCircleItem.getHeight();
+        }else{
+            return;
         }
 
         if (commentConfig.commentType == CommentConfig.Type.REPLY) {
             //回复评论的情况
-            CommentListView commentLv = (CommentListView) selectCircleItem.findViewById(R.id.commentList);
+            CommentListView commentLv = selectCircleItem.findViewById(R.id.commentList);
             if (commentLv != null) {
                 //找到要回复的评论view,计算出该view距离所属动态底部的距离
                 View selectCommentItem = commentLv.getChildAt(commentConfig.commentPosition);

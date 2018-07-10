@@ -48,6 +48,7 @@ import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.PraiseListView;
 import top.wifistar.customview.SnsPopupWindow;
 import top.wifistar.dialog.CommentDialog;
+import top.wifistar.fragment.MomentsFragment;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.MomentRealm;
 import top.wifistar.realm.UserRealm;
@@ -71,6 +72,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     private Context context;
     private HomeActivity.OnSharedViewListener sharedViewListener;
     public User user;
+    public MomentsFragment momentsFragment;
 
     public void setCirclePresenter(MomentsPresenter presenter) {
         this.presenter = presenter;
@@ -81,10 +83,11 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
 
-    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener,User user) {
+    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener,User user,MomentsFragment momentsFragment) {
         this.context = context;
         this.sharedViewListener = sharedViewListener;
         this.user = user;
+        this.momentsFragment = momentsFragment;
     }
 
     @Override
@@ -397,7 +400,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 @Override
                 public void onItemClick(int commentPosition) {
                     Comment comment = commentsDatas.get(commentPosition);
-                    if (BUser.getCurrentUser().getObjectId().equals(comment.getUser().getObjectId().trim())) {//复制或者删除自己的评论
+                    if (Utils.getCurrentShortUser().getObjectId().equals(comment.getUser().getObjectId().trim())) {//复制或者删除自己的评论
                         CommentDialog dialog = new CommentDialog(context, presenter, comment, dataPosition);
                         dialog.show();
                     } else {//回复别人的评论
@@ -407,6 +410,10 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                             config.commentPosition = commentPosition;
                             config.commentType = CommentConfig.Type.REPLY;
                             config.replyUser = comment.getUser();
+
+                            momentsFragment.selectMomentId = moment.getObjectId();
+                            momentsFragment.replyUser = comment.getUser();
+
                             presenter.showEditTextBody(config);
                         }
                     }
