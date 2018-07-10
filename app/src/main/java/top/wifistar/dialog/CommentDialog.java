@@ -14,7 +14,7 @@ import android.widget.TextView;
 import top.wifistar.R;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
 import top.wifistar.bean.bmob.Comment;
-import top.wifistar.utils.DatasUtil;
+import top.wifistar.utils.Utils;
 
 
 /**
@@ -68,7 +68,7 @@ public class CommentDialog extends Dialog implements
 		copyTv.setOnClickListener(this);
 		TextView deleteTv = (TextView) findViewById(R.id.deleteTv);
 		if (mComment != null
-				&& DatasUtil.curUser.getObjectId().equals(
+				&& Utils.getCurrentShortUser().getObjectId().equals(
 						mComment.getUser().getObjectId())) {
 			deleteTv.setVisibility(View.VISIBLE);
 		} else {
@@ -89,7 +89,7 @@ public class CommentDialog extends Dialog implements
 			break;
 		case R.id.deleteTv:
 			if (mPresenter != null && mComment != null) {
-				mPresenter.deleteComment(mCirclePosition, mComment.getMomentId());
+				mPresenter.deleteComment(mCirclePosition, mComment.getObjectId());
 			}
 			dismiss();
 			break;

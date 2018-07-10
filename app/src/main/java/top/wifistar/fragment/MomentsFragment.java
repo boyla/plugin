@@ -325,7 +325,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         Moment item = (Moment) momentAdapter.getDatas().get(circlePosition);
         List<Comment> items = item.getComments();
         for (int i = 0; i < items.size(); i++) {
-            if (commentId.equals(items.get(i).getMomentId())) {
+            if (commentId.equals(items.get(i).getObjectId())) {
                 items.remove(i);
                 momentAdapter.notifyDataSetChanged();
                 //momentAdapter.notifyItemChanged(circlePosition+1);

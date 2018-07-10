@@ -117,8 +117,17 @@ public class MomentsModel {
         });
     }
 
-    public void deleteComment(final IDataRequestListener listener) {
-        requestServer(listener);
+    public void deleteComment(final String commentId,final IDataRequestListener listener) {
+        Comment comment = new Comment();
+        comment.setObjectId(commentId);
+        comment.delete(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if(e==null || e.getErrorCode()==101){
+                    listener.onSuccess();
+                }
+            }
+        });
     }
 
     /**

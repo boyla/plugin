@@ -13,12 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import top.wifistar.app.App;
 import top.wifistar.bean.bmob.Comment;
 import top.wifistar.R;
 import top.wifistar.bean.bmob.User;
@@ -91,11 +89,17 @@ public class CommentListView extends LinearLayout {
         }
     }
 
+    volatile int[] requestCount;
+
     public void notifyDataSetChanged() {
 
         removeAllViews();
         if (mDatas == null || mDatas.size() == 0) {
             return;
+        }
+        requestCount = new int[mDatas.size()];
+        for (int i = 0; i < requestCount.length; i++) {
+            requestCount[i] = 2;
         }
         LayoutParams layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         for (int i = 0; i < mDatas.size(); i++) {
@@ -120,10 +124,10 @@ public class CommentListView extends LinearLayout {
         final CircleMovementMethod circleMovementMethod = new CircleMovementMethod(itemSelectorColor, itemSelectorColor);
         final Comment comment = mDatas.get(position);
         String userId = comment.getUser().getObjectId().trim();
+
         NetUserRequest.NetRequestCallBack queryUsesrCallBack = new NetUserRequest.NetRequestCallBack() {
             @Override
             public void onSuccess(User user) {
-                comment.setUser(user);
                 String name = comment.getUser().getName();
                 String toReplyName = "";
                 if (comment.getToReplyUser() != null) {
@@ -163,23 +167,65 @@ public class CommentListView extends LinearLayout {
 
             @Override
             public void onFailure(String e) {
-                Utils.showToast("获取用户失败:"+e);
+                Utils.showToast("获取用户失败:" + e);
             }
         };
-        if(TextUtils.isEmpty(comment.user.getName())){
-            Utils.queryShortUser(userId,queryUsesrCallBack);
-        }else{
-            queryUsesrCallBack.onSuccess(comment.user);
+
+        // need 2 request done
+        if (TextUtils.isEmpty(comment.user.getName())) {
+            Utils.queryShortUser(userId, new NetUserRequest.NetRequestCallBack() {
+                @Override
+                public void onSuccess(User user) {
+                    comment.setUser(user);
+                    countDownAndCheck(queryUsesrCallBack, position);
+                }
+
+                @Override
+                public void onFailure(String msg) {
+                    countDownAndCheck(queryUsesrCallBack, position);
+                }
+            });
+        } else {
+            countDownAndCheck(queryUsesrCallBack, position);
         }
+
+        if (comment.getToReplyUser() == null) {
+            countDownAndCheck(queryUsesrCallBack, position);
+        } else {
+            if (TextUtils.isEmpty(comment.user.getName())) {
+                Utils.queryShortUser(comment.getToReplyUser().getObjectId(), new NetUserRequest.NetRequestCallBack() {
+                    @Override
+                    public void onSuccess(User user) {
+                        comment.setToReplyUser(user);
+                        countDownAndCheck(queryUsesrCallBack, position);
+                    }
+
+                    @Override
+                    public void onFailure(String msg) {
+                        countDownAndCheck(queryUsesrCallBack, position);
+                    }
+                });
+            } else {
+                countDownAndCheck(queryUsesrCallBack, position);
+            }
+        }
+
         return convertView;
+    }
+
+    private void countDownAndCheck(NetUserRequest.NetRequestCallBack callBack, int position) {
+        requestCount[position]--;
+        if (requestCount[position] == 0) {
+            callBack.onSuccess(null);
+        }
     }
 
     @NonNull
     private SpannableString setClickableSpan(final String textStr, final String id) {
         String res;
-        if(TextUtils.isEmpty(textStr)){
+        if (TextUtils.isEmpty(textStr)) {
             res = "unknown";
-        }else{
+        } else {
             res = textStr;
         }
         SpannableString subjectSpanText = new SpannableString(res);
@@ -189,7 +235,7 @@ public class CommentListView extends LinearLayout {
                                         Utils.queryShortUser(id, new NetUserRequest.NetRequestCallBack() {
                                             @Override
                                             public void onSuccess(User user) {
-                                                Utils.jumpToProfile(CommentListView.this.getContext(),user,null);
+                                                Utils.jumpToProfile(CommentListView.this.getContext(), user, null);
                                             }
 
                                             @Override

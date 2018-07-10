@@ -221,7 +221,7 @@ public class MomentsPresenter implements MomentsContract.Presenter {
      * @Description: 删除评论
      */
     public void deleteComment(final int circlePosition, final String commentId) {
-        momentsModel.deleteComment(new IDataRequestListener() {
+        momentsModel.deleteComment(commentId,new IDataRequestListener() {
 
             @Override
             public void onSuccess() {
