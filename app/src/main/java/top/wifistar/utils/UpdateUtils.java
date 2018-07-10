@@ -35,11 +35,11 @@ public class UpdateUtils {
         BmobQuery<Version> queryVersion = new BmobQuery<>();
         queryVersion.getObject("N1dpJJJK", new QueryListener<Version>() {
             @Override
-            public void done(Version currentVersion, BmobException e) {
-                if (e == null && currentVersion.version > version) {
+            public void done(Version newestVersion, BmobException e) {
+                if (e == null && newestVersion.version > version) {
                     AllenVersionChecker
                             .getInstance()
-                            .downloadOnly(createUIData(currentVersion.url, currentVersion.versionInfo))
+                            .downloadOnly(createUIData(newestVersion.url, newestVersion.versionInfo))
                             .setCustomVersionDialogListener(createCustomDialogTwo())
                             .excuteMission(activity);
                 }
