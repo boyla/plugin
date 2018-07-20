@@ -165,13 +165,21 @@ public class HomeActivity extends BottomInputActivity {
         lastBottomItem = bottomMenuView.currentItem;
     }
 
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            moveTaskToBack(true);
+//            return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
+    public void onBackPressed() {
+        if(editTextBodyLl!=null && editTextBodyLl.getVisibility() == View.VISIBLE){
+            editTextBodyLl.setVisibility(View.GONE);
+        }else{
             moveTaskToBack(true);
-            return true;
         }
-        return super.onKeyDown(keyCode, event);
     }
 
     private void refreshPage() {

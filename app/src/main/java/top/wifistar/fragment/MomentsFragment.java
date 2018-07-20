@@ -52,6 +52,7 @@ import top.wifistar.customview.TitleBar;
 import top.wifistar.dialog.UpLoadDialog;
 import top.wifistar.event.PublishMomentEvent;
 import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.realm.CommentRealm;
 import top.wifistar.utils.CommonUtils;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.RealmUtils;
@@ -227,7 +228,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         for (int i = 0; i < moments.size(); i++) {
             if (momentId.equals(moments.get(i).getObjectId())) {
                 Moment moment = moments.remove(i);
-                RealmUtils.deleteFromRealmByObjId(moment.toRealmObject());
+                RealmUtils.deleteFromRealmByObj(moment.toRealmObject());
                 momentAdapter.notifyItemRemoved(position);
                 if (position != moments.size()) {
                     momentAdapter.notifyItemRangeChanged(position, moments.size() - position);
@@ -319,8 +320,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         List<Comment> items = item.getComments();
         for (int i = 0; i < items.size(); i++) {
             if (commentId.equals(items.get(i).getObjectId())) {
-                items.remove(i);
+                Comment commentToRemove = items.remove(i);
                 momentAdapter.notifyDataSetChanged();
+                RealmUtils.deleteFromRealmByObjId(CommentRealm.class,commentId);
                 //momentAdapter.notifyItemChanged(circlePosition+1);
                 return;
             }

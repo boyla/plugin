@@ -66,8 +66,8 @@ public class NetUtils {
     public static void scan() {
         locAddress = getLocAddrIndex();//获取本地ip前缀  
         final List<String> scanedIPs = new CopyOnWriteArrayList<>();
-        if (locAddress.equals("")) {
-            Toast.makeText(ctx, "扫描失败，请检查wifi网络", Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(locAddress)) {
+            System.out.println("扫描 WIFI IP 失败，请检查wifi网络");
             return;
         }
         for (int i = 0; i < 256; i++) {//创建256个线程分别去ping

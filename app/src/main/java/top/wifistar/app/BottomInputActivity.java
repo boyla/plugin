@@ -86,4 +86,13 @@ public class BottomInputActivity extends ToolbarActivity {
             exitPosition = data.getIntExtra("exit_position", enterPosition);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if(editTextBodyLl!=null && editTextBodyLl.getVisibility() == View.VISIBLE){
+            editTextBodyLl.setVisibility(View.GONE);
+        }else{
+            super.onBackPressed();
+        }
+    }
 }
