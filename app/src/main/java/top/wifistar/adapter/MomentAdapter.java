@@ -434,11 +434,6 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
-        if (Utils.getCurrentShortUser().getObjectId().equals(moment.getUser().getObjectId())) {
-            moment.setUser(Utils.getCurrentShortUser());
-            setUserToHolder(moment, holder);
-            return;
-        }
         if (moment.getUser() != null && moment.getUser().getName() != null) {
             setUserToHolder(moment, holder);
             return;

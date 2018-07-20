@@ -29,7 +29,7 @@ public class MemoryUserRequest extends UserRequest{
 
     @Override
     public void insertOrUpdate(User user) {
-        if(user!=null && !TextUtils.isEmpty(user.getObjectId())){
+        if(user!=null && !TextUtils.isEmpty(user.getObjectId()) && !TextUtils.isEmpty(user.getName())){
             memCacheUsers.put(user.getObjectId(), user);
         }
     }

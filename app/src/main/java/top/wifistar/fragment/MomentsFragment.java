@@ -157,6 +157,10 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     private void setXRecyclerView() {
         progressCombineView.showContent();
         recyclerView.setPullRefreshEnabled(true);
+
+        recyclerView.setFocusable(false);
+        recyclerView.setFocusableInTouchMode(false);
+
         layoutManager = new LinearLayoutManager(getActivity());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -306,8 +310,6 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                     break;
                 }
             }
-//            Moment item = (Moment) momentAdapter.getDatas().get(circlePosition);
-//            item.getComments().add(addItem);
             //momentAdapter.notifyItemChanged(circlePosition+1);
         }
         //清空评论文本
@@ -341,6 +343,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             CommonUtils.showSoftInput(editText.getContext(), editText);
         } else if (View.GONE == visibility) {
             //隐藏键盘
+            editText.clearFocus();
             CommonUtils.hideSoftInput(editText.getContext(), editText);
         }
     }
