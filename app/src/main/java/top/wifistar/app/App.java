@@ -431,12 +431,12 @@ public class App extends MultiDexApplication {
     }
 
     public void showReloginDialog(String title, String message) {
+        BUser.logOut();
         if (curActivity == null) {
             return; // 不要忘了判空操作
         }
         MessageDialog msgDialog = MessageDialog.show(curActivity, title, message, "确定", (dialog, which) -> {
 //                App.getApp().appExit();
-            BUser.logOut();
             Intent intent = new Intent(curActivity, SplashActivity.class);
             ComponentName cn = intent.getComponent();
             Intent mainIntent = Intent.makeRestartActivityTask(cn);//ComponentInfo{包名+类名}

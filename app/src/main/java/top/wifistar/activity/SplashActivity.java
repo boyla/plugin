@@ -139,6 +139,9 @@ public class SplashActivity extends BaseActivity {
 
 
     private void goToMain() {
+        if(BUser.getCurrentUser()==null){
+            return;
+        }
         App.currentUserProfile = (UserProfile) ACache.get(context).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
         HomeActivity.isFirstLogin = true;
         startActivity(new Intent(context, HomeActivity.class));
