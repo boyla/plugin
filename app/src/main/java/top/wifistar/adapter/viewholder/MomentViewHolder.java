@@ -9,9 +9,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import top.wifistar.R;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.customview.CommentListView;
 import top.wifistar.customview.ExpandTextView;
 import top.wifistar.customview.PraiseListView;
@@ -47,6 +47,7 @@ public abstract class MomentViewHolder extends RecyclerView.ViewHolder implement
     public LinearLayout digCommentBody;
     public LinearLayout llRightContent;
     public View digLine;
+    public User user;
 
     /** 评论列表 */
     public CommentListView commentList;

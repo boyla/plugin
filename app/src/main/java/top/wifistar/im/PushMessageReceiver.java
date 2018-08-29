@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import cn.bmob.push.PushConstants;
 import top.wifistar.R;
+import top.wifistar.app.App;
 
 /**
  * Created by boyla on 2018/5/14.
@@ -20,6 +21,10 @@ public class PushMessageReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         String msg = intent.getStringExtra("msg");
+        if(msg.contains("LOGIN ON OTHER DEVICE")){
+            App.getApp().showReloginDialog("提示","你的账号在另一设备登陆，你已被迫下线");
+            return;
+        }
         if (intent.getAction().equals(PushConstants.ACTION_MESSAGE)) {
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
             Log.i("收到推送：", msg);

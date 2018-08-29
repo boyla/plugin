@@ -156,7 +156,6 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             final MomentViewHolder holder = (MomentViewHolder) viewHolder;
             final Moment moment = (Moment) datas.get(dataPosition);
             //todo 查询帖子关联的User,以及赞列表和评论列表
-            holder.headIv.setImageDrawable(null);
             queryUser(moment, holder);
             holder.digCommentBody.setVisibility(View.GONE);
             queryLikes(moment, holder, dataPosition);
@@ -438,6 +437,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             setUserToHolder(moment, holder);
             return;
         }
+        holder.headIv.setImageDrawable(null);
         Utils.queryShortUser(moment.getUser().getObjectId(), new NetUserRequest.NetRequestCallBack() {
 
             @Override
@@ -455,6 +455,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
 
     private void setUserToHolder(Moment moment, MomentViewHolder holder) {
         User user = moment.getUser();
+        holder.user = user;
         //如果头像是用户自己，保存至列表
         if (Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())) {
             ((BottomInputActivity) context).selfAvatarsInMomentList.add(holder.headIv);

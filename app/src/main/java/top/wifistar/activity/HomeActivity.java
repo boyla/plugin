@@ -2,14 +2,25 @@ package top.wifistar.activity;
 
 
 
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.List;
+
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.v3.BmobInstallation;
+import cn.bmob.v3.BmobInstallationManager;
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
+import rx.functions.Action1;
 import top.wifistar.app.App;
 import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.BUser;
+import top.wifistar.bean.bmob.Installation;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.customview.BottomMenuView;
 import top.wifistar.R;
@@ -65,6 +76,7 @@ public class HomeActivity extends BottomInputActivity {
         } catch (Exception e) {
             System.out.println("Update exception:" + e.getMessage());
         }
+        checkLogin();
     }
 
     @Override
@@ -156,6 +168,8 @@ public class HomeActivity extends BottomInputActivity {
                 break;
             case BottomMenuView.Item_Discover:
                 title = getResources().getString(R.string.discover);
+                ConnectionStatus status = BmobIM.getInstance().getCurrentStatus();
+                App.getApp().showReloginDialog("当前IM连接状态",status.getMsg());
                 break;
             default:
                 title = getResources().getString(R.string.chats);
@@ -219,7 +233,94 @@ public class HomeActivity extends BottomInputActivity {
         }
     }
 
+    public void checkLogin(){
+        BmobInstallation bi = BmobInstallationManager.getInstance().getCurrentInstallation();
+        BmobQuery<Installation> bmobQuery = new BmobQuery<>();
+        final String userId = Utils.getCurrentShortUser().getObjectId();
+        bmobQuery.addWhereEqualTo("userId", userId);
+        bmobQuery.findObjectsObservable(Installation.class)
+                .subscribe(new Action1<List<Installation>>() {
+                    @Override
+                    public void call(List<Installation> installations) {
+                        String localId = BmobInstallationManager.getInstallationId();
+                        //有用户信息
+                        if (installations.size() > 0) {
+                            Installation installation = installations.get(0);
+                            String currentId = installation.getInstallationId();
+                            if(!localId.equals(currentId)){
+                                //不同设备登陆，发送PUSH，将上一个设备挤下线
+                                App.getApp().pushAndroidMessage("LOGIN ON OTHER DEVICE",currentId);
+                                //更新数据
+                                installation.userId = "";
+                                installation.update();
 
+                                Installation ins = new Installation();
+                                ins.setObjectId(bi.getObjectId());
+                                ins.setInstallationId(localId);
+                                ins.userId = userId;
+                                ins.update();
+                            }
+//                            //删除多余的数据
+//                            if (installations.size() > 1){
+//                                List<BmobObject> res = new ArrayList<>();
+//                                int len = installations.size() - 1;
+//                                for(int i = len; i > 0; i--){
+//                                    res.add(installations.get(i));
+//                                }
+//                                new BmobBatch().deleteBatch(res).doBatch(new QueryListListener<BatchResult>() {
+//
+//                                    @Override
+//                                    public void done(List<BatchResult> o, BmobException e) {
+//                                        if(e==null){
+//                                            for(int i=0;i<o.size();i++){
+//                                                BatchResult result = o.get(i);
+//                                                BmobException ex =result.getError();
+//                                                if(ex==null){
+//                                                    System.out.println("第"+i+"个数据批量删除成功");
+//                                                }else{
+//                                                    System.out.println("第"+i+"个数据批量删除失败："+ex.getMessage()+","+ex.getErrorCode());
+//                                                }
+//                                            }
+//                                        }else{
+//                                            Log.i("bmob","失败："+e.getMessage()+","+e.getErrorCode());
+//                                        }
+//                                    }
+//                                });
+//                            }
+
+                        } else {
+                            //通过userId没有找到,通过installationId查找，然后更新
+                            BmobQuery<Installation> query = new BmobQuery<Installation>();
+                            query.addWhereEqualTo("installationId", localId);
+                            query.findObjects(new FindListener<Installation>() {
+
+                                @Override
+                                public void done(List<Installation> list, BmobException e) {
+                                    Installation ins;
+                                    if(e!=null || list==null || list.size()==0){
+                                        //save data
+                                        ins = new Installation();
+                                        ins.setInstallationId(localId);
+                                        ins.userId = userId;
+                                        ins.save();
+                                    }else{
+                                        //update data
+                                        ins = list.get(0);
+                                        ins.userId = userId;
+                                        ins.update();
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        System.out.println("查询设备数据失败：" );
+                    }
+                });
+    }
 
 
 }

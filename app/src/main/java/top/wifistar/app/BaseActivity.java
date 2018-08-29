@@ -13,17 +13,17 @@ import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 
 import io.realm.Realm;
-import top.wifistar.bean.User;
+import top.wifistar.bean.bmob.User;
 import top.wifistar.corepage.CorePageManager;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
-import top.wifistar.utils.CacheUtils;
+import top.wifistar.utils.Utils;
 
 import java.util.List;
 
@@ -85,9 +85,9 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     }
 
     private void initCache() {
-        User userBean = CacheUtils.getInstance().getUserBean();
-        if (userBean != null && userBean.id() != null) {
-            myCache = ACache.get(getApplicationContext(), userBean.id());
+        User userBean = Utils.getCurrentShortUser();
+        if (userBean != null && !TextUtils.isEmpty(userBean.getObjectId())) {
+            myCache = ACache.get(getApplicationContext(), userBean.getObjectId());
         } else {
             myCache = ACache.get(getApplicationContext(), "guest");
         }
@@ -136,15 +136,11 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
     @Override
     protected void onStart() {
         super.onStart();
-        if (App.isApplicationToBackground && CacheUtils.getInstance().getUserBean() != null && CacheUtils.getInstance().getUserBean().id() != null) {
-            App.isApplicationToBackground = false;
-        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        App.isApplicationToBackground = true;
     }
 
     public void dispatcherMessage(Message msg) {

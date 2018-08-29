@@ -5,17 +5,24 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+
 import com.google.gson.Gson;
 import com.kongzue.dialog.v2.DialogSettings;
+import com.kongzue.dialog.v2.MessageDialog;
+
 import org.greenrobot.eventbus.EventBus;
+
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.ConnectionStatus;
@@ -25,17 +32,21 @@ import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobInstallation;
 import cn.bmob.v3.BmobInstallationManager;
+import cn.bmob.v3.BmobPushManager;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.InstallationListener;
 import cn.bmob.v3.exception.BmobException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import top.wifistar.activity.SplashActivity;
+import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
 import top.wifistar.event.RefreshEvent;
 import top.wifistar.im.IMMessageHandler;
-import top.wifistar.utils.CacheUtils;
 import top.wifistar.utils.Utils;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -67,8 +78,6 @@ public class App extends MultiDexApplication {
 
     private static App sInstance;
 
-    public static int mCurrentState = 1;
-
     public static LinkedList<Activity> activityStack = new LinkedList<Activity>();
 
     public static Handler mHandler;
@@ -77,8 +86,6 @@ public class App extends MultiDexApplication {
 
     public static int authen_attempt_times = 0;
     public static int conn_attempt_times = 0;
-
-    public static Boolean isApplicationToBackground = true;
 
     public static String WIFI_HOST;
 
@@ -119,9 +126,49 @@ public class App extends MultiDexApplication {
         super.onConfigurationChanged(newConfig);
     }
 
+    private AppCompatActivity curActivity;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
+            @Override
+            public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+
+            }
+
+            @Override
+            public void onActivityStarted(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivityResumed(Activity activity) {
+                curActivity = (AppCompatActivity) activity;
+            }
+
+            @Override
+            public void onActivityPaused(Activity activity) {
+                curActivity = null;
+            }
+
+            @Override
+            public void onActivityStopped(Activity activity) {
+
+            }
+
+            @Override
+            public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+
+            }
+
+            @Override
+            public void onActivityDestroyed(Activity activity) {
+
+            }
+        });
+
 
         AppCrashHandler.getInstance().init(this);
         APP_INSTANCE = this;
@@ -129,7 +176,7 @@ public class App extends MultiDexApplication {
         realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
         Realm.setDefaultConfiguration(realmConfig);
 
-        //第一：默认初始化
+        //Bmob初始化
         Bmob.initialize(this, "15210abb365601ec97b87f55b1efa0d4");
         //IM
         String packageName = getApplicationInfo().packageName;
@@ -138,19 +185,8 @@ public class App extends MultiDexApplication {
             BmobIM.init(this);
             BmobIM.registerDefaultMessageHandler(new IMMessageHandler(this));
         }
-        // 使用推送服务时的初始化操作
-        BmobInstallationManager.getInstance().initialize(new InstallationListener<BmobInstallation>() {
-            @Override
-            public void done(BmobInstallation bmobInstallation, BmobException e) {
-                if (e == null) {
-                    Log.i(bmobInstallation.getObjectId() + " push started: ", bmobInstallation.getInstallationId());
-                } else {
-                    Log.e("push start exception: ", e.getMessage());
-                }
-            }
-        });
-// 启动推送服务
-        BmobPush.startWork(this);
+
+        initPush();
 
         //第二：自v3.4.7版本开始,设置BmobConfig,允许设置请求超时时间、文件分片上传时每片的大小、文件的过期时间(单位为秒)，
         //BmobConfig config =new BmobConfig.Builder(this)
@@ -175,7 +211,6 @@ public class App extends MultiDexApplication {
 
         mContext = getApplicationContext();
         init();
-        CacheUtils.getInstance().init(mContext);
 
         DialogSettings.type = DialogSettings.TYPE_IOS;
         //In this way the VM ignores the file URI exposure
@@ -256,7 +291,7 @@ public class App extends MultiDexApplication {
         activityStack.clear();
     }
 
-    public void AppExit() {
+    public void appExit() {
         try {
             finishAllActivity();
         } catch (Exception ex) {
@@ -393,6 +428,49 @@ public class App extends MultiDexApplication {
                 Utils.makeSysToast(status.getMsg());
             }
         });
+    }
+
+    public void showReloginDialog(String title, String message) {
+        if (curActivity == null) {
+            return; // 不要忘了判空操作
+        }
+        MessageDialog msgDialog = MessageDialog.show(curActivity, title, message, "确定", (dialog, which) -> {
+//                App.getApp().appExit();
+            BUser.logOut();
+            Intent intent = new Intent(curActivity, SplashActivity.class);
+            ComponentName cn = intent.getComponent();
+            Intent mainIntent = Intent.makeRestartActivityTask(cn);//ComponentInfo{包名+类名}
+            startActivity(mainIntent);
+        });
+        msgDialog.setCanCancel(false);
+    }
+
+    BmobPushManager<BmobInstallation> bmobPush;
+
+    public void pushAndroidMessage(String message, String installId) {
+//      bmobPush.pushMessage(message, installId);
+        if (bmobPush == null)
+            bmobPush = new BmobPushManager();
+        BmobQuery<BmobInstallation> query = BmobInstallation.getQuery();
+        query.addWhereEqualTo("installationId", installId);
+        bmobPush.setQuery(query);
+        bmobPush.pushMessage(message);
+    }
+
+    private void initPush() {
+        // 使用推送服务时的初始化操作
+        BmobInstallationManager.getInstance().initialize(new InstallationListener<BmobInstallation>() {
+            @Override
+            public void done(BmobInstallation bmobInstallation, BmobException e) {
+                if (e == null) {
+                    Log.i(bmobInstallation.getObjectId() + " push started: ", bmobInstallation.getInstallationId());
+                } else {
+                    Log.e("push start exception: ", e.getMessage());
+                }
+            }
+        });
+        // 启动推送服务
+        BmobPush.startWork(this);
     }
 
 }

@@ -1,11 +1,9 @@
 package top.wifistar.bean.bmob;
 
-import android.text.TextUtils;
 
 import java.lang.reflect.Field;
 
 import cn.bmob.v3.BmobObject;
-import io.realm.RealmObject;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.realm.ToRealmObject;
 import top.wifistar.realm.UserRealm;
