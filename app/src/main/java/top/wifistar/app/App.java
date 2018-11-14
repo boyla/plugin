@@ -437,6 +437,15 @@ public class App extends MultiDexApplication {
         }
         MessageDialog msgDialog = MessageDialog.show(curActivity, title, message, "确定", (dialog, which) -> {
 //                App.getApp().appExit();
+            if(curActivity instanceof SplashActivity){
+                App.getHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ((SplashActivity)curActivity).refreshStart();
+                    }
+                });
+                return;
+            }
             Intent intent = new Intent(curActivity, SplashActivity.class);
             ComponentName cn = intent.getComponent();
             Intent mainIntent = Intent.makeRestartActivityTask(cn);//ComponentInfo{包名+类名}

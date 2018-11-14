@@ -68,7 +68,7 @@ repositories {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation files('libs/flatbuffers-java-1.2.0-SNAPSHOT.jar')
+//    implementation files('libs/flatbuffers-java-1.2.0-SNAPSHOT.jar')
     api project(':photopicker')
     //    implementation project(':IMLib')
     //    implementation project(':IMKit')

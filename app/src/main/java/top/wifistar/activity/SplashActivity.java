@@ -107,11 +107,7 @@ public class SplashActivity extends BaseActivity {
 //        } else {
 //            canLogin = false;
 //        }
-        if (BmobUser.getCurrentUser() == null) {
-            canLogin = false;
-        } else {
-            canLogin = true;
-        }
+
     }
 
     private void setSplashWord() {
@@ -194,6 +190,17 @@ public class SplashActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        refreshStart();
+
+        //queryData();
+    }
+
+    public void refreshStart() {
+        if (BmobUser.getCurrentUser() == null) {
+            canLogin = false;
+        } else {
+            canLogin = true;
+        }
         ivBackground.clearAnimation();
         if (canLogin) {
             //RongIM.connect(cacheToken, RongIMListener.getInstance().getConnectCallback());
@@ -203,6 +210,7 @@ public class SplashActivity extends BaseActivity {
                     goToMain();
                 }
             }, 2500);
+            return;
         } else if (isFirstIn) {
             handler.postDelayed(() -> {
                 Animation animation = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.translate_anim);
@@ -215,9 +223,12 @@ public class SplashActivity extends BaseActivity {
                 }
             }, 2500);
             isFirstIn = false;
+        }else{
+            handler.postDelayed(() -> {
+                Animation animation = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.translate_anim);
+                ivBackground.startAnimation(animation);
+            }, 100);
         }
-
-        //queryData();
     }
 
     public void queryData() {
