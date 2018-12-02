@@ -121,4 +121,6 @@ dependencies {
     }
     // 加载长图和大图的view
     implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.10.0'
+    //MMKV
+    implementation 'com.tencent:mmkv:1.0.14'
 }

@@ -1,4 +1,120 @@
-//package top.wifistar.utils;
+package top.wifistar.utils;
+
+import android.content.SharedPreferences;
+import android.text.TextUtils;
+
+import com.tencent.mmkv.MMKV;
+
+public class CacheUtils {
+
+    private static MMKV defaultMMKV;
+    private static MMKV userMMKV;
+    private static String currentUserId;
+
+    public static MMKV getMMKV() {
+        String userId = null;
+        if(Utils.getCurrentShortUser()!=null){
+            userId = Utils.getCurrentShortUser().getObjectId();
+        }
+        if(TextUtils.isEmpty(userId)){
+            if(defaultMMKV == null){
+                defaultMMKV = MMKV.defaultMMKV();
+            }
+            return defaultMMKV;
+        }else{
+            if(userMMKV == null){
+                userMMKV = MMKV.mmkvWithID("mmkv_user_" + userId);
+                currentUserId = userId;
+            }else if(!userId.equals(currentUserId)){
+                userMMKV = MMKV.mmkvWithID("mmkv_user_" + userId);
+                currentUserId = userId;
+            }
+            return userMMKV;
+        }
+    }
+
+    public static void importSpToMMKV(SharedPreferences... sp) {
+        new Thread(
+                () -> {
+                    for (SharedPreferences s : sp) {
+                        getMMKV().importFromSharedPreferences(s);
+                    }
+                }
+        ).start();
+    }
+
+    public static SharedPreferences.Editor putInt(String key, int value) {
+        return getMMKV().putInt(key, value);
+    }
+
+    public static int getInt(String key, int defaultValue) {
+        return getMMKV().getInt(key, defaultValue);
+    }
+
+    public static SharedPreferences.Editor putBoolean(String key, boolean value) {
+        return getMMKV().putBoolean(key, value);
+    }
+
+    public static boolean getBoolean(String key, boolean defaultValue) {
+        return getMMKV().getBoolean(key, defaultValue);
+    }
+
+    public static SharedPreferences.Editor putString(String key, String value) {
+        return getMMKV().putString(key, value);
+    }
+
+    public static String getString(String key, String defaultValue) {
+        return getMMKV().getString(key, defaultValue);
+    }
+    public static <T> T getPreference(String key, T defaultValue) {
+        MMKV mmkv = getMMKV();
+        if (mmkv.contains(key)) {
+            if (defaultValue instanceof String) {
+                return (T) mmkv.getString(key, (String) defaultValue);
+            } else if (defaultValue instanceof Long) {
+                return (T) Long.valueOf(mmkv.getLong(key, (Long) defaultValue));
+            } else if (defaultValue instanceof Integer) {
+                return (T) Integer.valueOf(mmkv.getInt(key, (Integer) defaultValue));
+            } else if (defaultValue instanceof Float) {
+                return (T) Float.valueOf(mmkv.getFloat(key, (Float) defaultValue));
+            } else if (defaultValue instanceof Boolean) {
+                return (T) Boolean.valueOf(mmkv.getBoolean(key, (Boolean) defaultValue));
+            } else {
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
+    public static <T> boolean setPreference(String key, T value, boolean isAsync) {
+        MMKV mmkv = getMMKV();
+        SharedPreferences.Editor editor = null;
+        if (value instanceof Boolean) {
+            editor = mmkv.putBoolean(key, (Boolean) value);
+        } else if (value instanceof Integer) {
+            editor = mmkv.putInt(key, (Integer) value);
+        } else if (value instanceof String) {
+            editor = mmkv.putString(key, (String) value);
+        } else if (value instanceof Long) {
+            editor = mmkv.putLong(key, (Long) value);
+        } else if (value instanceof Float) {
+            editor = mmkv.putFloat(key, (Float) value);
+        }
+        if(editor==null){
+            throw new IllegalArgumentException("only support String、Boolean、Float、Int、Long、Set<String>");
+        }
+        if (isAsync) {
+            editor.apply();
+            return true;
+        }
+        return editor.commit();
+    }
+
+    public static <T> boolean setPreference(String lightnessKey, T value) {
+        return setPreference(lightnessKey, value, false);
+    }
+}
 //
 //import android.content.Context;
 //import android.util.Log;
