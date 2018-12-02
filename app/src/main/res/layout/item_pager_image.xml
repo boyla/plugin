@@ -11,4 +11,13 @@
 		android:layout_gravity="center"
 		android:adjustViewBounds="true" />
 
+	<com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+		android:id="@+id/bigImage"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_gravity="center"/>
+		<!--android:scaleType="fitCenter"-->
+		<!--android:layout_gravity="center"-->
+		<!--android:adjustViewBounds="true" />-->
+
 </FrameLayout>

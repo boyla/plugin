@@ -1,11 +1,14 @@
 package top.wifistar.activity;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SharedElementCallback;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PointF;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -30,6 +33,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.ImageViewState;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.github.chrisbanes.photoview.PhotoView;
 
 import java.io.Serializable;
@@ -40,6 +46,9 @@ import java.util.Map;
 import top.wifistar.R;
 import top.wifistar.app.App;
 import top.wifistar.customview.MultiImageView;
+import top.wifistar.utils.DisplayUtils;
+import top.wifistar.utils.ImageUtils;
+
 
 /**
  * Created by yiw on 2016/1/6.
@@ -58,6 +67,7 @@ public class ImagePagerActivity extends YWActivity {
     private int adapterPosition;
 
 
+    @SuppressLint("RestrictedApi")
     public static void startImagePagerActivity(MultiImageView startView, Context context, List<String> imgUrls, int adapterPosition, int picPosition, ImageSize imageSize) {
         Intent intent = new Intent(context, ImagePagerActivity.class);
         intent.putStringArrayListExtra(INTENT_IMGURLS, new ArrayList<>(imgUrls));
@@ -198,7 +208,8 @@ public class ImagePagerActivity extends YWActivity {
             final String transitionName = container.getContext()
                     .getString(R.string.transition_name, adapterPosition, position);
             if (view != null) {
-                PhotoView imageView = (PhotoView) view.findViewById(R.id.image);
+                SubsamplingScaleImageView bigImage = view.findViewById(R.id.bigImage);
+                PhotoView imageView = view.findViewById(R.id.image);
 //                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     imageView.setTransitionName(transitionName);
@@ -226,6 +237,8 @@ public class ImagePagerActivity extends YWActivity {
                 loading.setLayoutParams(loadingLayoutParams);
                 ((FrameLayout) view).addView(loading);
 
+                bigImage.setVisibility(View.GONE);
+
                 Glide.with(context)
                         .load(imgurl)
                         .dontAnimate()
@@ -251,16 +264,20 @@ public class ImagePagerActivity extends YWActivity {
                             @Override
                             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                                 super.onResourceReady(resource, animation);
-                                loading.setVisibility(View.GONE);
+                                DisplayUtils.ScaleInfo info = DisplayUtils.getInitImageScale(ImagePagerActivity.this, ImageUtils.getCacheFile(imgurl).getPath());
+                                if (imgurl.contains(".gif") || imgurl.contains(".GIF") || !info.showRaw){
+                                    loading.setVisibility(View.VISIBLE);
+                                }else{
+                                    loading.setVisibility(View.GONE);
+                                }
                                 if (smallImageView != null) {
                                     smallImageView.setVisibility(View.GONE);
                                 }
-
-                                if (imgurl.contains(".gif") || imgurl.contains(".GIF")) {
-                                    loading.setVisibility(View.GONE);
-                                    App.getHandler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
+                                App.getHandler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loading.setVisibility(View.GONE);
+                                        if (imgurl.contains(".gif") || imgurl.contains(".GIF")) {
                                             Glide.clear(imageView);
                                             Glide.with(context)
                                                     .load(imgurl)
@@ -269,15 +286,65 @@ public class ImagePagerActivity extends YWActivity {
                                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
                                                     .error(R.drawable.loading_failed)
                                                     .into(imageView);
-                                            imageView.setTag(transitionName);
+                                        } else if (!info.showRaw) {
+                                            //展示大长图的view
+                                            bigImage.setVisibility(View.VISIBLE);
+                                            bigImage.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CUSTOM);
+                                            bigImage.setMinScale(0.3F);//最小显示比例
+                                            bigImage.setMaxScale( 5.0f);//最大显示比例
+// 将图片文件给SubsamplingScaleImageView,这里注意设置ImageViewState设置初始显示比例
+// ImageViewState的三个参数为：scale,center,orientation
+                                            bigImage.setImage(ImageSource.uri(Uri.fromFile(ImageUtils.getCacheFile(imgurl))),new ImageViewState(info.scale, new PointF(0, 0), 0));
+
                                         }
-                                    }, 444);
-                                }else{
-                                    imageView.setTag(transitionName);
-                                }
+                                        imageView.setTag(transitionName);
+                                    }
+                                }, 333);
+
+
+//                                App.getHandler().postDelayed(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+////                                            Glide.with(context).load(resource).into(imageView);
+//
+////                                            Glide.clear(imageView);
+//                                            Glide.with(context)
+//                                                    .load(imgurl)
+//                                                    .crossFade()
+//                                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
+//                                                    .error(R.drawable.loading_failed)
+//                                                    .into(imageView);
+//                                            imageView.setTag(transitionName);
+//                                        }
+//                                    }, 444);
+//
+//
+//                                DisplayUtils.ScaleInfo info = DisplayUtils.getInitImageScale(ImagePagerActivity.this, ImageUtils.getCacheFile(imgurl).getPath());
+//                                if (imgurl.contains(".gif") || imgurl.contains(".GIF") || info.showRaw) {
+//                                    App.getHandler().postDelayed(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            Glide.clear(imageView);
+//                                            Glide.with(context)
+//                                                    .load(imgurl)
+//                                                    .asGif()
+//                                                    .crossFade()
+//                                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)//缓存多个尺寸
+//                                                    .error(R.drawable.loading_failed)
+//                                                    .into(imageView);
+//                                            imageView.setTag(transitionName);
+//                                        }
+//                                    }, 444);
+//                                }else{
+//                                    imageView.setTag(transitionName);
+//                                    if(!info.showRaw){
+//                                        //展示大长图的view
+//                                        bigImage.setVisibility(View.VISIBLE);
+//
+//                                    }
+//                                }
                             }
                         });
-
                 container.addView(view, 0);
             }
             return view;
