@@ -24,6 +24,7 @@ import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
+import top.wifistar.utils.ChatUtils;
 import top.wifistar.utils.Utils;
 
 public class IMUsersAdapter extends BaseRecycleViewAdapter {
@@ -108,7 +109,7 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
     }
 
     private void showMessageContent(String str, TextView textView) {
-        textView.setText(str);
+        textView.setText(ChatUtils.getEmotionContent(textView,str));
     }
 
     static public class ChildViewHolder extends RecyclerView.ViewHolder {

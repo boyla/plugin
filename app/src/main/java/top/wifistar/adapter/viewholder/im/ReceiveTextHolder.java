@@ -16,6 +16,7 @@ import cn.bmob.newim.bean.BmobIMUserInfo;
 import top.wifistar.R;
 import top.wifistar.activity.ChatActivity;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.utils.ChatUtils;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.Utils;
 
@@ -53,7 +54,7 @@ public class ReceiveTextHolder extends BaseViewHolder {
                 .bitmapTransform(new GlideCircleTransform(context))
                 .into(iv_avatar);
         String content = message.getContent();
-        tv_message.setText(content);
+        tv_message.setText(ChatUtils.getEmotionContent(tv_message,content));
         iv_avatar.setOnClickListener(v -> {
             if(((ChatActivity) context).isFromProfile()){
                 ((ChatActivity) context).finish();

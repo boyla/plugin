@@ -19,6 +19,7 @@ import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.exception.BmobException;
 import top.wifistar.R;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.utils.ChatUtils;
 import top.wifistar.utils.GlideCircleTransform;
 import top.wifistar.utils.Utils;
 
@@ -66,7 +67,7 @@ public class SendTextHolder extends BaseViewHolder implements View.OnClickListen
                 .bitmapTransform(new GlideCircleTransform(context))
                 .into(iv_avatar);
         String content = message.getContent();
-        tv_message.setText(content);
+        tv_message.setText(ChatUtils.getEmotionContent(tv_message,content));
         String time = Utils.getFuzzyTime2(message.getCreateTime());
         tv_time.setText(time);
 

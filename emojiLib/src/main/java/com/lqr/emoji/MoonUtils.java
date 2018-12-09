@@ -168,7 +168,7 @@ public class MoonUtils {
         }
     }
 
-    private static Drawable getEmotDrawable(Context context, String text, float scale) {
+    public static Drawable getEmotDrawable(Context context, String text, float scale) {
         Drawable drawable = EmojiManager.getDrawable(context, text);
 
         // scale
