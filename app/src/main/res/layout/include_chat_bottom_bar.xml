@@ -1,127 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/base_comment_emo_bar">
-
-<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="@dimen/margin_5"
-    android:paddingRight="@dimen/margin_5"
-    android:minHeight="50dp"
-    android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btn_chat_add"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="@drawable/btn_chat_add_selector"
-        android:gravity="center"
-        android:onClick="toAction" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc" />
 
-    <Button
-        android:id="@+id/btn_chat_emo"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:visibility="visible"
-        android:layout_marginLeft="6dp"
-        android:background="@drawable/btn_chat_emo_selector"
-        android:gravity="center"
-        android:onClick="toAction" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/edit_msg"
-        android:textSize="@dimen/text_size_medium"
-        android:layout_marginLeft="6dp"
-        android:textColor="@color/color_1e1e1e"
-        android:hint="请输入新消息"
-        android:textColorHint="@color/color_b4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.0"
-        android:gravity="left|center"
-        android:lineSpacingExtra="@dimen/margin_3"
-        android:background="@drawable/drawable_edit_normal"
-        android:imeOptions="flagNoExtractUi"
-        android:minHeight="@dimen/height_40"
-        android:padding="@dimen/margin_5"/>
+        <FrameLayout
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="5dp">
 
-    <Button
-        android:id="@+id/btn_speak"
-        style="@style/style_text_black"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginRight="6dp"
-        android:layout_weight="1.0"
-        android:background="@drawable/btn_chat_record_selector"
-        android:gravity="center"
-        android:visibility="gone"
-        android:text="@string/longclick_speak" >
-    </Button>
+            <ImageView
+                android:id="@+id/ivAudio"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_cheat_voice" />
 
-    <Button
-        android:id="@+id/btn_chat_voice"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="6dp"
-        android:background="@drawable/btn_chat_voice_selector"
-        android:gravity="center"
-        android:textColor="@color/base_color_text_black" >
-    </Button>
+            <ImageView
+                android:id="@+id/ivKeyboardl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_cheat_keyboard"
+                android:visibility="gone" />
+        </FrameLayout>
 
-    <Button
-        android:id="@+id/btn_chat_keyboard"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:visibility="gone"
-        android:background="@drawable/btn_chat_keyboard_selector"
-        android:gravity="center"
-        android:textColor="@color/base_color_text_black" >
-    </Button>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center">
 
-    <Button
-        android:id="@+id/btn_chat_send"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:visibility="gone"
-        android:layout_marginLeft="@dimen/margin_10"
-        android:background="@drawable/btn_chat_send_selector"
-        android:gravity="center"
-        />
-</LinearLayout>
+            <EditText
+                android:id="@+id/etContent"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@null"
+                android:drawableBottom="@drawable/selector_edit_focus"
+                android:textColor="@color/text_black"
+                android:visibility="visible" />
 
-    <View android:layout_width="fill_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/color_emote_divder"
-        android:focusable="false" />
+            <Button
+                android:id="@+id/btnAudio"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/shape_session_btn_voice_normal"
+                android:text="@string/please_to_talk"
+                android:textColor="@color/gray1"
+                android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/layout_more"
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="5dp">
+
+            <ImageView
+                android:id="@+id/ivEmo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_cheat_emo" />
+
+            <ImageView
+                android:id="@+id/ivKeyboardr"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@mipmap/ic_cheat_keyboard"
+                android:visibility="gone" />
+        </FrameLayout>
+
+
+        <ImageView
+            android:id="@+id/ivMore"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="7dp"
+            android:src="@mipmap/ic_cheat_add" />
+
+        <Button
+            android:id="@+id/btnSend"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="43dp"
+            android:layout_height="35dp"
+            android:layout_marginRight="4dp"
+            android:background="@drawable/shape_session_btn_send"
+            android:text="@string/send"
+            android:textColor="@color/white"
+            android:textSize="13sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc" />
+
+    <FrameLayout
+        android:id="@+id/flEmotionView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:id="@+id/layout_emo"
+        android:visibility="gone">
+        <!--表情-->
+        <com.lqr.emoji.EmotionLayout
+            android:id="@+id/elEmotion"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/pager_emo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <include
-            android:id="@+id/layout_add"
+            android:layout_height="match_parent"
             android:visibility="gone"
-            layout="@layout/include_chat_add" />
-    </LinearLayout>
+            />
+        <!--其他功能 include_func_layout-->
+        <include
+            android:id="@+id/llMore"
+            layout="@layout/include_chat_add"
+            android:visibility="gone"/>
+    </FrameLayout>
+
+    <!--<LinearLayout-->
+        <!--android:id="@+id/layout_more"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:orientation="vertical"-->
+        <!--android:visibility="gone">-->
+
+        <!--<LinearLayout-->
+            <!--android:id="@+id/layout_emo"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="120dp"-->
+            <!--android:orientation="vertical"-->
+            <!--android:visibility="gone">-->
+
+            <!--<android.support.v4.view.ViewPager-->
+                <!--android:id="@+id/pager_emo"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content" />-->
+        <!--</LinearLayout>-->
+
+        <!--<include-->
+            <!--android:id="@+id/layout_add"-->
+            <!--layout="@layout/include_chat_add"-->
+            <!--android:visibility="gone" />-->
+    <!--</LinearLayout>-->
 
 </LinearLayout>

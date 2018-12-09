@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ll_chat"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/chat_bgc">
+    android:background="@color/chat_bgc"
+    android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_weight="1.0"
+    <!--内容-->
+    <LinearLayout
+        android:id="@+id/llContent"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/sw_refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rc_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -28,9 +32,9 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
-            android:visibility="invisible"
             android:background="@drawable/chat_top_voice_bg"
-            android:padding="10dp" >
+            android:padding="10dp"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/iv_record"
@@ -49,7 +53,130 @@
                 android:text="@string/voice_up_tips"
                 android:textSize="14sp" />
         </RelativeLayout>
-    </FrameLayout>
 
-    <include layout="@layout/include_chat_bottom_bar"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#ccc" />
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:focusable="true"
+            android:background="@color/white"
+            android:focusableInTouchMode="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivAudio"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/ic_cheat_voice" />
+
+                <ImageView
+                    android:id="@+id/ivKeyboardl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/ic_cheat_keyboard"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/etContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@null"
+                    android:drawableBottom="@drawable/selector_edit_focus"
+                    android:textColor="@color/text_black"
+                    android:visibility="visible" />
+
+                <Button
+                    android:id="@+id/btnAudio"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@drawable/shape_session_btn_voice_normal"
+                    android:text="@string/please_to_talk"
+                    android:textColor="@color/gray1"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <FrameLayout
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivEmo"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/ic_cheat_emo" />
+
+                <ImageView
+                    android:id="@+id/ivKeyboardr"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@mipmap/ic_cheat_keyboard"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+
+            <ImageView
+                android:id="@+id/ivMore"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="7dp"
+                android:src="@mipmap/ic_cheat_add" />
+
+            <Button
+                android:id="@+id/btnSend"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="43dp"
+                android:layout_height="35dp"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/shape_session_btn_send"
+                android:text="@string/send"
+                android:textColor="@color/white"
+                android:textSize="13sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#ccc" />
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/flEmotionView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+        <!--表情-->
+        <com.lqr.emoji.EmotionLayout
+            android:id="@+id/elEmotion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+        <!--其他功能 include_func_layout-->
+        <include
+            android:id="@+id/llMore"
+            layout="@layout/include_chat_add"
+            android:visibility="gone" />
+    </FrameLayout>
 </LinearLayout>

@@ -16,10 +16,15 @@ import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.gson.Gson;
 import com.kongzue.dialog.v2.DialogSettings;
 import com.kongzue.dialog.v2.MessageDialog;
+import com.lqr.emoji.IImageLoader;
+import com.lqr.emoji.LQREmotionKit;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -216,6 +221,13 @@ public class App extends MultiDexApplication {
         //In this way the VM ignores the file URI exposure
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+        //初始化表情包
+        LQREmotionKit.init(this, new IImageLoader() {
+            @Override
+            public void displayImage(Context context, String path, ImageView imageView) {
+                Glide.with(context).load(path).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
+            }
+        });
     }
 
 

@@ -24,8 +24,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -33,10 +33,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greysonparrelli.permiso.Permiso;
+import com.lidong.photopicker.Image;
 import com.lidong.photopicker.ImageCaptureManager;
 import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.SelectModel;
 import com.lidong.photopicker.intent.PhotoPickerIntent;
+import com.lqr.emoji.EmotionKeyboard;
+import com.lqr.emoji.EmotionLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +68,7 @@ import top.wifistar.R;
 import top.wifistar.adapter.ChatMsgAdapter;
 import top.wifistar.adapter.viewholder.im.BaseViewHolder;
 import top.wifistar.adapter.viewholder.im.OnRecyclerViewListener;
+import top.wifistar.app.App;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.im.IMUtils;
@@ -86,16 +90,18 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     LinearLayout ll_chat;
     SwipeRefreshLayout sw_refresh;
     RecyclerView rc_view;
-    EditText edit_msg;
-    Button btn_chat_add;
-    Button btn_chat_emo;
-    Button btn_speak;
-    Button btn_chat_voice;
-    Button btn_chat_keyboard;
-    Button btn_chat_send;
-    LinearLayout layout_more;
-    LinearLayout layout_add;
-    LinearLayout layout_emo;
+    EditText etContent;
+    View ivMore;
+    View ivEmo;
+    View btnAudio;
+    View ivAudio;
+    View ivKeyboardl;
+    View ivKeyboardr;
+    View btnSend;
+    LinearLayout llMore, llContent;
+
+    FrameLayout flEmotionView;
+    EmotionLayout elEmotion;
     // 语音有关
     RelativeLayout layout_record;
     TextView tv_voice_tips;
@@ -109,6 +115,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     User shortUser;
     boolean isFromProfile;
     public static final int REQUEST_CAMERA_CODE = 101;
+    private EmotionKeyboard mEmotionKeyboard;
 
     @Override
     protected void initUI() {
@@ -116,20 +123,24 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         ll_chat = bindViewById(R.id.ll_chat);
         sw_refresh = bindViewById(R.id.sw_refresh);
         rc_view = bindViewById(R.id.rc_view);
-        edit_msg = bindViewById(R.id.edit_msg);
-        btn_chat_add = bindViewById(R.id.btn_chat_add);
-        btn_chat_emo = bindViewById(R.id.btn_chat_emo);
-        btn_speak = bindViewById(R.id.btn_speak);
-        btn_chat_voice = bindViewById(R.id.btn_chat_voice);
-        btn_chat_keyboard = bindViewById(R.id.btn_chat_keyboard);
-        btn_chat_send = bindViewById(R.id.btn_chat_send);
-        layout_more = bindViewById(R.id.layout_more);
-        layout_add = bindViewById(R.id.layout_add);
+        etContent = bindViewById(R.id.etContent);
+        ivMore = bindViewById(R.id.ivMore);
+        ivEmo = bindViewById(R.id.ivEmo);
+        btnAudio = bindViewById(R.id.btnAudio);
+        ivAudio = bindViewById(R.id.ivAudio);
+        ivKeyboardl = bindViewById(R.id.ivKeyboardl);
+        ivKeyboardr = bindViewById(R.id.ivKeyboardr);
+        btnSend = bindViewById(R.id.btnSend);
+//        llMore = bindViewById(R.id.llMore);
+        llMore = bindViewById(R.id.llMore);
+
         ll_chat = bindViewById(R.id.ll_chat);
         ll_chat = bindViewById(R.id.ll_chat);
         ll_chat = bindViewById(R.id.ll_chat);
         ll_chat = bindViewById(R.id.ll_chat);
-        layout_emo = bindViewById(R.id.layout_emo);
+        flEmotionView = bindViewById(R.id.flEmotionView);
+        llContent = bindViewById(R.id.llContent);
+        elEmotion = bindViewById(R.id.elEmotion);
         BmobIMConversation conversationEntrance = (BmobIMConversation) getIntent().getExtras().getSerializable("c");
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
         BaseViewHolder.setLeftUser(shortUser);
@@ -141,6 +152,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         initSwipeLayout();
         initVoiceView();
         initBottomView();
+        initEmotionKeyboard();
         setClickListener();
     }
 
@@ -157,6 +169,90 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                 return true;
             }
         });
+    }
+
+    private void initEmotionKeyboard() {
+        elEmotion.attachEditText(etContent);
+        mEmotionKeyboard = EmotionKeyboard.with(this);
+        mEmotionKeyboard.bindToEditText(etContent);
+        mEmotionKeyboard.bindToContent(llContent);
+        mEmotionKeyboard.setEmotionLayout(flEmotionView);
+        mEmotionKeyboard.bindToEmotionButton(ivEmo, ivMore, ivKeyboardl, ivKeyboardr);
+        mEmotionKeyboard.setOnEmotionButtonOnClickListener(new EmotionKeyboard.OnEmotionButtonOnClickListener() {
+            @Override
+            public boolean onEmotionButtonOnClickListener(View view) {
+                boolean res = false;
+                switch (view.getId()) {
+                    case R.id.ivEmo:
+                        if (!elEmotion.isShown()) {
+                            if (llMore.isShown()) {
+                                showEmotionLayout();
+                                hideMoreLayout();
+                                hideAudioButton();
+                                res = true;
+                            }
+                        }
+                        showEmotionLayout();
+                        hideMoreLayout();
+                        hideAudioButton();
+                        break;
+                    case R.id.ivMore:
+                        if (!llMore.isShown()) {
+                            if (elEmotion.isShown()) {
+                                showMoreLayout();
+                                hideEmotionLayout();
+                                hideAudioButton();
+                                return true;
+                            }
+                        }
+                        showMoreLayout();
+                        hideEmotionLayout();
+                        hideAudioButton();
+                        break;
+                    case R.id.ivKeyboardr:
+                        resetBottom(false);
+                        etContent.performClick();
+                        break;
+                    case R.id.ivKeyboardl:
+                        resetBottom(false);
+                        etContent.postDelayed(() -> etContent.performClick(), 2222);
+//                        etContent.performClick();
+                        break;
+                }
+                return res;
+            }
+        });
+//        elEmotion.setEmotionSelectedListener(this);
+        elEmotion.setEmotionAddVisiable(true);
+        elEmotion.setEmotionSettingVisiable(true);
+    }
+
+    private void hideEmotionLayout() {
+        elEmotion.setVisibility(View.GONE);
+        ivEmo.setVisibility(View.VISIBLE);
+        ivKeyboardr.setVisibility(View.GONE);
+    }
+
+    private void hideAudioButton() {
+        btnAudio.setVisibility(View.GONE);
+        ivAudio.setVisibility(View.VISIBLE);
+        etContent.setVisibility(View.VISIBLE);
+        ivKeyboardl.setVisibility(View.GONE);
+        ((ImageView)ivAudio).setImageResource(R.mipmap.ic_cheat_voice);
+    }
+
+    private void showMoreLayout() {
+        llMore.setVisibility(View.VISIBLE);
+    }
+
+    private void hideMoreLayout() {
+        llMore.setVisibility(View.GONE);
+    }
+
+    private void showEmotionLayout() {
+        elEmotion.setVisibility(View.VISIBLE);
+        ivEmo.setVisibility(View.GONE);
+        ivKeyboardr.setVisibility(View.VISIBLE);
     }
 
     private void initSwipeLayout() {
@@ -188,7 +284,8 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         //设置RecyclerView的点击事件
         adapter.setOnRecyclerViewListener(new OnRecyclerViewListener() {
             @Override
-            public void onItemClick(int position) {}
+            public void onItemClick(int position) {
+            }
 
             @Override
             public boolean onItemLongClick(int position) {
@@ -199,20 +296,21 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                         //TODO 消息：5.3、删除指定聊天消息
                         mConversationManager.deleteMessage(adapter.getItem(position));
                         adapter.remove(position);
-                    }});
+                    }
+                });
                 return true;
             }
         });
     }
 
     private void initBottomView() {
-        edit_msg.setOnTouchListener((v, event) -> {
+        etContent.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_UP) {
                 scrollToBottom();
             }
             return false;
         });
-        edit_msg.addTextChangedListener(new TextWatcher() {
+        etContent.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -221,15 +319,17 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ivKeyboardl.setVisibility(View.GONE);
+                ivKeyboardr.setVisibility(View.GONE);
+                ivAudio.setVisibility(View.VISIBLE);
+                ivEmo.setVisibility(View.VISIBLE);
                 if (!TextUtils.isEmpty(s)) {
-                    btn_chat_send.setVisibility(View.VISIBLE);
-                    btn_chat_keyboard.setVisibility(View.GONE);
-                    btn_chat_voice.setVisibility(View.GONE);
+                    btnSend.setVisibility(View.VISIBLE);
+                    ivMore.setVisibility(View.GONE);
                 } else {
-                    if (btn_chat_voice.getVisibility() != View.VISIBLE) {
-                        btn_chat_voice.setVisibility(View.VISIBLE);
-                        btn_chat_send.setVisibility(View.GONE);
-                        btn_chat_keyboard.setVisibility(View.GONE);
+                    if (ivAudio.getVisibility() != View.VISIBLE) {
+                        btnSend.setVisibility(View.GONE);
+                        ivMore.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -247,7 +347,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
      * @return void
      */
     private void initVoiceView() {
-        btn_speak.setOnTouchListener(new VoiceTouchListener());
+        btnAudio.setOnTouchListener(new VoiceTouchListener());
         initVoiceAnimRes();
         initRecordManager();
     }
@@ -290,8 +390,8 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 //                Logger.i("voice", "已录音长度:" + recordTime);
                 if (recordTime >= BmobRecordManager.MAX_RECORD_TIME) {// 1分钟结束，发送消息
                     // 需要重置按钮
-                    btn_speak.setPressed(false);
-                    btn_speak.setClickable(false);
+                    btnAudio.setPressed(false);
+                    btnAudio.setClickable(false);
                     // 取消录音框
                     layout_record.setVisibility(View.INVISIBLE);
                     // 发送语音消息
@@ -301,7 +401,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 
                         @Override
                         public void run() {
-                            btn_speak.setClickable(true);
+                            btnAudio.setClickable(true);
                         }
                     }, 1000);
                 }
@@ -394,71 +494,85 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         return toast;
     }
 
+    boolean isVoiceBtnShown;
+
     private void setClickListener() {
-        edit_msg.setOnClickListener(v -> {
-            if (layout_more.getVisibility() == View.VISIBLE) {
-                layout_add.setVisibility(View.GONE);
-                layout_emo.setVisibility(View.GONE);
-                layout_more.setVisibility(View.GONE);
+        etContent.setOnClickListener(v -> {
+            if (llMore.getVisibility() == View.VISIBLE) {
+                elEmotion.setVisibility(View.GONE);
+                llMore.setVisibility(View.GONE);
             }
         });
 
-        btn_chat_emo.setOnClickListener(v -> {
-            if (layout_more.getVisibility() == View.GONE) {
-                Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
-                    @Override
-                    public void onPermissionResult(Permiso.ResultSet resultSet) {
-                        if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                            showEditState(true);
-                        } else {
-                            Toast.makeText(ChatActivity.this, "发送文件需要权限，请到应用权限中进行设置", Toast.LENGTH_LONG).show();
-                        }
-                    }
+//        ivEmo.setOnClickListener(v -> {
+//            if (llMore.getVisibility() == View.GONE) {
+//                Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+//                    @Override
+//                    public void onPermissionResult(Permiso.ResultSet resultSet) {
+//                        if (resultSet.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//                            resetBottom(true);
+//                        } else {
+//                            Toast.makeText(ChatActivity.this, "发送文件需要权限，请到应用权限中进行设置", Toast.LENGTH_LONG).show();
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+//                        Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "发送文件需要权限，请到应用权限中进行设置", null, callback);
+//                    }
+//                }, Manifest.permission.READ_EXTERNAL_STORAGE);
+//
+//            } else {
+//                if (llMore.getVisibility() == View.VISIBLE) {
+//                    llMore.setVisibility(View.GONE);
+//                    elEmotion.setVisibility(View.VISIBLE);
+//                } else {
+//                    llMore.setVisibility(View.GONE);
+//                }
+//            }
+//        });
 
-                    @Override
-                    public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                        Permiso.getInstance().showRationaleInDialog("需要文件读取权限", "发送文件需要权限，请到应用权限中进行设置", null, callback);
-                    }
-                }, Manifest.permission.READ_EXTERNAL_STORAGE);
-
-            } else {
-                if (layout_add.getVisibility() == View.VISIBLE) {
-                    layout_add.setVisibility(View.GONE);
-                    layout_emo.setVisibility(View.VISIBLE);
-                } else {
-                    layout_more.setVisibility(View.GONE);
+//        ivMore.setOnClickListener(v -> {
+//            if (llMore.getVisibility() == View.GONE) {
+//                llMore.setVisibility(View.VISIBLE);
+//                elEmotion.setVisibility(View.GONE);
+//                hideSoftInputView();
+//            } else {
+//                if (elEmotion.getVisibility() == View.VISIBLE) {
+//                    elEmotion.setVisibility(View.GONE);
+//                } else {
+//                    llMore.setVisibility(View.GONE);
+//                }
+//            }
+//        });
+        ivAudio.setOnClickListener(v -> {
+            if (btnAudio.isShown()) {
+                hideAudioButton();
+                etContent.requestFocus();
+                if (mEmotionKeyboard != null) {
+                    mEmotionKeyboard.showSoftInput();
                 }
-            }
-        });
-
-        btn_chat_add.setOnClickListener(v -> {
-            if (layout_more.getVisibility() == View.GONE) {
-                layout_more.setVisibility(View.VISIBLE);
-                layout_add.setVisibility(View.VISIBLE);
-                layout_emo.setVisibility(View.GONE);
-                hideSoftInputView();
             } else {
-                if (layout_emo.getVisibility() == View.VISIBLE) {
-                    layout_emo.setVisibility(View.GONE);
-                    layout_add.setVisibility(View.VISIBLE);
-                } else {
-                    layout_more.setVisibility(View.GONE);
-                }
+                showAudioButton();
+                hideEmotionLayout();
+                hideMoreLayout();
             }
         });
-        btn_chat_voice.setOnClickListener(v -> {
-            edit_msg.setVisibility(View.GONE);
-            layout_more.setVisibility(View.GONE);
-            btn_chat_voice.setVisibility(View.GONE);
-            btn_chat_keyboard.setVisibility(View.VISIBLE);
-            btn_speak.setVisibility(View.VISIBLE);
-            hideSoftInputView();
-        });
-        btn_chat_keyboard.setOnClickListener(v -> {
-            showEditState(false);
-        });
+//        ivKeyboardl.setOnClickListener(v -> {
+////            hideAudioButton();
+//            resetBottom(false);
+//            etContent.performClick();
+//
+//        });
+//        ivKeyboardr.setOnClickListener(v -> {
+////            hideEmotionLayout();
+////            hideMoreLayout();
+//            resetBottom(false);
+//            showSoftInputView();
+//
+//        });
 
-        btn_chat_send.setOnClickListener(v -> {
+        btnSend.setOnClickListener(v -> {
             Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
                 @Override
                 public void onPermissionResult(Permiso.ResultSet resultSet) {
@@ -476,15 +590,31 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             }, Manifest.permission.READ_PHONE_STATE);
 
         });
-        layout_add.findViewById(R.id.tv_picture).setOnClickListener(v -> {
+        llMore.findViewById(R.id.tv_picture).setOnClickListener(v -> {
             sendLocalImage();
         });
-        layout_add.findViewById(R.id.tv_camera).setOnClickListener(v -> {
+        llMore.findViewById(R.id.tv_camera).setOnClickListener(v -> {
             sendPicFromCamera();
         });
-        layout_add.findViewById(R.id.tv_location).setOnClickListener(v -> {
+        llMore.findViewById(R.id.tv_location).setOnClickListener(v -> {
             sendLocationMessage();
         });
+    }
+
+    private void showAudioButton() {
+        ((ImageView)ivAudio).setImageResource(R.mipmap.ic_cheat_keyboard);
+        btnAudio.setVisibility(View.VISIBLE);
+        etContent.setVisibility(View.GONE);
+
+        if (flEmotionView.isShown()) {
+            if (mEmotionKeyboard != null) {
+                mEmotionKeyboard.interceptBackPress();
+            }
+        } else {
+            if (mEmotionKeyboard != null) {
+                mEmotionKeyboard.hideSoftInput();
+            }
+        }
     }
 
     /**
@@ -493,40 +623,58 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
      * @param isEmo 用于区分文字和表情
      * @return void
      */
-    private void showEditState(boolean isEmo) {
-        edit_msg.setVisibility(View.VISIBLE);
-        btn_chat_keyboard.setVisibility(View.GONE);
-        btn_chat_voice.setVisibility(View.VISIBLE);
-        btn_speak.setVisibility(View.GONE);
-        edit_msg.requestFocus();
-        if (isEmo) {
-            layout_more.setVisibility(View.VISIBLE);
-            layout_more.setVisibility(View.VISIBLE);
-            layout_emo.setVisibility(View.VISIBLE);
-            layout_add.setVisibility(View.GONE);
-            hideSoftInputView();
-        } else {
-            layout_more.setVisibility(View.GONE);
-            showSoftInputView();
-        }
+    private void resetBottom(boolean isEmo) {
+        etContent.setVisibility(View.VISIBLE);
+        ivKeyboardl.setVisibility(View.GONE);
+        ivKeyboardr.setVisibility(View.GONE);
+        ivAudio.setVisibility(View.VISIBLE);
+        ivEmo.setVisibility(View.VISIBLE);
+        btnAudio.setVisibility(View.GONE);
+        etContent.requestFocus();
+//        if (isEmo) {
+//            ivEmo.setVisibility(View.GONE);
+//            ivKeyboardr.setVisibility(View.VISIBLE);
+//            llMore.setVisibility(View.VISIBLE);
+//            llMore.setVisibility(View.GONE);
+//            elEmotion.setVisibility(View.VISIBLE);
+//            hideSoftInputView();
+//            elEmotion.setVisibility(View.VISIBLE);
+//        } else {
+//            ivEmo.setVisibility(View.VISIBLE);
+//            ivKeyboardr.setVisibility(View.GONE);
+//            llMore.setVisibility(View.GONE);
+//            showSoftInputView();
+//            elEmotion.setVisibility(View.GONE);
+//        }
     }
 
     /**
      * 显示软键盘
      */
     public void showSoftInputView() {
-        if (getWindow().getAttributes().softInputMode == WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (getCurrentFocus() != null)
-                ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
-                        .showSoftInput(edit_msg, 0);
-        }
+        elEmotion.setVisibility(View.GONE);
+        llMore.setVisibility(View.GONE);
+        mEmotionKeyboard.showSoftInput();
+//        App.getHandler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+////                if (getWindow().getAttributes().softInputMode == WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+////                    if (getCurrentFocus() != null)
+////                        ((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE))
+////                                .showSoftInput(etContent, 0);
+////                }
+//                etContent.performClick();
+//
+//            }
+//        },555);
+
     }
 
     /**
      * 发送文本消息
      */
     private void sendMessage() {
-        String text = edit_msg.getText().toString();
+        String text = etContent.getText().toString().trim();
         if (TextUtils.isEmpty(text.trim())) {
             Utils.makeSysToast("请输入内容");
             return;
@@ -556,6 +704,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
      * 发送本地图片文件
      */
     private ArrayList<String> imagePaths = new ArrayList<>();
+
     private void sendLocalImage() {
         Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
             @Override
@@ -701,14 +850,14 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         public void onStart(BmobIMMessage msg) {
             super.onStart(msg);
             adapter.addMessage(msg);
-            edit_msg.setText("");
+            etContent.setText("");
             scrollToBottom();
         }
 
         @Override
         public void done(BmobIMMessage msg, BmobException e) {
             adapter.notifyDataSetChanged();
-            edit_msg.setText("");
+            etContent.setText("");
             scrollToBottom();
             if (e != null) {
                 Utils.makeSysToast(e.getMessage());
@@ -781,8 +930,8 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (layout_more.getVisibility() == View.VISIBLE) {
-                layout_more.setVisibility(View.GONE);
+            if (llMore.getVisibility() == View.VISIBLE) {
+                llMore.setVisibility(View.GONE);
                 return false;
             } else {
                 return super.onKeyDown(keyCode, event);
@@ -842,7 +991,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         if (mConversationManager != null) {
             mConversationManager.updateLocalCache();
         }
-        hideSoftInputView();
+//        hideSoftInputView();
         super.onDestroy();
     }
 
@@ -853,14 +1002,13 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     /**
      * 隐藏软键盘
      */
-    public void hideSoftInputView() {
-        InputMethodManager manager = ((InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE));
-        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
-            if (getCurrentFocus() != null)
-                manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
-    }
-
+//    public void hideSoftInputView() {
+//        InputMethodManager manager = ((InputMethodManager) this.getSystemService(Activity.INPUT_METHOD_SERVICE));
+//        if (getWindow().getAttributes().softInputMode != WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN) {
+//            if (getCurrentFocus() != null)
+//                manager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//        }
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.chat_config, menu);
@@ -870,12 +1018,12 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==RESULT_OK){
-            if(requestCode==REQUEST_CAMERA_CODE){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_CAMERA_CODE) {
                 ArrayList<String> list = data.getStringArrayListExtra(PhotoPickerActivity.EXTRA_RESULT);
                 BmobIMImageMessage image = new BmobIMImageMessage(list.get(0));
                 mConversationManager.sendMessage(image, listener);
-            }else if(requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO){
+            } else if (requestCode == ImageCaptureManager.REQUEST_TAKE_PHOTO) {
                 BmobIMImageMessage image = new BmobIMImageMessage(IntentUtils.photoFile.getAbsolutePath());
                 mConversationManager.sendMessage(image, listener);
             }
