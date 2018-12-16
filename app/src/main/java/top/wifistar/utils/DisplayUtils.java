@@ -55,4 +55,23 @@ public class DisplayUtils {
         public boolean showRaw = false;
         public float scale;
     }
+
+    /**
+     * 获得屏幕宽度
+     *
+     * @return
+     */
+    public static int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
+    /**
+     * 获得屏幕高度
+     *
+     * @param context
+     * @return
+     */
+    public static int getScreenHeight(Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
+    }
 }

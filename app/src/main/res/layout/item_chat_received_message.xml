@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/margin_5"
             style="@style/chat_text"
-            android:gravity="left|center"
+            android:gravity="center"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/iv_avatar"
             android:background="@drawable/chat_left_qp"

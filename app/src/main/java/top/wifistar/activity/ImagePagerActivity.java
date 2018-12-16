@@ -290,7 +290,7 @@ public class ImagePagerActivity extends YWActivity {
                                             //展示大长图的view
                                             bigImage.setVisibility(View.VISIBLE);
                                             bigImage.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CUSTOM);
-                                            bigImage.setMinScale(0.3F);//最小显示比例
+                                            bigImage.setMinScale(0.5F);//最小显示比例
                                             bigImage.setMaxScale( 5.0f);//最大显示比例
 // 将图片文件给SubsamplingScaleImageView,这里注意设置ImageViewState设置初始显示比例
 // ImageViewState的三个参数为：scale,center,orientation

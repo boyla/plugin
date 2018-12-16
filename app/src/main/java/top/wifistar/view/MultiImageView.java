@@ -18,9 +18,11 @@ import java.util.List;
 
 import io.realm.RealmResults;
 import top.wifistar.R;
+import top.wifistar.app.App;
 import top.wifistar.bean.bmob.Photo;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.DensityUtil;
+import top.wifistar.utils.DisplayUtils;
 
 /**
  * @author shoyu
@@ -30,6 +32,7 @@ import top.wifistar.utils.DensityUtil;
 
 public class MultiImageView extends LinearLayout {
     public static int MAX_WIDTH = 0;
+    static int maxH = DisplayUtils.getScreenHeight(App.getApp()) / 2;
 
     // 照片的Url列表
     private List<Photo> imagesList;
@@ -197,7 +200,7 @@ public class MultiImageView extends LinearLayout {
         Photo photo = imagesList.get(position);
         ColorFilterImageView imageView = new ColorFilterImageView(getContext());
         String transitionName = getContext().getString(R.string.transition_name, adapterPosition + 1, position);
-        ViewCompat.setTransitionName(imageView,transitionName);
+        ViewCompat.setTransitionName(imageView, transitionName);
 
         imageView.url = photo.url;
         imageView.adapterPosition = adapterPosition;
@@ -209,7 +212,7 @@ public class MultiImageView extends LinearLayout {
         } else {
             imageView.setAdjustViewBounds(true);
             imageView.setScaleType(ScaleType.FIT_CENTER);
-            //imageView.setMaxHeight(pxOneMaxWandH);
+            imageView.setMaxHeight(maxH);
 
             if (photo.w == 0 || photo.h == 0) {
                 //get real w and h of pic
@@ -241,14 +244,16 @@ public class MultiImageView extends LinearLayout {
         imageView.setId(photo.url.hashCode());
         imageView.setOnClickListener(new ImageOnClickListener(position));
         imageView.setBackgroundColor(getResources().getColor(R.color.im_font_color_text_hint));
-        if(photo.url.contains(".gif") || photo.url.contains(".GIF")){
+        if (photo.url.contains(".gif") || photo.url.contains(".GIF")) {
             Glide.with(getContext()).load(photo.url).asGif().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
-        }else{
+        } else {
             Glide.with(getContext()).load(photo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
         }
 
         return imageView;
     }
+
+    boolean showPart = false;
 
     private void setWh(Photo photo, ImageView imageView) {
         int expectW = photo.w;
@@ -269,6 +274,18 @@ public class MultiImageView extends LinearLayout {
                 actualW = expectW;
                 actualH = expectH;
             }
+
+            if (actualH > maxH) {
+                int scaleH = actualH / maxH;
+                actualH = maxH;
+                actualW = actualW / scaleH;
+                if (actualW < pxMoreWandH) {
+                    actualW = pxMoreWandH;
+                    showPart = true;
+                    imageView.setScaleType(ScaleType.CENTER_CROP);
+                }
+            }
+
             imageView.setLayoutParams(new LayoutParams(actualW, actualH));
         }
     }
