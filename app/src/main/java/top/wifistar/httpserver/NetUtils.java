@@ -28,9 +28,10 @@ import java.util.regex.Pattern;
 import org.apache.http.conn.util.InetAddressUtils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import top.wifistar.app.App;
 import top.wifistar.bean.bmob.User;
@@ -328,5 +329,94 @@ public class NetUtils {
         }
         Log.e("getNetIp", ipLine);
         return ipLine;
+    }
+
+    public static final int MOBILE = 1;
+    public static final int WIFI = 0;
+    public static final int NONET = -1;
+    private static ConnectivityManager sConnectivityManager;
+
+    /**
+     * 获得网络连接是否可用
+     *
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        if (context == null) {
+            return false;
+        }
+        if (sConnectivityManager == null) {
+            ConnectivityManager con = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            if(con == null) {
+                return false;
+            }
+            sConnectivityManager = con;
+        }
+
+        NetworkInfo workinfo = sConnectivityManager.getActiveNetworkInfo();
+        return workinfo != null && workinfo.isAvailable();
+    }
+
+
+
+    /**
+     * 获取当前的网络状态 -1：没有网络 0：WIFI网络1：mobile网络
+     *
+     * @param context
+     * @return
+     */
+    public static int getNetConnectType(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            String type = networkInfo.getTypeName();
+            if (type.equalsIgnoreCase("WIFI")) {
+                return WIFI;
+            } else if (type.equalsIgnoreCase("MOBILE")) {
+                return MOBILE;
+            }
+        }
+        return NONET;
+    }
+
+    /**
+     * 检测wifi是否连接
+     */
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 检测3G是否连接
+     */
+    public static boolean is3gConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断网址是否有效
+     */
+    public static boolean isLinkAvailable(String link) {
+        Pattern pattern = Pattern.compile("^(http://|https://)?((?:[A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\\.)+([A-Za-z]+)[/\\?\\:]?.*$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(link);
+        if (matcher.matches()) {
+            return true;
+        }
+        return false;
     }
 }  

@@ -63,10 +63,10 @@ import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.Follow;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
+import top.wifistar.httpserver.NetUtils;
 import top.wifistar.view.CircleImageView;
 import top.wifistar.view.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
-import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.FollowRealm;
@@ -94,8 +94,7 @@ public class UserProfileActivity extends AppCompatActivity {
     View flUp, vSex;
     TextView tvAddFan, tvInfo, tvName, tvSelfIntro, tvStartWord1;
 
-    String follower;
-    String followed;
+    String userId;
     FollowRealm followRealm;
     boolean isFromChat;
 
@@ -247,16 +246,17 @@ public class UserProfileActivity extends AppCompatActivity {
             initFollow();
             tvAddFan.setOnClickListener((v) -> {
                 WaitDialog waitDialog = WaitDialog.show(this, "请稍后...");
-                if (followRealm != null && followRealm.isFollowing) {
+                if (followRealm != null && followRealm.isFollowing()) {
                     //取消关注
                     Follow follow = followRealm.toBmobObject();
-                    follow.isFollowing = false;
+                    follow.cancelFollow();
                     follow.update(new UpdateListener() {
                         @Override
                         public void done(BmobException e) {
                             waitDialog.dismiss();
                             if (e == null) {
-                                BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                                followRealm = follow.toRealmObject();
+                                BaseRealmDao.insertOrUpdate(followRealm);
                                 tvAddFan.setText("＋关注");
                             } else {
                                 Utils.makeSysToast(e.getMessage());
@@ -266,17 +266,16 @@ public class UserProfileActivity extends AppCompatActivity {
                 } else {
                     //添加关注
                     if (followRealm == null) {
-                        Follow follow = new Follow();
-                        follow.follower = follower;
-                        follow.followed = followed;
-                        follow.isFollowing = true;
+                        Follow follow = new Follow(userId);
+                        follow.addFollow();
                         follow.save(new SaveListener<String>() {
                             @Override
                             public void done(String s, BmobException e) {
                                 waitDialog.dismiss();
                                 if (e == null) {
                                     follow.setObjectId(s);
-                                    BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                                    followRealm = follow.toRealmObject();
+                                    BaseRealmDao.insertOrUpdate(followRealm);
                                     tvAddFan.setText("已关注");
                                 } else {
                                     Utils.makeSysToast(e.getMessage());
@@ -285,13 +284,14 @@ public class UserProfileActivity extends AppCompatActivity {
                         });
                     } else {
                         Follow follow = followRealm.toBmobObject();
-                        follow.isFollowing = true;
+                        follow.addFollow();
                         follow.update(new UpdateListener() {
                             @Override
                             public void done(BmobException e) {
                                 waitDialog.dismiss();
                                 if (e == null) {
-                                    BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                                    followRealm = follow.toRealmObject();
+                                    BaseRealmDao.insertOrUpdate(followRealm);
                                     tvAddFan.setText("已关注");
                                 } else {
                                     Utils.makeSysToast(e.getMessage());
@@ -370,29 +370,29 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void initFollow() {
-        follower = Utils.getCurrentShortUser().getObjectId();
-        followed = shortUser.getObjectId();
+        userId = shortUser.getObjectId();
+        String followers = Follow.getFollowers(userId);
         //from realm
-        followRealm = BaseRealmDao.realm.where(FollowRealm.class).equalTo("follower", follower).equalTo("followed", followed).findFirst();
+        followRealm = BaseRealmDao.realm.where(FollowRealm.class).equalTo("followers", followers).findFirst();
         //from bmob
-        if (followRealm == null) {
+        if (NetUtils.isNetworkAvailable(this)) {
             BmobQuery<Follow> query = new BmobQuery<>();
-            query.addWhereEqualTo("follower", follower);
-            query.addWhereEqualTo("followed", followed);
+            query.addWhereEqualTo("followers", followers);
             query.findObjects(new FindListener<Follow>() {
                 @Override
                 public void done(List<Follow> list, BmobException e) {
                     if (e == null && list.size() > 0) {
                         Follow follow = list.get(0);
-                        if (follow.isFollowing) {
+                        if (follow.isFollowing()) {
                             tvAddFan.setText("已关注");
                         }
-                        BaseRealmDao.insertOrUpdate(follow.toRealmObject());
+                        followRealm = follow.toRealmObject();
+                        BaseRealmDao.insertOrUpdate(followRealm);
                     }
                 }
             });
         } else {
-            if (followRealm.isFollowing) {
+            if (followRealm!=null && followRealm.isFollowing()) {
                 tvAddFan.setText("已关注");
             }
         }
