@@ -962,6 +962,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     /**
      * 添加未读的通知栏消息到聊天界面
      */
+    boolean firtsIn = true;
     private void addUnReadMessage() {
         List<MessageEvent> cache = BmobNotificationManager.getInstance(this).getNotificationCacheList();
         if (cache.size() > 0) {
@@ -971,7 +972,10 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                 addMessage2Chat(event);
             }
         }
-        scrollToBottom();
+        if(firtsIn){
+            firtsIn = false;
+            scrollToBottom();
+        }
     }
 
     @Override

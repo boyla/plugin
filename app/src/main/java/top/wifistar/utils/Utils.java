@@ -69,8 +69,8 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.chain.user.UserChainHandler;
-import top.wifistar.customview.CircleImageView;
-import top.wifistar.customview.TopReminder;
+import top.wifistar.view.CircleImageView;
+import top.wifistar.view.TopReminder;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.UserRealm;
 

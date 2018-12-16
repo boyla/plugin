@@ -45,7 +45,7 @@ import java.util.Map;
 
 import top.wifistar.R;
 import top.wifistar.app.App;
-import top.wifistar.customview.MultiImageView;
+import top.wifistar.view.MultiImageView;
 import top.wifistar.utils.DisplayUtils;
 import top.wifistar.utils.ImageUtils;
 

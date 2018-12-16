@@ -1,6 +1,6 @@
 package top.wifistar.event;
 
-import top.wifistar.customview.BottomMenuView;
+import top.wifistar.view.BottomMenuView;
 
 /**
  * Created by hasee on 2017/3/27.

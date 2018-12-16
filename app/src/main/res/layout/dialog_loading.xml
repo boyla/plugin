@@ -10,7 +10,7 @@
         android:layout_height="70dp"
         android:background="@drawable/loading_bg">
 
-        <top.wifistar.customview.LoadingView
+        <top.wifistar.view.LoadingView
             android:id="@+id/lv_loading"
             android:layout_width="40dp"
             android:layout_height="40dp"

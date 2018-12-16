@@ -31,7 +31,7 @@ import android.view.ViewGroup;
 import android.widget.ScrollView;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.corepage.CorePageManager;
-import top.wifistar.customview.BadgeView;
+import top.wifistar.view.BadgeView;
 import top.wifistar.utils.Utils;
 
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;

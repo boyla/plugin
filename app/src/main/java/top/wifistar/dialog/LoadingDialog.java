@@ -5,7 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.Gravity;
 import top.wifistar.R;
-import top.wifistar.customview.LoadingView;
+import top.wifistar.view.LoadingView;
 
 
 

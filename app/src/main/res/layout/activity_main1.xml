@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:text="Hello World!" />
 
-    <top.wifistar.customview.LoadingView
+    <top.wifistar.view.LoadingView
         android:id="@+id/loadingView"
         android:layout_width="match_parent"
         android:layout_height="100dp" />

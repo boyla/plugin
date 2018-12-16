@@ -44,7 +44,7 @@ import top.wifistar.app.BaseActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.User;
-import top.wifistar.customview.TopReminder;
+import top.wifistar.view.TopReminder;
 import top.wifistar.dialog.LoadingDialog;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;

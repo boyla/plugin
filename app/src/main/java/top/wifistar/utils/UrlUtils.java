@@ -11,7 +11,7 @@ import android.view.View;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import top.wifistar.customview.SpannableClickable;
+import top.wifistar.view.SpannableClickable;
 
 /**
  * Created by suneee on 2016/6/2.

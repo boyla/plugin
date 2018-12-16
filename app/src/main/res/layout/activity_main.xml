@@ -9,7 +9,7 @@
         android:layout_marginBottom="50dp"
         android:orientation="vertical">
 
-        <top.wifistar.customview.TopReminder
+        <top.wifistar.view.TopReminder
             android:id="@+id/topReminder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
     </LinearLayout>
 
 
-    <top.wifistar.customview.BottomMenuView
+    <top.wifistar.view.BottomMenuView
         android:id="@+id/bottomMenuView"
         android:layout_width="match_parent"
         android:layout_height="50dp"

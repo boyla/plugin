@@ -12,12 +12,12 @@ import com.bumptech.glide.Glide;
 
 import top.wifistar.R;
 import top.wifistar.bean.bmob.User;
-import top.wifistar.customview.CommentListView;
-import top.wifistar.customview.ExpandTextView;
-import top.wifistar.customview.PraiseListView;
-import top.wifistar.customview.SnsPopupWindow;
-import top.wifistar.customview.videolist.model.VideoLoadMvpView;
-import top.wifistar.customview.videolist.widget.TextureVideoView;
+import top.wifistar.view.CommentListView;
+import top.wifistar.view.ExpandTextView;
+import top.wifistar.view.PraiseListView;
+import top.wifistar.view.SnsPopupWindow;
+import top.wifistar.view.videolist.model.VideoLoadMvpView;
+import top.wifistar.view.videolist.widget.TextureVideoView;
 import top.wifistar.utils.GlideCircleTransform;
 
 

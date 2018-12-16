@@ -24,17 +24,15 @@ import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.adapter.IMUsersAdapter;
 import top.wifistar.bean.bmob.User;
-import top.wifistar.customview.OnTouchXRecyclerView;
-import top.wifistar.customview.ProgressCombineView;
-import top.wifistar.customview.RecyclerViewDivider;
+import top.wifistar.view.OnTouchXRecyclerView;
+import top.wifistar.view.ProgressCombineView;
+import top.wifistar.view.RecyclerViewDivider;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.event.EurekaEvent;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.EventUtils;
-
-import static top.wifistar.httpserver.NetUtils.usersInWiFi;
 
 /**
  * Created by hasee on 2017/4/8.

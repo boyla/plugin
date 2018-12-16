@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,7 +19,7 @@ import com.jaeger.library.StatusBarUtil;
 import com.shizhefei.view.indicator.FixedIndicatorView;
 
 import top.wifistar.R;
-import top.wifistar.customview.CircleImageView;
+import top.wifistar.view.CircleImageView;
 
 
 public abstract class ToolbarActivity extends BaseActivity {
