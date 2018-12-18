@@ -31,7 +31,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:27.1.1'
     testCompile 'junit:junit:4.12'
-    compile files('libs/universal-image-loader-1.9.5.jar')
+//    compile files('libs/universal-image-loader-1.9.5.jar')
 }
 
 ////项目主页

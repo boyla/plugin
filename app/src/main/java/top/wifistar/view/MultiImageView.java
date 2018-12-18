@@ -80,7 +80,7 @@ public class MultiImageView extends LinearLayout {
 
         if (MAX_WIDTH > 0) {
             pxMoreWandH = (MAX_WIDTH - pxImagePadding * 2) / 3; //解决右侧图片和内容对不齐问题
-            pxOneMaxWandH = MAX_WIDTH * 4 / 5;
+            pxOneMaxWandH = MAX_WIDTH - pxImagePadding * 2;
             initImageLayoutParams();
         }
 
@@ -256,31 +256,31 @@ public class MultiImageView extends LinearLayout {
     boolean showPart = false;
 
     private void setWh(Photo photo, ImageView imageView) {
-        int expectW = photo.w;
-        int expectH = photo.h;
-        if (expectW == 0 || expectH == 0) {
+        int rawW = photo.w;
+        int rawH = photo.h;
+        if (rawW == 0 || rawH == 0) {
             imageView.setLayoutParams(onePicPara);
         } else {
             int actualW = 0;
             int actualH = 0;
-            float scale = ((float) expectH) / ((float) expectW);
-            if (expectW > pxOneMaxWandH) {
+            float scale = ((float) rawH) / ((float) rawW);
+            if (rawW > pxOneMaxWandH) {
                 actualW = pxOneMaxWandH;
                 actualH = (int) (actualW * scale);
-            } else if (expectW < pxMoreWandH) {
-                actualW = pxMoreWandH;
+            } else if(rawW < pxMoreWandH*3/2){
+                actualW = pxMoreWandH*3/2;
                 actualH = (int) (actualW * scale);
-            } else {
-                actualW = expectW;
-                actualH = expectH;
+            }else{
+                actualW = rawW;
+                actualH = rawH;
             }
 
             if (actualH > maxH) {
                 int scaleH = actualH / maxH;
                 actualH = maxH;
                 actualW = actualW / scaleH;
-                if (actualW < pxMoreWandH) {
-                    actualW = pxMoreWandH;
+                if (actualW < pxMoreWandH*3/2) {
+                    actualW = pxMoreWandH*3/2;
                     showPart = true;
                     imageView.setScaleType(ScaleType.CENTER_CROP);
                 }
