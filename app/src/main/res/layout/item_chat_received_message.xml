@@ -40,8 +40,6 @@
             android:layout_toRightOf="@id/iv_avatar"
             android:background="@drawable/chat_left_qp"
             android:lineSpacingExtra="@dimen/margin_3"
-            android:paddingLeft="14dp"
-            android:paddingRight="11dp"
             android:minHeight="32dp"
             android:maxWidth="225.0dip"
             android:clickable="true"

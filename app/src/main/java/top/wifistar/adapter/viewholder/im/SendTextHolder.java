@@ -67,7 +67,7 @@ public class SendTextHolder extends BaseViewHolder implements View.OnClickListen
                 .bitmapTransform(new GlideCircleTransform(context))
                 .into(iv_avatar);
         String content = message.getContent();
-        tv_message.setText(ChatUtils.getEmotionContent(tv_message,content));
+        tv_message.setText(ChatUtils.getEmotionContent(tv_message, content, true));
         String time = Utils.getFuzzyTime2(message.getCreateTime());
         tv_time.setText(time);
 

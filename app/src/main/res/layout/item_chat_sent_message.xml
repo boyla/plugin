@@ -38,9 +38,8 @@
             android:gravity="start|center_vertical"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/iv_avatar"
+            android:lineSpacingExtra="@dimen/margin_3"
             android:background="@drawable/chat_right_qp"
-            android:paddingLeft="11dp"
-            android:paddingRight="14dp"
             android:maxWidth="225.0dip"
             android:minHeight="32dp" />
 

@@ -1,14 +1,11 @@
 package top.wifistar.utils;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
+import android.view.Gravity;
 import android.widget.TextView;
 
 import com.lqr.emoji.MoonUtils;
@@ -23,7 +20,20 @@ import top.wifistar.app.App;
  */
 
 public class ChatUtils {
+
     public static SpannableString getEmotionContent(final TextView tv, String source) {
+        return getEmotionContent(tv, source, false);
+    }
+
+    public static SpannableString getEmotionContent(final TextView tv, String source, boolean oneCenter) {
+        if (oneCenter) {
+            if (null != source && source.length() < 5) {
+                tv.setGravity(Gravity.CENTER);
+            } else {
+                tv.setGravity(Gravity.START | Gravity.CENTER_VERTICAL);
+            }
+        }
+
         SpannableString spannableString = new SpannableString(source);
         String regexEmotion = "\\[[^\\[]{1,10}\\]";
         Pattern patternEmotion = Pattern.compile(regexEmotion);
@@ -37,7 +47,7 @@ public class ChatUtils {
             BitmapDrawable d = (BitmapDrawable) MoonUtils.getEmotDrawable(App.getApp(), key, 0.6F);
             if (d != null) {
                 // 压缩表情图片
-                int size = (int) tv.getTextSize()*13/10;
+                int size = (int) tv.getTextSize() * 13 / 10;
                 Bitmap bitmap = d.getBitmap();
                 Bitmap scaleBitmap = Bitmap.createScaledBitmap(bitmap, size, size, true);
                 ImageSpan span = new ImageSpan(App.getApp(), scaleBitmap);

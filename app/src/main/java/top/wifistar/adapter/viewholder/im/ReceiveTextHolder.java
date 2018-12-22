@@ -54,11 +54,11 @@ public class ReceiveTextHolder extends BaseViewHolder {
                 .bitmapTransform(new GlideCircleTransform(context))
                 .into(iv_avatar);
         String content = message.getContent();
-        tv_message.setText(ChatUtils.getEmotionContent(tv_message,content));
+        tv_message.setText(ChatUtils.getEmotionContent(tv_message, content, true));
         iv_avatar.setOnClickListener(v -> {
-            if(((ChatActivity) context).isFromProfile()){
+            if (((ChatActivity) context).isFromProfile()) {
                 ((ChatActivity) context).finish();
-            }else{
+            } else {
                 User user = ((ChatActivity) context).getCurrentUser();
                 Utils.jumpToProfile(context, user, iv_avatar);
             }
