@@ -1,31 +1,34 @@
 package top.wifistar.bean.bmob
 
+import cn.bmob.v3.BmobObject
 import cn.bmob.v3.BmobQuery
 import cn.bmob.v3.exception.BmobException
 import cn.bmob.v3.listener.QueryListener
-import top.wifistar.bean.bmob.User
 import top.wifistar.realm.BaseRealmDao
-import top.wifistar.utils.Utils
+import top.wifistar.utils.LogUtils
 
 /**
  * Created by boyla on 2017/9/22.
  */
-class QueryUtils{
-     fun queryUserById(uId: String) {
-        val query = BmobQuery<User>()
-        query.getObject(uId, object : QueryListener<User>() {
-            override fun done(result: User, e: BmobException?) {
-                if (e == null) {
+class QueryUtils {
 
-                } else {
-                    Utils.showToast("失败：" + e.message + "," + e.errorCode)
+    companion object {
+        fun  queryFollow(objId: String, callBack: QueryCallBack<Follow>) {
+            val query = BmobQuery<Follow>()
+            query.getObject(objId, object : QueryListener<Follow>() {
+                override fun done(result: Follow, e: BmobException?) {
+                    if (e == null) {
+                        callBack.onSuccess(result)
+                    } else {
+                        LogUtils.logI("失败：" + e.message + "," + e.errorCode)
+                    }
                 }
-            }
-
-        })
+            })
+        }
     }
 
-    fun queryProfileById(profileId:String,listener: OnQueryBmobSuccess){
+
+    fun queryProfileById(profileId: String, listener: OnQueryBmobSuccess) {
         val query = BmobQuery<UserProfile>()
         query.getObject(profileId,
                 object : QueryListener<UserProfile>() {
@@ -36,5 +39,9 @@ class QueryUtils{
                 })
     }
 
-
+    interface QueryCallBack<T : BmobObject> {
+        fun onSuccess(obj: T)
+    }
 }
+
+

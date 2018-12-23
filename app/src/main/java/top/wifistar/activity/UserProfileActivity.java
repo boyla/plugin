@@ -32,7 +32,6 @@ import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.SelectModel;
 import com.lidong.photopicker.intent.PhotoPickerIntent;
 import com.ruffian.library.RTextView;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -61,6 +60,7 @@ import top.wifistar.bean.LocationBean;
 import top.wifistar.bean.CNLocationBean;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.Follow;
+import top.wifistar.bean.bmob.QueryUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.httpserver.NetUtils;
@@ -242,66 +242,10 @@ public class UserProfileActivity extends AppCompatActivity {
         } else {
             llEditInfo.setVisibility(View.GONE);
             llInfo.setVisibility(View.VISIBLE);
-
             initFollow();
             tvAddFan.setOnClickListener((v) -> {
                 WaitDialog waitDialog = WaitDialog.show(this, "请稍后...");
-                if (followRealm != null && followRealm.isFollowing()) {
-                    //取消关注
-                    Follow follow = followRealm.toBmobObject();
-                    follow.cancelFollow();
-                    follow.update(new UpdateListener() {
-                        @Override
-                        public void done(BmobException e) {
-                            waitDialog.dismiss();
-                            if (e == null) {
-                                followRealm = follow.toRealmObject();
-                                BaseRealmDao.insertOrUpdate(followRealm);
-                                tvAddFan.setText("＋关注");
-                            } else {
-                                Utils.makeSysToast(e.getMessage());
-                            }
-                        }
-                    });
-                } else {
-                    //添加关注
-                    if (followRealm == null) {
-                        Follow follow = new Follow(userId);
-                        follow.addFollow();
-                        follow.save(new SaveListener<String>() {
-                            @Override
-                            public void done(String s, BmobException e) {
-                                waitDialog.dismiss();
-                                if (e == null) {
-                                    follow.setObjectId(s);
-                                    followRealm = follow.toRealmObject();
-                                    BaseRealmDao.insertOrUpdate(followRealm);
-                                    tvAddFan.setText("已关注");
-                                } else {
-                                    Utils.makeSysToast(e.getMessage());
-                                }
-                            }
-                        });
-                    } else {
-                        Follow follow = followRealm.toBmobObject();
-                        follow.addFollow();
-                        follow.update(new UpdateListener() {
-                            @Override
-                            public void done(BmobException e) {
-                                waitDialog.dismiss();
-                                if (e == null) {
-                                    followRealm = follow.toRealmObject();
-                                    BaseRealmDao.insertOrUpdate(followRealm);
-                                    tvAddFan.setText("已关注");
-                                } else {
-                                    Utils.makeSysToast(e.getMessage());
-                                }
-                            }
-                        });
-                    }
-
-                }
-
+                processFollow(waitDialog);
             });
             vSendMail.setOnClickListener((v) -> {
                 if (isFromChat) {
@@ -318,6 +262,77 @@ public class UserProfileActivity extends AppCompatActivity {
                     UserProfileActivity.this.startActivity(intent);
                 }
             });
+        }
+    }
+
+    private void processFollow(WaitDialog waitDialog) {
+        if (NetUtils.isNetworkAvailable(this) && followRealm != null) {
+//            QueryUtils.Companion.queryBmobObj(followRealm.objectId, (QueryUtils.QueryCallBack<Follow>) obj -> {
+            QueryUtils.Companion.queryFollow(followRealm.objectId, obj -> {
+                followRealm = obj.toRealmObject();
+                BaseRealmDao.insertOrUpdate(followRealm);
+                updateFollow(waitDialog);
+            });
+        } else {
+            updateFollow(waitDialog);
+        }
+    }
+
+    private void updateFollow(WaitDialog waitDialog) {
+        if (followRealm != null && followRealm.isFollowing()) {
+            //取消关注
+            Follow follow = followRealm.toBmobObject();
+            follow.cancelFollow();
+            follow.update(new UpdateListener() {
+                @Override
+                public void done(BmobException e) {
+                    waitDialog.dismiss();
+                    if (e == null) {
+                        followRealm = follow.toRealmObject();
+                        BaseRealmDao.insertOrUpdate(followRealm);
+                        tvAddFan.setText("＋关注");
+                    } else {
+                        Utils.makeSysToast(e.getMessage());
+                    }
+                }
+            });
+        } else {
+            //添加关注
+            if (followRealm == null) {
+                Follow follow = new Follow(userId);
+                follow.addFollow();
+                follow.save(new SaveListener<String>() {
+                    @Override
+                    public void done(String s, BmobException e) {
+                        waitDialog.dismiss();
+                        if (e == null) {
+                            follow.setObjectId(s);
+                            followRealm = follow.toRealmObject();
+                            BaseRealmDao.insertOrUpdate(followRealm);
+                            tvAddFan.setText("已关注");
+                        } else {
+                            Utils.makeSysToast(e.getMessage());
+                        }
+                    }
+                });
+            } else {
+                Follow follow = followRealm.toBmobObject();
+                follow.addFollow();
+                follow.update(new UpdateListener() {
+                    @Override
+                    public void done(BmobException e) {
+                        waitDialog.dismiss();
+                        if (e == null) {
+                            followRealm = follow.toRealmObject();
+                            BaseRealmDao.insertOrUpdate(followRealm);
+                            tvAddFan.setText("已关注");
+                        } else {
+                            Utils.makeSysToast(e.getMessage());
+                        }
+                    }
+                });
+            }
+
         }
     }
 
@@ -374,7 +389,10 @@ public class UserProfileActivity extends AppCompatActivity {
         String followers = Follow.getFollowers(userId);
         //from realm
         followRealm = BaseRealmDao.realm.where(FollowRealm.class).equalTo("followers", followers).findFirst();
-        //from bmob
+        if (followRealm != null && followRealm.isFollowing()) {
+            tvAddFan.setText("已关注");
+        }
+        //update from bmob
         if (NetUtils.isNetworkAvailable(this)) {
             BmobQuery<Follow> query = new BmobQuery<>();
             query.addWhereEqualTo("followers", followers);
@@ -391,10 +409,6 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 }
             });
-        } else {
-            if (followRealm!=null && followRealm.isFollowing()) {
-                tvAddFan.setText("已关注");
-            }
         }
     }
 
