@@ -11,6 +11,7 @@ import top.wifistar.utils.Utils;
 
 /**
  * Created by boyla on 2017/12/25.
+ * 点击时收起键盘
  */
 
 public class OnTouchXRecyclerView extends XRecyclerView {

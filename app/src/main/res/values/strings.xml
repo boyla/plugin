@@ -47,7 +47,7 @@
     <!-- BottomMenu -->
     <string name="chats">Chats</string>
     <string name="moments">Moments</string>
-    <string name="connections">Connections</string>
+    <string name="connections">Follow</string>
     <string name="discover">Discover</string>
 
     <!-- ProgressCombineView -->

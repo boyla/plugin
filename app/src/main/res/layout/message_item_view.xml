@@ -52,7 +52,7 @@
                 android:text="WiFi"
                 android:textSize="8sp"
                 android:textColor="@color/white"
-                android:background="@drawable/bg_wifi"
+                android:background="@drawable/text_bg_blue"
                 android:layout_marginLeft="7dp"
                 android:layout_toRightOf="@id/textview_username" />
 

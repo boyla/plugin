@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="50dp"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bottom_tab_bg"
     android:orientation="horizontal">
@@ -23,8 +23,8 @@
 
             <top.wifistar.view.ThemeImageView
                 android:id="@+id/ivChats"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="43.5dp"
+                android:layout_height="38dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="6dp"
                 custom:needTheme="true"
@@ -61,8 +61,8 @@
 
             <top.wifistar.view.ThemeImageView
                 android:id="@+id/ivMoments"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="43.5dp"
+                android:layout_height="38dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="6dp"
                 custom:needTheme="true"
@@ -99,8 +99,8 @@
 
             <top.wifistar.view.ThemeImageView
                 android:id="@+id/ivConnections"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="43.5dp"
+                android:layout_height="38dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="6dp"
                 android:src="@drawable/bottom_tab_connections"
@@ -136,8 +136,8 @@
 
             <top.wifistar.view.ThemeImageView
                 android:id="@+id/ivDiscover"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="43.5dp"
+                android:layout_height="38dp"
                 android:paddingTop="2dp"
                 android:paddingBottom="6dp"
                 custom:needTheme="true"
