@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmResults;
+import io.realm.Sort;
 import top.wifistar.R;
 import top.wifistar.adapter.FollowAdapter;
 import top.wifistar.bean.bmob.Follow;
@@ -95,7 +96,7 @@ public class ConnectionsFragment extends BaseFragment {
         if (currentUser != null && !TextUtils.isEmpty(currentUser.getObjectId())) {
             userId = currentUser.getObjectId();
             //load by local
-            RealmResults<FollowRealm> dbData = BaseRealmDao.realm.where(FollowRealm.class).contains("followers", userId).findAll();
+            RealmResults<FollowRealm> dbData = BaseRealmDao.realm.where(FollowRealm.class).contains("followers", userId).findAll().sort("followState", Sort.DESCENDING);
             if (dbData.isLoaded()) {
                 // 完成查询
                 if (!dbData.isEmpty()) {
