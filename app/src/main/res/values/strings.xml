@@ -1,7 +1,7 @@
 <resources
     xmlns:tools="http://schemas.android.com/tools"
     tools:locale="en">
-    <string name="app_name">WiFiStar</string>
+    <string name="app_name">NearU</string>
     <string name="splash_word_1">We connect more</string>
     <string name="splash_word_2">From a place beyond time,and time beyond counting</string>
     <string name="splash_word_3">Better to run than curse the road</string>
