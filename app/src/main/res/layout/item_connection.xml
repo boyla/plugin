@@ -41,7 +41,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="7dp"
             android:layout_toRightOf="@id/tvName"
-            android:background="@drawable/text_bg_blue"
             android:paddingLeft="2dp"
             android:paddingRight="2dp"
             tools:text="WiFi"

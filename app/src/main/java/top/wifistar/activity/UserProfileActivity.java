@@ -279,6 +279,7 @@ public class UserProfileActivity extends AppCompatActivity {
     }
 
     private void updateFollow(WaitDialog waitDialog) {
+        User thisUser = Utils.getCurrentShortUser();
         if (followRealm != null && followRealm.isFollowing()) {
             //取消关注
             Follow follow = followRealm.toBmobObject();
@@ -291,11 +292,18 @@ public class UserProfileActivity extends AppCompatActivity {
                         followRealm = follow.toRealmObject();
                         BaseRealmDao.insertOrUpdate(followRealm);
                         tvAddFan.setText("＋关注");
+                        if(thisUser!=null){
+                            thisUser.follows = thisUser.follows.replace(shortUser.getObjectId()+"_","");
+                            Utils.updateUser(thisUser);
+                            thisUser.update();
+                        }
                     } else {
                         Utils.makeSysToast(e.getMessage());
                     }
                 }
             });
+
+
         } else {
             //添加关注
             if (followRealm == null) {
@@ -310,6 +318,11 @@ public class UserProfileActivity extends AppCompatActivity {
                             followRealm = follow.toRealmObject();
                             BaseRealmDao.insertOrUpdate(followRealm);
                             tvAddFan.setText("已关注");
+                            if(thisUser!=null){
+                                thisUser.follows += shortUser.getObjectId()+"_";
+                                Utils.updateUser(thisUser);
+                                thisUser.update();
+                            }
                         } else {
                             Utils.makeSysToast(e.getMessage());
                         }
@@ -326,13 +339,17 @@ public class UserProfileActivity extends AppCompatActivity {
                             followRealm = follow.toRealmObject();
                             BaseRealmDao.insertOrUpdate(followRealm);
                             tvAddFan.setText("已关注");
+                            if(thisUser!=null){
+                                thisUser.follows += shortUser.getObjectId()+"_";
+                                Utils.updateUser(thisUser);
+                                thisUser.update();
+                            }
                         } else {
                             Utils.makeSysToast(e.getMessage());
                         }
                     }
                 });
             }
-
         }
     }
 

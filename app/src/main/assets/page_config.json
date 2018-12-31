@@ -23,7 +23,7 @@
   {
     "type": "fragment",
     "nameAlias": "Connections",
-    "clazz": "top.wifistar.fragment.ConnectionsFragment",
+    "clazz": "top.wifistar.fragment.FollowFragment",
     "template": "",
     "params": ""
   },

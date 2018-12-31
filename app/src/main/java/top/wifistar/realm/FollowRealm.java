@@ -9,8 +9,8 @@ import top.wifistar.utils.Utils;
 
 public class FollowRealm  extends RealmObject implements ToBmobObject{
 
-    @PrimaryKey
     public String objectId;
+    @PrimaryKey
     public String followers;
     public Integer followState;
 

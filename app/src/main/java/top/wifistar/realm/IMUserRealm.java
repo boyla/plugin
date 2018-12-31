@@ -36,6 +36,7 @@ public class IMUserRealm extends RealmObject implements ToBmobObject {
     public String startWord3;
     public String selfIntroduce;
     public String birth;
+    public String follows;
 
     @Override
     public String toString() {
@@ -70,6 +71,7 @@ public class IMUserRealm extends RealmObject implements ToBmobObject {
         user.startWord3 = startWord3;
         user.selfIntroduce = selfIntroduce;
         user.birth = birth;
+        user.follows = follows;
 
         return user;
     }

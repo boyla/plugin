@@ -13,8 +13,12 @@ import com.jcodecraeer.xrecyclerview.ProgressStyle;
 import com.jcodecraeer.xrecyclerview.XRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 import top.wifistar.R;
@@ -32,7 +36,7 @@ import top.wifistar.view.RecyclerViewDivider;
  * Created by hasee on 2017/4/8.
  */
 
-public class ConnectionsFragment extends BaseFragment {
+public class FollowFragment extends BaseFragment {
 
     ProgressCombineView progressCombineView;
 
@@ -107,6 +111,28 @@ public class ConnectionsFragment extends BaseFragment {
                         }
                     }
                     showData();
+                }else{
+                    //本地无数据，从网络获取
+                    String[] followIds = currentUser.follows.split("_");
+                    if(followIds.length<1){
+                        showData();
+                        return;
+                    }
+                    BmobQuery<User> query = new BmobQuery<>();
+                    query.addWhereContainedIn("objectId", Arrays.asList(followIds));
+                    query.findObjects(new FindListener<User>() {
+                        @Override
+                        public void done(List<User> list, BmobException e) {
+                            follows.clear();
+                            for(User u : list){
+                                Follow follow = new Follow(u.getObjectId());
+                                follow.addFollow();
+                                follows.add(follow);
+                                Utils.updateUser(u);
+                            }
+                            showData();
+                        }
+                    });
                 }
             }
             //update from net
