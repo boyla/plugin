@@ -1310,10 +1310,10 @@ public class Utils {
         }
         SimpleDateFormat isSameYear = new SimpleDateFormat("yyyy");
         if(isSameYear.format(new Date(createTime)).equals(isSameYear.format(new Date(current)))){
-            resSdf = new SimpleDateFormat("MM-dd HH:mm");
+            resSdf = new SimpleDateFormat("MM月dd日");
             return resSdf.format(new Date(createTime));
         }else{
-            resSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            resSdf = new SimpleDateFormat("yyyy年MM月dd日");
             return resSdf.format(new Date(createTime));
         }
     }
