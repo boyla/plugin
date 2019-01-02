@@ -30,6 +30,7 @@ public class User extends BmobObject implements ToRealmObject {
 	public String selfIntroduce;
 	public String birth;
 	public String follows;
+	public String topicCreate;
 	public boolean isHost = false;
 
 	public User(){}
@@ -91,6 +92,7 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.selfIntroduce = selfIntroduce;
 		realm.birth = birth;
 		realm.follows = follows;
+		realm.topicCreate = topicCreate;
 
 		return realm;
 	}

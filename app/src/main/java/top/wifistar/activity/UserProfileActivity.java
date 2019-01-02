@@ -14,6 +14,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.flexbox.FlexboxLayout;
 import com.google.gson.Gson;
 import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
@@ -32,6 +34,9 @@ import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.SelectModel;
 import com.lidong.photopicker.intent.PhotoPickerIntent;
 import com.ruffian.library.RTextView;
+
+import org.jetbrains.annotations.NotNull;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,6 +50,7 @@ import java.util.Date;
 import java.util.List;
 
 import cn.bmob.newim.bean.BmobIMConversation;
+import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
@@ -61,9 +67,12 @@ import top.wifistar.bean.CNLocationBean;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.Follow;
 import top.wifistar.bean.bmob.QueryUtils;
+import top.wifistar.bean.bmob.Topic;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
+import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.httpserver.NetUtils;
+import top.wifistar.utils.DialogUtils;
 import top.wifistar.view.CircleImageView;
 import top.wifistar.view.ObservableScrollView;
 import top.wifistar.event.RefreshAvatarsEvent;
@@ -92,7 +101,8 @@ public class UserProfileActivity extends AppCompatActivity {
     View toolbar, vSendMail;
     LinearLayout llHeadAndInfo, llInfo, llEditInfo, llMoments;
     View flUp, vSex;
-    TextView tvAddFan, tvInfo, tvName, tvSelfIntro, tvStartWord1;
+    TextView tvAddFan, tvInfo, tvName, tvSelfIntro, tvStartWord1, tvHisTopic, tvFollowTopic;
+    FlexboxLayout flexBoxTopicCreated, flexBoxTopicFollowed;
 
     String userId;
     FollowRealm followRealm;
@@ -127,6 +137,10 @@ public class UserProfileActivity extends AppCompatActivity {
         ivRecentPic2 = (ImageView) findViewById(R.id.ivRecentPic2);
         ivRecentPic3 = (ImageView) findViewById(R.id.ivRecentPic3);
         ivRecentPic4 = (ImageView) findViewById(R.id.ivRecentPic4);
+        flexBoxTopicCreated = findViewById(R.id.flexBoxTopicCreated);
+        flexBoxTopicFollowed = findViewById(R.id.flexBoxTopicFollowed);
+        tvHisTopic = findViewById(R.id.tvHisTopic);
+        tvFollowTopic = findViewById(R.id.tvFollowTopic);
 
         mToolbar.setNavigationIcon(R.drawable.back);
         shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
@@ -135,7 +149,7 @@ public class UserProfileActivity extends AppCompatActivity {
         mToolbar.setTitle("");
 
         showUserInfo(shortUser);
-        BmobUtils.querySingleUser(shortUser.getObjectId(), new BmobUtils.BmobDoneListener<User>() {
+        BmobUtils.querySingleUser(shortUser.getObjectId(), new BmobUtils.BmobDoneListener() {
             @Override
             public void onSuccess(User res) {
                 if (!shortUser.equals(res)) {
@@ -263,6 +277,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 }
             });
         }
+
     }
 
     private void processFollow(WaitDialog waitDialog) {
@@ -292,8 +307,8 @@ public class UserProfileActivity extends AppCompatActivity {
                         followRealm = follow.toRealmObject();
                         BaseRealmDao.insertOrUpdate(followRealm);
                         tvAddFan.setText("＋关注");
-                        if(thisUser!=null){
-                            thisUser.follows = thisUser.follows.replace(shortUser.getObjectId()+"_","");
+                        if (thisUser != null) {
+                            thisUser.follows = thisUser.follows.replace(shortUser.getObjectId() + "_", "");
                             Utils.updateUser(thisUser);
                             thisUser.update();
                         }
@@ -318,8 +333,8 @@ public class UserProfileActivity extends AppCompatActivity {
                             followRealm = follow.toRealmObject();
                             BaseRealmDao.insertOrUpdate(followRealm);
                             tvAddFan.setText("已关注");
-                            if(thisUser!=null){
-                                thisUser.follows += shortUser.getObjectId()+"_";
+                            if (thisUser != null) {
+                                thisUser.follows += shortUser.getObjectId() + "_";
                                 Utils.updateUser(thisUser);
                                 thisUser.update();
                             }
@@ -339,8 +354,8 @@ public class UserProfileActivity extends AppCompatActivity {
                             followRealm = follow.toRealmObject();
                             BaseRealmDao.insertOrUpdate(followRealm);
                             tvAddFan.setText("已关注");
-                            if(thisUser!=null){
-                                thisUser.follows += shortUser.getObjectId()+"_";
+                            if (thisUser != null) {
+                                thisUser.follows += shortUser.getObjectId() + "_";
                                 Utils.updateUser(thisUser);
                                 thisUser.update();
                             }
@@ -370,6 +385,72 @@ public class UserProfileActivity extends AppCompatActivity {
 
         tvInfo.setText(getAgeByBirth(shortUser.birth) + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
         setUserImgsAndInfo();
+        //话题初始化
+        initTopicCreated();
+        initTopicFollowed();
+    }
+
+    private void initTopicCreated() {
+        flexBoxTopicCreated.removeAllViews();
+        hideTopicCreated(true);
+        if (!TextUtils.isEmpty(shortUser.topicCreate)) {
+            String[] topics = shortUser.topicCreate.split("_");
+            if (topics != null && topics.length > 0) {
+                for (String topic : topics) {
+                    if (!TextUtils.isEmpty(topic)) {
+                        hideTopicCreated(false);
+                        TextView tvLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_flex, flexBoxTopicCreated, false);
+                        String[] strs = topic.split("@");
+                        tvLabel.setText(strs[1]);
+                        tvLabel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //TODO jump to topic page with topic id
+                                //strs[0]
+                            }
+                        });
+                        flexBoxTopicCreated.addView(tvLabel);
+                    }
+                }
+            }
+        }
+    }
+
+    private void initTopicFollowed() {
+        flexBoxTopicFollowed.removeAllViews();
+        hideTopicFollowed(true);
+        String[] topics = shortUser.follows.split("_");
+        if (topics != null && topics.length > 0) {
+            for (String topic : topics) {
+                if (!TextUtils.isEmpty(topic) && topic.contains("@")) {
+                    hideTopicFollowed(false);
+                    String[] idAndName = topic.split("@");
+                    TextView tvLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_flex, flexBoxTopicFollowed, false);
+                    tvLabel.setText(idAndName[1]);
+                    flexBoxTopicFollowed.addView(tvLabel);
+                }
+            }
+        }
+    }
+
+    private void hideTopicCreated(boolean hide) {
+        if (hide) {
+            flexBoxTopicCreated.setVisibility(View.GONE);
+            tvHisTopic.setVisibility(View.GONE);
+        } else {
+            flexBoxTopicCreated.setVisibility(View.VISIBLE);
+            tvHisTopic.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void hideTopicFollowed(boolean hide) {
+        if (hide) {
+            flexBoxTopicFollowed.setVisibility(View.GONE);
+            tvFollowTopic.setVisibility(View.GONE);
+        } else {
+            flexBoxTopicFollowed.setVisibility(View.VISIBLE);
+            tvFollowTopic.setVisibility(View.VISIBLE);
+        }
     }
 
     private int getAgeByBirth(String birthStr) {
@@ -621,14 +702,70 @@ public class UserProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ActivityCompat.finishAfterTransition(this);
-            } else {
-                finish();
-            }
+        super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityCompat.finishAfterTransition(this);
+                } else {
+                    finish();
+                }
+                break;
+
+            case R.id.addTopic:
+                DialogUtils.Companion.showEditDialog(this, "发布话题", "输入话题名", new EditProfileActivity.EditDialogCallBack() {
+
+                    @Override
+                    public void onFinish(@NotNull String topicName) {
+                        if (!TextUtils.isEmpty(topicName)) {
+                            User user = Utils.getCurrentShortUser();
+                            BmobQuery<Topic> query = new BmobQuery<>();
+                            query.addWhereEqualTo("name", topicName)
+                                    .findObjects(new FindListener<Topic>() {
+                                        @Override
+                                        public void done(List<Topic> list, BmobException e) {
+                                            if (e == null) {
+                                                if (list != null && list.size() > 0) {
+                                                    Utils.showToast("该话题已存在，请在首页查找加入");
+                                                } else {
+                                                    //创建话题
+                                                    Topic topic = new Topic();
+                                                    topic.name = topicName;
+                                                    topic.owner = user.getObjectId();
+                                                    topic.save(new SaveListener<String>() {
+                                                        @Override
+                                                        public void done(String topicId, BmobException e) {
+                                                            if (e == null) {
+                                                                Utils.showToast("创建话题成功");
+                                                                if (TextUtils.isEmpty(user.topicCreate)) {
+                                                                    user.topicCreate = topicId + "@" + topicName + "_";
+                                                                } else {
+                                                                    user.topicCreate += topicId + "@" + topicName + "_";
+                                                                }
+                                                                user.update();
+                                                                Utils.updateUser(user);
+                                                                shortUser.topicCreate = user.topicCreate;
+                                                                initTopicCreated();
+                                                            } else {
+                                                                Utils.showToast("创建话题失败，请稍后再试");
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            } else {
+                                                Utils.showToast("似乎有点不对劲");
+                                            }
+                                        }
+                                    });
+                        } else {
+                            Utils.showToast("请输入话题名称");
+                        }
+
+                    }
+                });
+                break;
         }
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
 
@@ -803,4 +940,16 @@ public class UserProfileActivity extends AppCompatActivity {
             tvStartWord1.setText(shortUser.startWord1);
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (isSelfProfile()) {
+            getMenuInflater().inflate(R.menu.add_topic, menu);
+            return true;
+        } else {
+            return super.onCreateOptionsMenu(menu);
+        }
+
+    }
+
 }

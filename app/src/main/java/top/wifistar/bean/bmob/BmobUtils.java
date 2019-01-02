@@ -84,8 +84,8 @@ public class BmobUtils {
         });
     }
 
-    public interface BmobDoneListener<T extends BmobObject>{
-        void onSuccess(T res);
+    public interface BmobDoneListener{
+        void onSuccess(User res);
         void onFailure(String msg);
     }
 }

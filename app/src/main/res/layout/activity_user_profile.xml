@@ -191,10 +191,10 @@
                     android:layout_height="wrap_content"
                     android:background="@color/activity_bg_dark"
                     android:orientation="horizontal"
+                    android:paddingBottom="3dp"
                     android:paddingLeft="15dp"
-                    android:paddingTop="3dp"
                     android:paddingRight="15dp"
-                    android:paddingBottom="3dp">
+                    android:paddingTop="3dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -246,18 +246,20 @@
                     android:background="@color/divider_line_default_color" />
 
                 <TextView
+                    android:id="@+id/tvHisTopic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
                     android:layout_marginTop="15dp"
-                    android:layout_marginBottom="0dp"
-                    android:text="TA关注的话题"
+                    android:text="创建的话题"
                     android:textColor="#000000"
                     android:textSize="15sp" />
 
                 <com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/flexBoxTopicCreated"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="12dp"
@@ -266,75 +268,32 @@
                     app:alignItems="flex_start"
                     app:dividerDrawable="@drawable/hot_label_divider"
                     app:flexWrap="wrap"
-                    app:showDivider="beginning|middle">
+                    app:showDivider="beginning|middle" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/hot_label_text_bg"
-                        android:paddingLeft="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="5dp"
-                        android:textColor="@color/text_default_color"
-                        android:text="123" />
+                <TextView
+                    android:id="@+id/tvFollowTopic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:text="关注的话题"
+                    android:textColor="#000000"
+                    android:textSize="15sp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/hot_label_text_bg"
-                        android:paddingLeft="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="5dp"
-                        android:textColor="@color/text_default_color"
-                        android:text="123" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/hot_label_text_bg"
-                        android:paddingLeft="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="5dp"
-                        android:textColor="@color/text_default_color"
-                        android:text="666666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/hot_label_text_bg"
-                        android:paddingLeft="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="5dp"
-                        android:textColor="@color/text_default_color"
-                        android:text="666666666 666666666" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/hot_label_text_bg"
-                        android:paddingLeft="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="5dp"
-                        android:textColor="@color/text_default_color"
-                        android:text="6666666669999" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/hot_label_text_bg"
-                        android:paddingLeft="15dp"
-                        android:paddingTop="5dp"
-                        android:paddingRight="15dp"
-                        android:paddingBottom="5dp"
-                        android:textColor="@color/text_default_color"
-                        android:text="123" />
-
-                </com.google.android.flexbox.FlexboxLayout>
+                <com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/flexBoxTopicFollowed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="7dp"
+                    app:alignContent="flex_start"
+                    app:alignItems="flex_start"
+                    app:dividerDrawable="@drawable/hot_label_divider"
+                    app:flexWrap="wrap"
+                    app:showDivider="beginning|middle" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -371,7 +330,6 @@
             android:background="@android:color/transparent"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-
 
     </LinearLayout>
 

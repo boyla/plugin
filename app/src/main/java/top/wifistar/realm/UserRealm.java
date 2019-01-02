@@ -36,6 +36,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 	public String selfIntroduce;
     public String birth;
 	public String follows;
+	public String topicCreate;
 
     @Override
 	public String toString() {
@@ -71,6 +72,7 @@ public class UserRealm  extends RealmObject implements ToBmobObject{
 		user.selfIntroduce = selfIntroduce;
 		user.birth = birth;
         user.follows = follows;
+		user.topicCreate = topicCreate;
 
 		return user;
 	}
