@@ -22,6 +22,7 @@ import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobPointer;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.QueryListener;
 import io.realm.RealmResults;
 import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
@@ -40,6 +41,7 @@ import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.bean.bmob.Comment;
 //import top.wifistar.bean.demo.Favor;
+import top.wifistar.bean.bmob.Topic;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.view.CircleVideoView;
@@ -62,6 +64,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     private static final int STATE_IDLE = 0;
     private static final int STATE_ACTIVED = 1;
     private static final int STATE_DEACTIVED = 2;
+    private String topic;
     private int videoState = STATE_IDLE;
     public static final int HEADVIEW_SIZE = 1;
 
@@ -82,11 +85,12 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
 
-    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener,User user,MomentsFragment momentsFragment) {
+    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener,User user,MomentsFragment momentsFragment,String topic) {
         this.context = context;
         this.sharedViewListener = sharedViewListener;
         this.user = user;
         this.momentsFragment = momentsFragment;
+        this.topic = topic;
     }
 
     @Override
@@ -116,19 +120,41 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             viewHolder = new HeaderViewHolder(headView);
             TextView tvName = headView.findViewById(R.id.tvName);
             ImageView ivBg = headView.findViewById(R.id.ivBg);
-            User temp;
-            if(user==null){
-                temp = Utils.getCurrentShortUser();
+            if(TextUtils.isEmpty(topic)){
+                //用户动态
+                User temp;
+                if(user==null){
+                    temp = Utils.getCurrentShortUser();
+                }else{
+                    temp = user;
+                }
+                tvName.setText(temp.getName());
+                if (TextUtils.isEmpty(temp.headBgUrl)) {
+                    ivBg.setImageResource(R.drawable.splash);
+                } else {
+                    ivBg.setImageResource(R.color.darkgray);
+                    Glide.with(context).load(temp.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
+                }
             }else{
-                temp = user;
+                //话题动态
+                String[] strs = topic.split("@");
+                tvName.setText(strs[1]);
+                BmobQuery<Topic> query = new BmobQuery<Topic>();
+                query.getObject(strs[0], new QueryListener<Topic>() {
+                    @Override
+                    public void done(Topic topic, BmobException e) {
+                        if(e==null && topic!=null){
+                            if (!TextUtils.isEmpty(topic.bg)) {
+                                ivBg.setImageResource(R.color.darkgray);
+                                Glide.with(context).load(topic.bg.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
+                                return;
+                            }
+                        }
+                        ivBg.setImageResource(R.drawable.splash);
+                    }
+                });
             }
-            tvName.setText(temp.getName());
-            if (TextUtils.isEmpty(temp.headBgUrl)) {
-                ivBg.setImageResource(R.drawable.splash);
-            } else {
-                ivBg.setImageResource(R.color.darkgray);
-                Glide.with(context).load(temp.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
-            }
+
         } else {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_moment, parent, false);
             if (viewType == MomentViewHolder.TYPE_URL) {

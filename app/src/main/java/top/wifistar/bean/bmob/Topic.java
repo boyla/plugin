@@ -9,4 +9,7 @@ import cn.bmob.v3.BmobObject;
 public class Topic extends BmobObject {
     public String name;
     public String owner;
+    public String info;
+    public String headImg;
+    public String bg;
 }

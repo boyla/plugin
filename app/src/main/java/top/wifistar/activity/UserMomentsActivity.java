@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -65,7 +66,11 @@ public class UserMomentsActivity extends BottomInputActivity {
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     protected void setToolbarTitle() {
         mToolbar.setNavigationIcon(R.drawable.back);
-        setCenterTitle("用户动态");
+        if(TextUtils.isEmpty(topic)){
+            setCenterTitle("用户动态");
+        }else{
+            setCenterTitle("话题动态");
+        }
         tool_bar_frame.setVisibility(View.VISIBLE);
         mCustomLogo.setVisibility(View.GONE);
         invalidateOptionsMenu();

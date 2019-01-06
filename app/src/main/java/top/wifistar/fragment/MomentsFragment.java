@@ -118,7 +118,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             sendIv = activity.getBottomImageView();
         }
         presenter = new MomentsPresenter(this);
-        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(), currentUser, this);
+        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(), currentUser, this, topic);
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
