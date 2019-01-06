@@ -4,9 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -28,12 +28,10 @@ import top.wifistar.activity.ChatActivity;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.activity.SplashActivity;
 import top.wifistar.app.BaseActivity;
-import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.event.RefreshEvent;
 import top.wifistar.realm.BaseRealmDao;
-import top.wifistar.realm.IMUserRealm;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
@@ -68,7 +66,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
             Log.i("Bmob IM:  ", "用户" + entry.getKey() + "发来" + size + "条消息");
             for (int i = 0; i < size; i++) {
                 //处理每条消息
-                if(BaseRealmDao.realm!=null){
+                if (BaseRealmDao.realm != null) {
                     executeMessage(list.get(i));
                 }
             }
@@ -102,7 +100,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
 
     private void handleMsg(IMUserRealm rawUser, MessageEvent event, boolean needParse) {
         IMUserRealm copyUser = rawUser == null ? new IMUserRealm() : rawUser;
-        if(needParse && rawUser!=null){
+        if (needParse && rawUser != null) {
             copyUser = rawUser.toBmobObject().toIMRealm();
         }
         //不使用IM提供的用户信息，仅仅使用ID来查询BMOB
@@ -111,7 +109,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
 //        copyUser.headUrl = event.getFromUserInfo().getAvatar();
 
         copyUser.unReadNum = rawUser == null ? 1 : rawUser.unReadNum + 1;
-        if(BaseActivity.currentActivity instanceof ChatActivity){
+        if (BaseActivity.currentActivity instanceof ChatActivity) {
             copyUser.unReadNum = 0;
         }
         copyUser.isInConversation = true;
@@ -169,9 +167,9 @@ public class IMMessageHandler extends BmobIMMessageHandler {
         if (BmobNotificationManager.getInstance(context).isShowNotification()) {
             //如果需要显示通知栏，SDK提供以下两种显示方式：
             Intent pendingIntent;
-            if(HomeActivity.INSTANCE==null){
+            if (HomeActivity.INSTANCE == null) {
                 pendingIntent = new Intent(context, SplashActivity.class);
-            }else{
+            } else {
                 pendingIntent = new Intent(context, HomeActivity.class);
             }
             pendingIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -181,10 +179,47 @@ public class IMMessageHandler extends BmobIMMessageHandler {
 
             //TODO 消息接收：8.6、自定义通知消息：始终只有一条通知，新消息覆盖旧消息
             BmobIMUserInfo info = event.getFromUserInfo();
-            //这里可以是应用图标，也可以将聊天头像转成bitmap
             Bitmap largeIcon = BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_launcher);
-            BmobNotificationManager.getInstance(context).showNotification(largeIcon,
-                    info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
+            Utils.queryShortUser(info.getUserId(), new NetUserRequest.NetRequestCallBack() {
+                @Override
+                public void onSuccess(User user) {
+                    if (TextUtils.isEmpty(user.headUrl) || TextUtils.isEmpty(user.headUrl.split("_")[0])) {
+                        if (HomeActivity.INSTANCE == null) {
+                            BmobNotificationManager.getInstance(context).showNotification(largeIcon,
+                                    info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
+                            return;
+                        }
+                        Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(largeIcon), info.getName(), msg.getContent(), pendingIntent);
+                        return;
+                    }
+                    Utils.getDrawableByUrl(user.headUrl.split("_")[0], context, new Utils.GetDrawableCallBack() {
+                        @Override
+                        public void onFinish(Bitmap result) {
+                            if (HomeActivity.INSTANCE == null) {
+                                BmobNotificationManager.getInstance(context).showNotification(result,
+                                        info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
+                                return;
+                            }
+                            Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(result), info.getName(), msg.getContent(), pendingIntent);
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onFailure(String fMsg) {
+//                    BmobNotificationManager.getInstance(context).showNotification(largeIcon,
+//                            info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
+                    if (HomeActivity.INSTANCE == null) {
+                        BmobNotificationManager.getInstance(context).showNotification(largeIcon,
+                                info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
+                        return;
+                    }
+                    Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(largeIcon), info.getName(), msg.getContent(), pendingIntent);
+                }
+            });
+            //这里可以是应用图标，也可以将聊天头像转成bitmap
+
         } else {
             //直接发送消息事件
             EventBus.getDefault().post(event);

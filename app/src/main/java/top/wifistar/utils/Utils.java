@@ -51,6 +51,8 @@ import android.widget.Toast;
 //import com.mason.sociality.lib.xmpp.XMPPManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.kongzue.dialog.v2.Notification;
 import com.scottyab.aescrypt.AESCrypt;
@@ -1404,6 +1406,53 @@ public class Utils {
         }
     }
 
+    public interface GetDrawableCallBack {
+        void onFinish(Bitmap result);
+    }
+
+    public static void getDrawableByUrl(String url, Context context, GetDrawableCallBack callBack) {
+        Glide.with(context).load(url).asBitmap().into(new SimpleTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                callBack.onFinish(resource);
+            }
+        });
+//        GetImageDrawableAsyncTask task = new GetImageDrawableAsyncTask(context, callBack);
+//        task.execute(url);
+    }
+
+    private static class GetImageDrawableAsyncTask extends AsyncTask<String, Void, Bitmap> {
+        private final Context context;
+        GetDrawableCallBack callBack;
+
+        public GetImageDrawableAsyncTask(Context context, GetDrawableCallBack callBack) {
+            this.context = context;
+            this.callBack = callBack;
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... params) {
+            String imgUrl = params[0];
+            try {
+                Glide.with(context).load(imgUrl).asBitmap().into(new SimpleTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        callBack.onFinish(resource);
+                    }
+                });
+            } catch (Exception ex) {
+                return null;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+
+        }
+    }
+
+
     public static void getCacheGlideFile(String url, Context context, GetCacheGlideFileCallBack callBack) {
         GetImageCacheAsyncTask task = new GetImageCacheAsyncTask(context, callBack);
         task.equals(url);
@@ -1498,13 +1547,14 @@ public class Utils {
         return retBuf.toString();
     }
 
-    public static void showGlobalNotify(Context context, int id, Drawable drawable, String name, String msg) {
-        Notification.show(context, id, drawable == null ? context.getDrawable(R.mipmap.ic_launcher) : drawable, name, msg, Notification.SHOW_TIME_LONG, TYPE_NORMAL)
+    public static void showGlobalNotify(Context context, int id, Drawable drawable, String name, String msg,Intent intent) {
+        Notification.show(context, id, drawable, name, msg, Notification.SHOW_TIME_LONG, TYPE_NORMAL)
                 .setOnNotificationClickListener(new Notification.OnNotificationClickListener() {
             @Override
             public void OnClick(int id) {
                 //open chat
-                Utils.showToast("点击了通知");
+//                Utils.showToast("点击了通知");
+                context.startActivity(intent);
             }
         });
 //        Notification.show(App.getApp(), 0, "", "这是一条消息", Notification.SHOW_TIME_SHORT, TYPE_NORMAL);
