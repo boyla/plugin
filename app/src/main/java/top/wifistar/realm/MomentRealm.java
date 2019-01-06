@@ -28,9 +28,11 @@ public class MomentRealm extends RealmObject implements ToBmobObject{
 	public String objectId;
 
 	public boolean isExpand;
+	public String topic;
+	public Boolean isPrivate;
 
 
-	@Override
+    @Override
 	public String getRealmId() {
 		return objectId;
 	}
@@ -45,6 +47,8 @@ public class MomentRealm extends RealmObject implements ToBmobObject{
 		moment.linkTitle = linkTitle;
 		moment.photos = photos;
 		moment.setCreateAt(createAt);
+		moment.topic = topic;
+		moment.isPrivate = isPrivate;
 		//comment things
 		moment.comments = new ArrayList<>();
 		for(CommentRealm commentRealm : comments){

@@ -44,18 +44,16 @@ public class MomentsPresenter implements MomentsContract.Presenter {
         this.view = view;
     }
 
-    public void loadData(int loadType, String userId) {
+    public void loadData(int loadType, String userId, String topicName) {
         if (loadType == TYPE_PULLDOWNREFRESH) {
             NO_MORE_DATA = false;
             SKIP = 0;
         }
-        if(TextUtils.isEmpty(userId)){
-            queryBySubscribe(loadType);
-        }else{
-            queryByUser(loadType,userId);
+        if (TextUtils.isEmpty(userId)) {
+            queryBySubscribe(loadType, topicName);
+        } else {
+            queryByUser(loadType, userId);
         }
-
-
     }
 
     private void queryByUser(int loadType, String userId) {
@@ -65,6 +63,9 @@ public class MomentsPresenter implements MomentsContract.Presenter {
             query.addWhereEqualTo("user", userId);
             query.setLimit(PAGE_LIMIT);
             query.setSkip(SKIP);
+            if(Utils.getCurrentShortUser()==null || !userId.equals(Utils.getCurrentShortUser().getObjectId())){
+                query.addWhereEqualTo("isPrivate", false);
+            }
             query.order("-createdAt")
                     .findObjects(new FindListener<Moment>() {
                         @Override
@@ -98,13 +99,15 @@ public class MomentsPresenter implements MomentsContract.Presenter {
         }
     }
 
-    private void queryBySubscribe(int loadType) {
+    private void queryBySubscribe(int loadType, String topic) {
         if (Utils.isNetworkConnected()) {
             //TODO 有待优化，根据订阅的时间节点请求Bmob
             BmobQuery<Moment> query = new BmobQuery<>();
             query.setLimit(PAGE_LIMIT);
             query.setSkip(SKIP);
-            query.order("-createdAt")
+            query.addWhereEqualTo("topic", topic)
+                    .addWhereEqualTo("isPrivate", false)
+                    .order("-createdAt")
                     .findObjects(new FindListener<Moment>() {
                         @Override
                         public void done(List<Moment> data, BmobException e) {
@@ -223,7 +226,7 @@ public class MomentsPresenter implements MomentsContract.Presenter {
      * @Description: 删除评论
      */
     public void deleteComment(final int circlePosition, final String commentId) {
-        momentsModel.deleteComment(commentId,new IDataRequestListener() {
+        momentsModel.deleteComment(commentId, new IDataRequestListener() {
 
             @Override
             public void onSuccess() {

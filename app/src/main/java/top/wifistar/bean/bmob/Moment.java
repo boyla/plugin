@@ -43,6 +43,8 @@ public class Moment extends BmobObject implements ToRealmObject {
     public String videoImgUrl;
     public List<User> likes;
     public ArrayList<Photo> photosData;
+    public String topic;
+    public Boolean isPrivate;
 
     private boolean isExpand;
 
@@ -134,7 +136,7 @@ public class Moment extends BmobObject implements ToRealmObject {
         return this.isExpand;
     }
 
-    public void setCreateAt(String str){
+    public void setCreateAt(String str) {
         super.setCreatedAt(str);
     }
 
@@ -201,6 +203,9 @@ public class Moment extends BmobObject implements ToRealmObject {
         momentRealm.videoImgUrl = videoImgUrl;
         momentRealm.videoUrl = videoUrl;
         momentRealm.createAt = getCreatedAt();
+        momentRealm.topic = topic;
+        momentRealm.isPrivate = isPrivate;
+
         //persist likes, comments
         Realm realm = BaseRealmDao.realm;
         momentRealm.likes = new RealmList();

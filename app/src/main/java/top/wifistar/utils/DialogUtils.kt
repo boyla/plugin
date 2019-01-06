@@ -19,5 +19,13 @@ class DialogUtils {
                 }
             }).setDefaultInputHint(if (TextUtils.isEmpty(content)) "" else content)
         }
+
+        fun showWhoCanSeeDialog(context: Context, title: String, content: String?, editDialogCallBack: EditProfileActivity.EditDialogCallBack) {
+            InputDialog.show(context, title, null, object : InputDialogOkButtonClickListener {
+                override fun onClick(dialog: Dialog, inputText: String) {
+                    editDialogCallBack.onFinish(inputText)
+                }
+            }).setDefaultInputHint(if (TextUtils.isEmpty(content)) "" else content)
+        }
     }
 }

@@ -217,7 +217,7 @@ public class App extends MultiDexApplication {
         mContext = getApplicationContext();
         init();
 
-        DialogSettings.type = DialogSettings.TYPE_IOS;
+        DialogSettings.style = DialogSettings.STYLE_IOS;
         //In this way the VM ignores the file URI exposure
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());

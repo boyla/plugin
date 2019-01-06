@@ -17,9 +17,12 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.greysonparrelli.permiso.Permiso;
+import com.kongzue.dialog.listener.OnMenuItemClickListener;
+import com.kongzue.dialog.v2.BottomMenu;
 import com.lidong.photopicker.ImageCaptureManager;
 import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.PhotoPreviewActivity;
@@ -30,6 +33,7 @@ import com.lidong.photopicker.intent.PhotoPreviewIntent;
 import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cn.bmob.v3.datatype.BmobFile;
@@ -56,6 +60,8 @@ public class PublishMomentActivity extends ToolbarActivity {
     private GridView gridView;
     private GridAdapter gridAdapter;
     private EditText textView;
+    View llWhoCanSee;
+    TextView tvWhoCanSee;
     private String TAG = PublishMomentActivity.class.getSimpleName();
     private static final int PERMISSION_REQUEST_CODE = 1;
 
@@ -76,7 +82,8 @@ public class PublishMomentActivity extends ToolbarActivity {
         setToolbarTitle();
         gridView = (GridView) findViewById(R.id.gridView);
         textView = (EditText) findViewById(R.id.et_context);
-
+        llWhoCanSee = findViewById(R.id.llWhoCanSee);
+        tvWhoCanSee = findViewById(R.id.tvWhoCanSee);
         int cols = getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().densityDpi;
         cols = cols < 3 ? 3 : cols;
 //        gridView.setNumColumns(cols);
@@ -114,6 +121,45 @@ public class PublishMomentActivity extends ToolbarActivity {
         imagePaths.add("000000");
         gridAdapter = new GridAdapter(imagePaths);
         gridView.setAdapter(gridAdapter);
+        llWhoCanSee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showWhoCanSeeDialog();
+            }
+        });
+    }
+
+    ArrayList<String> topicNameList = new ArrayList<>();
+    ArrayList<String> topicList = new ArrayList<>();
+    int menuIndex;
+    private void showWhoCanSeeDialog() {
+        User user = Utils.getCurrentShortUser();
+        if(user==null){
+            Utils.showToast("似乎出了点问题");
+            return;
+        }
+        String[] raw1 = user.topicCreate.split("_");
+        String[] raw2 = user.follows.split("_");
+        ArrayList<String> raw = new ArrayList<>();
+        raw.addAll(Arrays.asList(raw1));
+        raw.addAll(Arrays.asList(raw2));
+        topicNameList.clear();
+        topicList.clear();
+        topicNameList.add("公开");
+        topicNameList.add("仅自己可见");
+        for(String str:raw){
+            if(str.contains("@")){
+                topicNameList.add(str.split("@")[1]);
+                topicList.add(str);
+            }
+        }
+        BottomMenu.show(this, topicNameList, new OnMenuItemClickListener() {
+            @Override
+            public void onClick(String text, int index) {
+                tvWhoCanSee.setText(text);
+                menuIndex = index;
+            }
+        },true);
     }
 
     private void jumpToPicSelectPage() {
@@ -243,6 +289,10 @@ public class PublishMomentActivity extends ToolbarActivity {
         Moment momentToPost = new Moment();
         momentToPost.setType(momentType);
         momentToPost.setContent(textView.getText().toString());
+        momentToPost.isPrivate = menuIndex==1;
+        if(menuIndex>1){
+            momentToPost.topic = topicList.get(menuIndex-2);
+        }
         String urlsStr = null;
         if (urls != null) {
             urlsStr = TextUtils.join(",", urls);
@@ -302,7 +352,7 @@ public class PublishMomentActivity extends ToolbarActivity {
                 // 选择照片
                 case REQUEST_CAMERA_CODE:
                     ArrayList<String> list = data.getStringArrayListExtra(PhotoPickerActivity.EXTRA_RESULT);
-                    Log.d(TAG, "list: " + "list = [" + list.size());
+                    Log.d(TAG, "topicNameList: " + "topicNameList = [" + list.size());
                     loadAdpater(list);
                     break;
                 // 预览

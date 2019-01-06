@@ -22,6 +22,7 @@ public class UserMomentsActivity extends BottomInputActivity {
 
     MomentsFragment momentsFragment;
     User currentUser;
+    String topic;
 
     @Override
     protected void initTopBar() {
@@ -48,6 +49,7 @@ public class UserMomentsActivity extends BottomInputActivity {
         //把自己创建好的fragment创建一个对象
         momentsFragment = new MomentsFragment();
         momentsFragment.setUser(currentUser);
+        momentsFragment.setTopic(topic);
         //向容器内加入Fragment，一般使用add或者replace方法实现，需要传入容器的id和Fragment的实例。
         ft.add(R.id.flContent, momentsFragment);
         //提交事务，调用commit方法提交。
@@ -57,6 +59,7 @@ public class UserMomentsActivity extends BottomInputActivity {
     @Override
     protected void getExtraData() {
         currentUser = (User) getIntent().getSerializableExtra("user");
+        topic = getIntent().getStringExtra("topic");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)

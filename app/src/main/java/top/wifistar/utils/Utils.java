@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -51,6 +52,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.Target;
+import com.kongzue.dialog.v2.Notification;
 import com.scottyab.aescrypt.AESCrypt;
 
 import cn.bmob.v3.BmobQuery;
@@ -96,6 +98,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static android.content.Context.MODE_PRIVATE;
+import static com.kongzue.dialog.v2.Notification.TYPE_NORMAL;
 
 /**
  * @packagename: com.masonsoft.base.utils
@@ -944,8 +947,10 @@ public class Utils {
             mCustomLogo.setVisibility(View.INVISIBLE);
             setUserAvatar(user, mCustomLogo);
             mCustomLogo.setVisibility(View.VISIBLE);
-        }else{
-            App.getHandler().postDelayed(()->{setUserAvatar(mCustomLogo);},444);
+        } else {
+            App.getHandler().postDelayed(() -> {
+                setUserAvatar(mCustomLogo);
+            }, 444);
         }
     }
 
@@ -1015,11 +1020,11 @@ public class Utils {
         Intent intent = new Intent(context, UserProfileActivity.class);
         Bundle bundle = new Bundle();
         bundle.putSerializable("ShortUser", user);
-        if(context instanceof ChatActivity){
+        if (context instanceof ChatActivity) {
             bundle.putBoolean("isFromChat", true);
         }
         intent.putExtras(bundle);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && imageView!=null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && imageView != null) {
             // 创建一个包含过渡动画信息的 ActivityOptions 对象
             Bundle options = ActivityOptionsCompat.makeSceneTransitionAnimation((Activity) context, imageView, App.getApp().getString(R.string.transition_name_head_img)).toBundle();
             // 使用 Intent 跳转界面，并传递共享对象信息
@@ -1123,9 +1128,9 @@ public class Utils {
             // 完成查询
             if (!dbData.isEmpty()) {
                 UserRealm userRealm = dbData.first();
-                if (userRealm != null){
-                    if(TextUtils.isEmpty(userRealm.name)){
-                        queryUserByNet(id,null);
+                if (userRealm != null) {
+                    if (TextUtils.isEmpty(userRealm.name)) {
+                        queryUserByNet(id, null);
                     }
                     return userRealm.toBmobObject();
                 }
@@ -1304,15 +1309,15 @@ public class Utils {
         long current = System.currentTimeMillis();
         SimpleDateFormat resSdf;
         SimpleDateFormat isSameDay = new SimpleDateFormat("yyyy-MM-dd");
-        if(isSameDay.format(new Date(createTime)).equals(isSameDay.format(new Date(current)))){
+        if (isSameDay.format(new Date(createTime)).equals(isSameDay.format(new Date(current)))) {
             resSdf = new SimpleDateFormat("HH:mm");
             return resSdf.format(new Date(createTime));
         }
         SimpleDateFormat isSameYear = new SimpleDateFormat("yyyy");
-        if(isSameYear.format(new Date(createTime)).equals(isSameYear.format(new Date(current)))){
+        if (isSameYear.format(new Date(createTime)).equals(isSameYear.format(new Date(current)))) {
             resSdf = new SimpleDateFormat("MM月dd日");
             return resSdf.format(new Date(createTime));
-        }else{
+        } else {
             resSdf = new SimpleDateFormat("yyyy年MM月dd日");
             return resSdf.format(new Date(createTime));
         }
@@ -1321,15 +1326,16 @@ public class Utils {
 
     static Map<String, User> cacheUsers = new ConcurrentHashMap<>();
     static UserChainHandler userChainHandler = new UserChainHandler();
+
     public static void queryShortUser(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
-        userChainHandler.getUserFromChain(shortUserObjId,callBack);
+        userChainHandler.getUserFromChain(shortUserObjId, callBack);
     }
 
     public static void queryUserByNet(String shortUserObjId, NetUserRequest.NetRequestCallBack callBack) {
-        userChainHandler.getUserByNet(shortUserObjId,callBack);
+        userChainHandler.getUserByNet(shortUserObjId, callBack);
     }
 
-    public static void updateUser(User user){
+    public static void updateUser(User user) {
         userChainHandler.updateUser(user);
     }
 
@@ -1453,13 +1459,13 @@ public class Utils {
         }
     }
 
-    public static String getChatTime(boolean hasYear,long timesamp) {
+    public static String getChatTime(boolean hasYear, long timesamp) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateStr = simpleDateFormat.format(new Date(timesamp));
         return getFuzzyTime(dateStr);
     }
 
-    public static void setAvatar(String avatar ,ImageView iv){
+    public static void setAvatar(String avatar, ImageView iv) {
         Glide.with(iv.getContext())
                 .load((!Utils.isEmpty(avatar)) ? avatar : R.drawable.default_avartar)
                 .dontAnimate()
@@ -1490,5 +1496,17 @@ public class Utils {
             }
         }
         return retBuf.toString();
+    }
+
+    public static void showGlobalNotify(Context context, int id, Drawable drawable, String name, String msg) {
+        Notification.show(context, id, drawable == null ? context.getDrawable(R.mipmap.ic_launcher) : drawable, name, msg, Notification.SHOW_TIME_LONG, TYPE_NORMAL)
+                .setOnNotificationClickListener(new Notification.OnNotificationClickListener() {
+            @Override
+            public void OnClick(int id) {
+                //open chat
+                Utils.showToast("点击了通知");
+            }
+        });
+//        Notification.show(App.getApp(), 0, "", "这是一条消息", Notification.SHOW_TIME_SHORT, TYPE_NORMAL);
     }
 }

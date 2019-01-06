@@ -16,10 +16,51 @@
     <GridView
         android:id="@+id/gridView"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="45dp"
+        android:layout_marginRight="15dp"
         android:horizontalSpacing="@dimen/space_size"
         android:numColumns="4"
         android:verticalSpacing="@dimen/space_size" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/divider"/>
+
+    <LinearLayout
+        android:id="@+id/llWhoCanSee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical">
+
+        <View
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="15dp"
+            android:background="@drawable/username_icon_normal"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:background="@null"
+            android:textColor="@color/text_black"
+            android:text="谁可以看"/>
+
+        <TextView
+            android:id="@+id/tvWhoCanSee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:padding="15dp"
+            android:background="@null"
+            android:textColor="@color/text_gray"
+            android:text="公开"/>
+
+    </LinearLayout>
 </LinearLayout>

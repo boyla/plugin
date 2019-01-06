@@ -118,7 +118,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             sendIv = activity.getBottomImageView();
         }
         presenter = new MomentsPresenter(this);
-        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(),currentUser,this);
+        momentAdapter = new MomentAdapter(getActivity(), ((BottomInputActivity) getActivity()).getSharedViewListener(), currentUser, this);
         recyclerView.setRefreshProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setLoadingMoreProgressStyle(ProgressStyle.BallClipRotatePulse);
         recyclerView.setBackgroundColor(Color.parseColor("#FFFFFF"));
@@ -170,7 +170,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 if (mContext instanceof HomeActivity) {
                     ((HomeActivity) mContext).reSetAvatarList();
                 }
-                presenter.loadData(TYPE_PULLDOWNREFRESH, currentUser==null?null:currentUser.getObjectId());
+                presenter.loadData(TYPE_PULLDOWNREFRESH, currentUser == null ? null : currentUser.getObjectId(), topic);
             }
 
             @Override
@@ -178,7 +178,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                 if (NO_MORE_DATA) {
                     recyclerView.loadMoreComplete();
                 } else {
-                    presenter.loadData(TYPE_PULLUPMORE, currentUser==null?null:currentUser.getObjectId());
+                    presenter.loadData(TYPE_PULLUPMORE, currentUser == null ? null : currentUser.getObjectId(), topic);
                 }
             }
         });
@@ -302,7 +302,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     @Override
     public void update2AddComment(Comment comment) {
-        if (comment!=null && !TextUtils.isEmpty(comment.getMomentId())) {
+        if (comment != null && !TextUtils.isEmpty(comment.getMomentId())) {
             for (Moment item : ((List<Moment>) momentAdapter.getDatas())) {
                 if (comment.getMomentId().equals(item.getObjectId())) {
                     item.getComments().add(comment);
@@ -324,7 +324,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
             if (commentId.equals(items.get(i).getObjectId())) {
                 Comment commentToRemove = items.remove(i);
                 momentAdapter.notifyDataSetChanged();
-                RealmUtils.deleteFromRealmByObjId(CommentRealm.class,commentId);
+                RealmUtils.deleteFromRealmByObjId(CommentRealm.class, commentId);
                 //momentAdapter.notifyItemChanged(circlePosition+1);
                 return;
             }
@@ -399,7 +399,7 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
         if (selectCircleItem != null) {
             selectCircleItemH = selectCircleItem.getHeight();
-        }else{
+        } else {
             return;
         }
 
@@ -520,5 +520,11 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     public void setUser(User user) {
         currentUser = user;
+    }
+
+    String topic;
+
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 }

@@ -34,7 +34,7 @@ public interface MomentsContract {
     }
 
     interface Presenter extends BasePresenter {
-        void loadData(int loadType, String userId);
+        void loadData(int loadType, String userId, String topicName);
 
         void deleteMoment(final String circleId, int position);
 

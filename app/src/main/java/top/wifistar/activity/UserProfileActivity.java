@@ -405,8 +405,9 @@ public class UserProfileActivity extends AppCompatActivity {
                         tvLabel.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                //TODO jump to topic page with topic id
-                                //strs[0]
+                                Intent intent = new Intent(UserProfileActivity.this, UserMomentsActivity.class);
+                                intent.putExtra("topic", topic);
+                                startActivity(intent);
                             }
                         });
                         flexBoxTopicCreated.addView(tvLabel);
@@ -427,6 +428,14 @@ public class UserProfileActivity extends AppCompatActivity {
                     String[] idAndName = topic.split("@");
                     TextView tvLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_flex, flexBoxTopicFollowed, false);
                     tvLabel.setText(idAndName[1]);
+                    tvLabel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(UserProfileActivity.this, UserMomentsActivity.class);
+                            intent.putExtra("topic", topic);
+                            startActivity(intent);
+                        }
+                    });
                     flexBoxTopicFollowed.addView(tvLabel);
                 }
             }
