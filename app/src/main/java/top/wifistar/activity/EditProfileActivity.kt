@@ -21,7 +21,7 @@ import android.animation.ValueAnimator
 
 class EditProfileActivity : ToolbarActivity() {
 
-    lateinit var mUser:User
+    lateinit var mUser: User
 
     override fun initTopBar() {
         mToolbar.setNavigationIcon(R.drawable.back)
@@ -55,7 +55,7 @@ class EditProfileActivity : ToolbarActivity() {
 
         rlNick.setOnClickListener {
             showEditDialog("修改昵称", mUser.name, object : EditDialogCallBack {
-                override fun onFinish(result: String) {
+                override fun onFinish(dialog:Dialog, result: String) {
                     mUser.name = result
                     tvNickName.text = result
                 }
@@ -70,7 +70,7 @@ class EditProfileActivity : ToolbarActivity() {
         }
         rlSignature1.setOnClickListener {
             showEditDialog("修改签名1", mUser.startWord1, object : EditDialogCallBack {
-                override fun onFinish(result: String) {
+                override fun onFinish(dialog:Dialog, result: String) {
                     mUser.startWord1 = result
                     tvSignature1.text = result
                 }
@@ -78,7 +78,7 @@ class EditProfileActivity : ToolbarActivity() {
         }
         rlSignature2.setOnClickListener {
             showEditDialog("修改签名2", mUser.startWord2, object : EditDialogCallBack {
-                override fun onFinish(result: String) {
+                override fun onFinish(dialog:Dialog, result: String) {
                     mUser.startWord2 = result
                     tvSignature2.text = result
                 }
@@ -86,7 +86,7 @@ class EditProfileActivity : ToolbarActivity() {
         }
         rlSignature3.setOnClickListener {
             showEditDialog("修改签名3", mUser.startWord3, object : EditDialogCallBack {
-                override fun onFinish(result: String) {
+                override fun onFinish(dialog:Dialog, result: String) {
                     mUser.startWord3 = result
                     tvSignature3.text = result
                 }
@@ -94,7 +94,7 @@ class EditProfileActivity : ToolbarActivity() {
         }
         rlSelfIntro.setOnClickListener {
             showEditDialog("修改个人介绍", mUser.selfIntroduce, object : EditDialogCallBack {
-                override fun onFinish(result: String) {
+                override fun onFinish(dialog:Dialog, result: String) {
                     mUser.selfIntroduce = result
                     tvSelfIntro.text = result
                 }
@@ -121,13 +121,13 @@ class EditProfileActivity : ToolbarActivity() {
     private fun showEditDialog(title: String, content: String?, editDialogCallBack: EditProfileActivity.EditDialogCallBack) {
         InputDialog.show(this, title, null, object : InputDialogOkButtonClickListener {
             override fun onClick(dialog: Dialog, inputText: String) {
-                editDialogCallBack.onFinish(inputText)
+                editDialogCallBack.onFinish(dialog, inputText)
             }
         }).setDefaultInputHint(if (TextUtils.isEmpty(content)) "" else content)
     }
 
     interface EditDialogCallBack {
-        fun onFinish(result: String)
+        fun onFinish(dialog: Dialog, result: String)
     }
 
     private fun initText() {

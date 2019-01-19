@@ -1,6 +1,7 @@
 package top.wifistar.activity;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -725,7 +726,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 DialogUtils.Companion.showEditDialog(this, "发布话题", "输入话题名", new EditProfileActivity.EditDialogCallBack() {
 
                     @Override
-                    public void onFinish(@NotNull String topicName) {
+                    public void onFinish(Dialog dialog, @NotNull String topicName) {
                         if (!TextUtils.isEmpty(topicName)) {
                             User user = Utils.getCurrentShortUser();
                             BmobQuery<Topic> query = new BmobQuery<>();
@@ -745,6 +746,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                                         @Override
                                                         public void done(String topicId, BmobException e) {
                                                             if (e == null) {
+                                                                dialog.cancel();
                                                                 Utils.showToast("创建话题成功");
                                                                 if (TextUtils.isEmpty(user.topicCreate)) {
                                                                     user.topicCreate = topicId + "@" + topicName + "_";
