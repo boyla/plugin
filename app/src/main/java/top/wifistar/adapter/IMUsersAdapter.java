@@ -99,7 +99,7 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
             textViewHolder.mNewPoint.setVisibility(View.GONE);
         }
         boolean found = false;
-        for(User user: NetUtils.usersInWiFi){
+        for (User user : NetUtils.usersInWiFi) {
             if (user.getObjectId().equals(imUser.objectId)) {
                 found = true;
                 break;
@@ -109,7 +109,7 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
     }
 
     private void showMessageContent(String str, TextView textView) {
-        textView.setText(ChatUtils.getEmotionContent(textView,str));
+        textView.setText(ChatUtils.getEmotionContent(textView, str));
     }
 
     static public class ChildViewHolder extends RecyclerView.ViewHolder {
@@ -143,21 +143,23 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
                 public void onClick(View v) {
                     if (shortUser != null && !TextUtils.isEmpty(shortUser.getObjectId())) {
                         BmobIMConversation conversation = IMUtils.getConversationEntranceByShortUser(shortUser);
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable("c", conversation);
-                        bundle.putSerializable("ShortUser", shortUser);
-                        Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
-                        intent.putExtras(bundle);
+                        if (conversation != null) {
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("c", conversation);
+                            bundle.putSerializable("ShortUser", shortUser);
+                            Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
+                            intent.putExtras(bundle);
 
-                        BaseRealmDao.realm = ((BaseActivity) itemView.getContext()).realm;
-                        BaseRealmDao.realm.beginTransaction();
-                        imUser.unReadNum = 0;
-                        BaseRealmDao.realm.commitTransaction();
-                        mNewPoint.setVisibility(View.GONE);
-                        itemView.getContext().startActivity(intent);
-                    } else {
-                        Utils.makeSysToast("未获取用户信息");
+                            BaseRealmDao.realm = ((BaseActivity) itemView.getContext()).realm;
+                            BaseRealmDao.realm.beginTransaction();
+                            imUser.unReadNum = 0;
+                            BaseRealmDao.realm.commitTransaction();
+                            mNewPoint.setVisibility(View.GONE);
+                            itemView.getContext().startActivity(intent);
+                            return;
+                        }
                     }
+                    Utils.makeSysToast("抱歉，打开会话失败");
                 }
             });
             //to profile
