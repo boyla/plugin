@@ -18,10 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import io.realm.Realm;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.corepage.CorePageManager;
-import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.Utils;
 
@@ -46,15 +44,15 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
 
     public static BaseActivity currentActivity;
 
-    public Realm realm;
+//    public Realm realm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        BaseRealmDao.realm = Realm.getDefaultInstance();
+//        BaseRealmDao.realm = Realm.getDefaultInstance();
 
-        realm = BaseRealmDao.realm;
+//        realm = BaseRealmDao.realm;
 
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(null);
@@ -181,7 +179,6 @@ public abstract class BaseActivity extends AppCompatActivity implements View.OnC
         }
 //        this.unregisterReceiver(myReceiver);
         super.onDestroy();
-        realm.close();
     }
 
     @Override

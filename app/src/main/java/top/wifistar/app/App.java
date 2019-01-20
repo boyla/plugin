@@ -50,6 +50,8 @@ import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
 import top.wifistar.event.RefreshEvent;
 import top.wifistar.im.IMMessageHandler;
+import top.wifistar.realm.BaseRealmDao;
+import top.wifistar.utils.LogUtils;
 import top.wifistar.utils.Utils;
 
 import java.io.BufferedReader;
@@ -403,7 +405,8 @@ public class App extends MultiDexApplication {
     public static void connectIM() {
         User user = Utils.getCurrentShortUser();
         if (user == null || TextUtils.isEmpty(user.getName())) {
-            Utils.makeSysToast("未取得用户信息,请重新登陆");
+//            Utils.makeSysToast("未取得用户信息,请重新登陆");
+            App.getApp().showReloginDialog("提    示","未取得用户信息,请重新登陆");
             return;
         }
         BmobIM.connect(user.getObjectId(), new ConnectListener() {
@@ -422,7 +425,8 @@ public class App extends MultiDexApplication {
                             updateUserInfo(new BmobIMUserInfo(user.getObjectId(),
                                     user.getName(), url));
                 } else {
-                    Utils.makeSysToast(e.getMessage());
+//                    Utils.makeSysToast(e.getMessage());
+                    LogUtils.logI(e.getMessage());
                 }
             }
         });
@@ -437,7 +441,8 @@ public class App extends MultiDexApplication {
                     KICK_ASS(-2, "kick off by other user");
                 **/
                 currentIMStatus = status;
-                Utils.makeSysToast(status.getMsg());
+//                Utils.makeSysToast(status.getMsg());
+                LogUtils.logI(status.getMsg());
             }
         });
     }
@@ -494,4 +499,9 @@ public class App extends MultiDexApplication {
         BmobPush.startWork(this);
     }
 
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        BaseRealmDao.realm.close();
+    }
 }

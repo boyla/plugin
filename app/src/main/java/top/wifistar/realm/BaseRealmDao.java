@@ -17,7 +17,7 @@ import io.realm.Sort;
 
 public class BaseRealmDao {
 
-    public static Realm realm;
+    public static Realm realm = Realm.getDefaultInstance();
 
     /**
      * 添加(性能优于下面的saveOrUpdate（）方法)

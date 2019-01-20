@@ -36,6 +36,7 @@ import cn.bmob.v3.listener.DeleteBatchListener;
 import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.activity.PublishMomentActivity;
+import top.wifistar.activity.UserMomentsActivity;
 import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
 import top.wifistar.adapter.MomentAdapter;
@@ -188,7 +189,9 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
         if (getActivity() instanceof HomeActivity) {
-            inflater.inflate(R.menu.add_moment, menu);
+            inflater.inflate(R.menu.add, menu);
+        }if (getActivity() instanceof UserMomentsActivity && !TextUtils.isEmpty(topic)) {
+            inflater.inflate(R.menu.edit_topic, menu);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -198,6 +201,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         if (item.getItemId() == R.id.publish) {
             Intent intent = new Intent(getActivity(), PublishMomentActivity.class);
             startActivity(intent);
+        }if (item.getItemId() == R.id.edit) {
+            //TODO edit topic, topic是本人创建
         }
         return super.onOptionsItemSelected(item);
     }
