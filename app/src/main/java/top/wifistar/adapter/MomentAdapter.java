@@ -85,7 +85,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
     }
 
 
-    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener,User user,MomentsFragment momentsFragment,String topic) {
+    public MomentAdapter(Context context, HomeActivity.OnSharedViewListener sharedViewListener, User user, MomentsFragment momentsFragment, String topic) {
         this.context = context;
         this.sharedViewListener = sharedViewListener;
         this.user = user;
@@ -120,12 +120,12 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             viewHolder = new HeaderViewHolder(headView);
             TextView tvName = headView.findViewById(R.id.tvName);
             ImageView ivBg = headView.findViewById(R.id.ivBg);
-            if(TextUtils.isEmpty(topic)){
+            if (TextUtils.isEmpty(topic)) {
                 //用户动态
                 User temp;
-                if(user==null){
+                if (user == null) {
                     temp = Utils.getCurrentShortUser();
-                }else{
+                } else {
                     temp = user;
                 }
                 tvName.setText(temp.getName());
@@ -135,7 +135,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     ivBg.setImageResource(R.color.darkgray);
                     Glide.with(context).load(temp.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
                 }
-            }else{
+            } else {
                 //话题动态
                 String[] strs = topic.split("@");
                 tvName.setText(strs[1]);
@@ -143,7 +143,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 query.getObject(strs[0], new QueryListener<Topic>() {
                     @Override
                     public void done(Topic topic, BmobException e) {
-                        if(e==null && topic!=null){
+                        if (e == null && topic != null) {
                             if (!TextUtils.isEmpty(topic.bg)) {
                                 ivBg.setImageResource(R.color.darkgray);
                                 Glide.with(context).load(topic.bg.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivBg);
@@ -221,10 +221,12 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                     break;
                 case MomentViewHolder.TYPE_IMAGE:// 处理图片
                     if (holder instanceof ImageViewHolder) {
-                    String photosStr = "";
-                    if(!TextUtils.isEmpty(moment.getPhotos())){
-                        photosStr = moment.getPhotos();
-                    }
+                        String photosStr = "";
+                        if (!TextUtils.isEmpty(moment.localPhotos)) {
+                            photosStr = moment.localPhotos;
+                        } else if (!TextUtils.isEmpty(moment.getPhotos())) {
+                            photosStr = moment.getPhotos();
+                        }
                         final List<String> photos = Arrays.asList(photosStr.split(","));
                         if (photos != null && photos.size() > 0) {
                             ((ImageViewHolder) holder).multiImageView.setVisibility(View.VISIBLE);
@@ -234,7 +236,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                                 //imagesize是作为loading时的图片size
                                 ImagePagerActivity.ImageSize imageSize = new ImagePagerActivity.ImageSize(view.getMeasuredWidth(), view.getMeasuredHeight());
                                 ImagePagerActivity.startImagePagerActivity(((ImageViewHolder) holder).multiImageView, context, photos, viewHolder.getAdapterPosition(), picPosition, imageSize);
-                                if(sharedViewListener!=null){
+                                if (sharedViewListener != null) {
                                     sharedViewListener.onSharedViewListener(((ImageViewHolder) holder).multiImageView.getSharedViews(), picPosition);
                                 }
                             });
@@ -374,7 +376,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             refreshLikeListAndCommentList(moment, holder, dataPosition);
             return;
         }
-        if(TextUtils.isEmpty(moment.getObjectId())){
+        if (TextUtils.isEmpty(moment.getObjectId())) {
             return;
         }
         BmobQuery<Comment> query = new BmobQuery<Comment>();
@@ -495,7 +497,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
                 Utils.showSimpleDialog(context, "确定删除该动态？", (dialog, which) -> {
                     //删除
                     if (presenter != null) {
-                        presenter.deleteMoment(moment.getObjectId(),holder.getAdapterPosition());
+                        presenter.deleteMoment(moment.getObjectId(), holder.getAdapterPosition());
                     }
                 });
             });

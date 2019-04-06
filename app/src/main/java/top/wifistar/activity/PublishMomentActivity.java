@@ -230,7 +230,10 @@ public class PublishMomentActivity extends ToolbarActivity {
         tempMoment.setType(momentType);
         tempMoment.setContent(textView.getText().toString());
         if (filePaths.length > 0) {
-            tempMoment.setPhotos(TextUtils.join(",", filePaths));
+            for(int i = 0; i < filePaths.length; i++){
+                filePaths[i] += Utils.getImageUrlWithWidthHeight(filePaths[i]);
+            }
+            tempMoment.localPhotos = TextUtils.join(",", filePaths);
         }
         //set user
         User user = Utils.getCurrentShortUser();

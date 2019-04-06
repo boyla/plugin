@@ -45,7 +45,7 @@ public class DisplayUtils {
             info.scale = srcw * 1.0f / imagew;
         }
 
-        if (imagew < srcw * 1.5 && imageh < srch * 1.5) {
+        if (imagew < srcw * 4 && imageh < srch * 4) {
             info.showRaw = true;
         }
         return info;

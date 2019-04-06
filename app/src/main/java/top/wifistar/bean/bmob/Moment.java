@@ -36,6 +36,7 @@ public class Moment extends BmobObject implements ToRealmObject {
     public String linkImg;
     public String linkTitle;
     public String photos;
+    public String localPhotos;
     private BmobRelation favors;
     public List<Comment> comments;
     public User user;
@@ -170,9 +171,14 @@ public class Moment extends BmobObject implements ToRealmObject {
         if (photosData != null) {
             return photosData;
         }
-        if (!TextUtils.isEmpty(this.getPhotos())) {
-            List<String> photoStrs = Arrays.asList(this.getPhotos().split(","));
-            photosData = new ArrayList<>();
+        photosData = new ArrayList<>();
+        if (!TextUtils.isEmpty(localPhotos) || !TextUtils.isEmpty(this.getPhotos())) {
+            List<String> photoStrs;
+            if (!TextUtils.isEmpty(localPhotos)) {
+                photoStrs = Arrays.asList(localPhotos.split(","));
+            } else {
+                photoStrs = Arrays.asList(this.getPhotos().split(","));
+            }
             for (String item : photoStrs) {
                 Photo photo = new Photo();
                 String[] strs = item.split("_wh_");

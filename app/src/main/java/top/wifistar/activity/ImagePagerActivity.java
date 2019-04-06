@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -45,6 +46,7 @@ import java.util.Map;
 
 import top.wifistar.R;
 import top.wifistar.app.App;
+import top.wifistar.utils.Utils;
 import top.wifistar.view.MultiImageView;
 import top.wifistar.utils.DisplayUtils;
 import top.wifistar.utils.ImageUtils;
@@ -55,6 +57,7 @@ import top.wifistar.utils.ImageUtils;
  */
 public class ImagePagerActivity extends YWActivity {
     public static final String INTENT_IMGURLS = "imgurls";
+    public static final String INTENT_LOCAL_IMGS = "localimgs";
     public static final String INTENT_IMAGESIZE = "imagesize";
     public volatile static int current;
 
@@ -72,7 +75,6 @@ public class ImagePagerActivity extends YWActivity {
         Intent intent = new Intent(context, ImagePagerActivity.class);
         intent.putStringArrayListExtra(INTENT_IMGURLS, new ArrayList<>(imgUrls));
         intent.putExtra(INTENT_IMAGESIZE, imageSize);
-
         intent.putExtra("adapter_position", adapterPosition);
         intent.putExtra("current", picPosition);
 
@@ -204,7 +206,7 @@ public class ImagePagerActivity extends YWActivity {
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             View view = inflater.inflate(R.layout.item_pager_image, container, false);
-            final String imgurl = datas.get(position).split("_wh_")[0];
+            String imgurl = datas.get(position).split("_wh_")[0];
             final String transitionName = container.getContext()
                     .getString(R.string.transition_name, adapterPosition, position);
             if (view != null) {
@@ -239,6 +241,7 @@ public class ImagePagerActivity extends YWActivity {
 
                 bigImage.setVisibility(View.GONE);
 
+                boolean finalFromGlide = imgurl.contains("http");
                 Glide.with(context)
                         .load(imgurl)
                         .dontAnimate()
@@ -264,10 +267,19 @@ public class ImagePagerActivity extends YWActivity {
                             @Override
                             public void onResourceReady(GlideDrawable resource, GlideAnimation<? super GlideDrawable> animation) {
                                 super.onResourceReady(resource, animation);
-                                DisplayUtils.ScaleInfo info = DisplayUtils.getInitImageScale(ImagePagerActivity.this, ImageUtils.getCacheFile(imgurl).getPath());
-                                if (imgurl.contains(".gif") || imgurl.contains(".GIF") || !info.showRaw){
+                                String path;
+                                if (finalFromGlide) {
+                                    path = ImageUtils.getCacheFile(imgurl) != null ? ImageUtils.getCacheFile(imgurl).getPath() : "";
+                                } else {
+                                    path = imgurl;
+                                }
+                                if (TextUtils.isEmpty(path)) {
+                                    return;
+                                }
+                                DisplayUtils.ScaleInfo info = DisplayUtils.getInitImageScale(ImagePagerActivity.this, path);
+                                if (imgurl.contains(".gif") || imgurl.contains(".GIF") || !info.showRaw) {
                                     loading.setVisibility(View.VISIBLE);
-                                }else{
+                                } else {
                                     loading.setVisibility(View.GONE);
                                 }
                                 if (smallImageView != null) {
@@ -291,10 +303,10 @@ public class ImagePagerActivity extends YWActivity {
                                             bigImage.setVisibility(View.VISIBLE);
                                             bigImage.setMinimumScaleType(SubsamplingScaleImageView.SCALE_TYPE_CUSTOM);
                                             bigImage.setMinScale(0.5F);//最小显示比例
-                                            bigImage.setMaxScale( 5.0f);//最大显示比例
+                                            bigImage.setMaxScale(5.0f);//最大显示比例
 // 将图片文件给SubsamplingScaleImageView,这里注意设置ImageViewState设置初始显示比例
 // ImageViewState的三个参数为：scale,center,orientation
-                                            bigImage.setImage(ImageSource.uri(Uri.fromFile(ImageUtils.getCacheFile(imgurl))),new ImageViewState(info.scale, new PointF(0, 0), 0));
+                                            bigImage.setImage(ImageSource.uri(Uri.fromFile(ImageUtils.getCacheFile(imgurl))), new ImageViewState(info.scale, new PointF(0, 0), 0));
 
                                         }
                                         imageView.setTag(transitionName);
