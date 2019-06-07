@@ -341,8 +341,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             holder.praiseListView.setOnItemClickListener(new PraiseListView.OnItemClickListener() {
                 @Override
                 public void onClick(int position) {
-                    //todo open profile with profile id(user.id)
-
+                    Utils.jumpToProfile(context, moment.likes.get(position), null);
                 }
             });
             userFirst(moment.likes);
