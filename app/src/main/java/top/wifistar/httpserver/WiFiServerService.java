@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Server service.</p>
  * Created by Yan Zhenjie on 2017/3/16.
  */
-public class CoreService extends Service {
+public class WiFiServerService extends Service {
 
     /**
      * AndServer.
@@ -72,17 +72,17 @@ public class CoreService extends Service {
             if(TextUtils.isEmpty(hostAddress)){
                 hostAddress = "127.0.0.1";
             }
-            ServerManager.serverStart(CoreService.this, hostAddress);
+            ServerManager.serverStart(WiFiServerService.this, hostAddress);
         }
 
         @Override
         public void onStopped() {
-            ServerManager.serverStop(CoreService.this);
+            ServerManager.serverStop(WiFiServerService.this);
         }
 
         @Override
         public void onError(Exception e) {
-            ServerManager.serverError(CoreService.this, e.getMessage());
+            ServerManager.serverError(WiFiServerService.this, e.getMessage());
         }
     };
 
@@ -109,7 +109,7 @@ public class CoreService extends Service {
                     return;
                 }
                 String hostAddress = mServer.getInetAddress().getHostAddress();
-                ServerManager.serverStart(CoreService.this, hostAddress);
+                ServerManager.serverStart(WiFiServerService.this, hostAddress);
             } else {
                 mServer.startup();
             }

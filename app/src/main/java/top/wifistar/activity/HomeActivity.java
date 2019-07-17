@@ -23,6 +23,7 @@ import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.Installation;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
+import top.wifistar.utils.UpdateUtils;
 import top.wifistar.view.BottomMenuView;
 import top.wifistar.R;
 import top.wifistar.view.TopReminder;
@@ -72,7 +73,7 @@ public class HomeActivity extends BottomInputActivity {
         NetUtils.userJson = App.gson.toJson(Utils.getCurrentShortUser());
         new Thread(() -> NetUtils.scan()).start();
         try {
-//            UpdateUtils.check4Update(this);
+            UpdateUtils.check4Update(this);
         } catch (Exception e) {
             System.out.println("Update exception:" + e.getMessage());
         }

@@ -26,8 +26,6 @@ import org.apache.httpcore.entity.StringEntity;
 import org.apache.httpcore.protocol.HttpContext;
 
 import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.Map;
 
 /**
  * <p>Login Handler.</p>
@@ -39,7 +37,7 @@ public class ServerHandler implements RequestHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
 
-        if (CoreService.isServerRunning()) {
+        if (WiFiServerService.isServerRunning()) {
             StringEntity stringEntity = new StringEntity("OK, at your service", "utf-8");
             response.setStatusCode(200);
             response.setEntity(stringEntity);

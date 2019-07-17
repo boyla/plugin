@@ -79,7 +79,7 @@ public class ServerManager extends BroadcastReceiver {
 
     public ServerManager(HomeActivity activity) {
         this.mActivity = activity;
-        mService = new Intent(activity, CoreService.class);
+        mService = new Intent(activity, WiFiServerService.class);
     }
 
     /**

@@ -197,7 +197,7 @@
             android:value="15210abb365601ec97b87f55b1efa0d4" />
 
         <service
-            android:name=".httpserver.CoreService"
+            android:name=".httpserver.WiFiServerService"
             android:exported="false"/>
     </application>
 
