@@ -403,13 +403,13 @@ public class App extends MultiDexApplication {
     public static ConnectionStatus currentIMStatus;
 
     public static void connectIM() {
-        User user = Utils.getCurrentShortUser();
-        if (user == null || TextUtils.isEmpty(user.getName())) {
+        User currentUser = Utils.getCurrentShortUser();
+        if (currentUser == null || TextUtils.isEmpty(currentUser.getName())) {
 //            Utils.makeSysToast("未取得用户信息,请重新登陆");
             App.getApp().showReloginDialog("提    示","未取得用户信息,请重新登陆");
             return;
         }
-        BmobIM.connect(user.getObjectId(), new ConnectListener() {
+        BmobIM.connect(currentUser.getObjectId(), new ConnectListener() {
             @Override
             public void done(String uid, BmobException e) {
                 if (e == null) {
@@ -418,12 +418,12 @@ public class App extends MultiDexApplication {
                     //服务器连接成功就发送一个更新事件，同步更新会话及主页的小红点
                     //TODO 会话：3.6、更新用户资料，用于在会话页面、聊天页面以及个人信息页面显示
                     String url = "";
-                    if (!TextUtils.isEmpty(user.getHeadUrl())) {
-                        url = user.getHeadUrl().split("_")[0];
+                    if (!TextUtils.isEmpty(currentUser.getHeadUrl())) {
+                        url = currentUser.getHeadUrl().split("_")[0];
                     }
                     BmobIM.getInstance().
-                            updateUserInfo(new BmobIMUserInfo(user.getObjectId(),
-                                    user.getName(), url));
+                            updateUserInfo(new BmobIMUserInfo(currentUser.getObjectId(),
+                                    currentUser.getName(), url));
                 } else {
 //                    Utils.makeSysToast(e.getMessage());
                     LogUtils.logI(e.getMessage());

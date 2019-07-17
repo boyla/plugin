@@ -1548,7 +1548,7 @@ public class Utils {
     }
 
     public static void showGlobalNotify(Context context, int id, Drawable drawable, String name, String msg,Intent intent) {
-        Notification.show(context, id, drawable, name, msg, Notification.SHOW_TIME_LONG, TYPE_NORMAL)
+        Notification.show(context, id, drawable, name, msg, 3000, TYPE_NORMAL)
                 .setOnNotificationClickListener(new Notification.OnNotificationClickListener() {
             @Override
             public void OnClick(int id) {
