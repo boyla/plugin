@@ -59,11 +59,11 @@ public class NetUtils {
     }
 
 
-
     /**
      * 扫描局域网内ip，找到对应服务器
      */
     public static String userJson;
+
     public static void scan() {
         locAddress = getLocAddrIndex();//获取本地ip前缀  
         final List<String> scanedIPs = new CopyOnWriteArrayList<>();
@@ -71,20 +71,16 @@ public class NetUtils {
             System.out.println("扫描 WIFI IP 失败，请检查wifi网络");
             return;
         }
-        for (int i = 0; i < 256; i++) {//创建256个线程分别去ping
-            j = i;
-            final int currentIndex = i;
-            new Thread(new Runnable() {
-
-                public void run() {
-
+        new Thread(new Runnable() {
+            public void run() {
+                //去ping 0-255
+                for (int i = 0; i < 256; i++) {
+                    j = i;
+                    final int currentIndex = i;
                     String p = ping + locAddress + currentIndex;
-
                     String current_ip = locAddress + currentIndex;
-
                     try {
                         proc = run.exec(p);
-
                         int result = proc.waitFor();
                         if (result == 0) {
                             System.out.println("发现主机：" + current_ip);
@@ -97,39 +93,38 @@ public class NetUtils {
                     } finally {
                         proc.destroy();
                     }
+                    if (j == 255) {
+                        try {
+                            Thread.sleep(1555);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        String[] strs = scanedIPs.toArray(new String[scanedIPs.size()]);
+                        Arrays.sort(strs);
+                        checkServer(strs);
+                    }
                 }
-            }).start();
-        }
-
-        if(j==255){
-            try {
-                Thread.sleep(1555);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
-            String[] strs = scanedIPs.toArray(new String[scanedIPs.size()]);
-            Arrays.sort(strs);
-            checkServer(strs);
-        }
+        }).start();
     }
 
     private static void checkServer(String[] scanedIPs) {
         usersInWiFi.clear();
-        for(final String ip : scanedIPs){
+        for (final String ip : scanedIPs) {
             final String host = "http://" + ip + ":9595";
             //如果验证通过...
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     if (isOnline(host)) {
-                        System.out.println("发现WLAN用户："+ ip);
+                        System.out.println("发现WLAN用户：" + ip);
                     }
                 }
             }).start();
         }
         try {
             Thread.sleep(5555);
-            if(TextUtils.isEmpty(App.WIFI_HOST)){
+            if (TextUtils.isEmpty(App.WIFI_HOST)) {
                 System.out.println("没有发现服务器");
             }
         } catch (InterruptedException e) {
@@ -191,7 +186,8 @@ public class NetUtils {
     }
 
     public static List<User> usersInWiFi = new ArrayList<>();
-    public static Map<String,String> userHostMap = new HashMap<>();
+    public static Map<String, String> userHostMap = new HashMap<>();
+
     private static boolean isOnline(String host) {
         final String urlStr = host + "/isOnline?user=" + userJson;
         boolean serviceAvaliable = false;
@@ -219,15 +215,15 @@ public class NetUtils {
                 String res = strber.toString();
                 if (!TextUtils.isEmpty(res) && res.contains("OK")) {
                     serviceAvaliable = true;
-                    ResponseWrapper response = App.gson.fromJson(res,ResponseWrapper.class);
-                    User user = App.gson.fromJson(response.data,User.class);
-                    if(user.isHost){
+                    ResponseWrapper response = App.gson.fromJson(res, ResponseWrapper.class);
+                    User user = App.gson.fromJson(response.data, User.class);
+                    if (user.isHost) {
                         App.WIFI_HOST = host;
                     }
-                    if(!Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())){
+                    if (!Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())) {
                         App.getHandler().post(() -> Utils.updateUser(user));
                         usersInWiFi.add(user);
-                        userHostMap.put(user.getObjectId(),host);
+                        userHostMap.put(user.getObjectId(), host);
                         EventUtils.post(new EurekaEvent(user));
                     }
                 }
@@ -273,6 +269,7 @@ public class NetUtils {
     private static final Pattern IPV4_PATTERN = Pattern.compile("^(" +
             "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}" +
             "([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$");
+
     public static boolean isIPv4Address(String input) {
         return IPV4_PATTERN.matcher(input).matches();
     }
@@ -303,7 +300,7 @@ public class NetUtils {
                         new InputStreamReader(inStream, "utf-8"));
                 StringBuilder strber = new StringBuilder();
                 String line = null;
-                while ((line = reader.readLine()) != null){
+                while ((line = reader.readLine()) != null) {
                     strber.append(line + "\n");
                 }
                 Pattern pattern = Pattern
@@ -348,7 +345,7 @@ public class NetUtils {
         }
         if (sConnectivityManager == null) {
             ConnectivityManager con = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            if(con == null) {
+            if (con == null) {
                 return false;
             }
             sConnectivityManager = con;
@@ -357,7 +354,6 @@ public class NetUtils {
         NetworkInfo workinfo = sConnectivityManager.getActiveNetworkInfo();
         return workinfo != null && workinfo.isAvailable();
     }
-
 
 
     /**
