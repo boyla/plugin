@@ -101,6 +101,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.kongzue.dialog.v2.Notification.TYPE_NORMAL;
+import static top.wifistar.utils.ACache.SHORT_USER_ID_CACHE;
 
 /**
  * @packagename: com.masonsoft.base.utils
@@ -1558,5 +1559,9 @@ public class Utils {
             }
         });
 //        Notification.show(App.getApp(), 0, "", "这是一条消息", Notification.SHOW_TIME_SHORT, TYPE_NORMAL);
+    }
+
+    public static String getCurrentShortUserId(){
+        return ACache.get(App.APP_INSTANCE).getAsString(SHORT_USER_ID_CACHE + BUser.getCurrentUser().getObjectId());
     }
 }

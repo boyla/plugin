@@ -85,6 +85,7 @@ public class NetUtils {
                         if (result == 0) {
                             System.out.println("发现主机：" + current_ip);
                             scanedIPs.add(current_ip);
+                            checkServer(current_ip);
                         }
                     } catch (IOException e1) {
                         e1.printStackTrace();
@@ -93,44 +94,13 @@ public class NetUtils {
                     } finally {
                         proc.destroy();
                     }
-                    if (j == 255) {
-                        try {
-                            Thread.sleep(1555);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        String[] strs = scanedIPs.toArray(new String[scanedIPs.size()]);
-                        Arrays.sort(strs);
-                        checkServer(strs);
-                    }
                 }
             }
         }).start();
     }
 
-    private static void checkServer(String[] scanedIPs) {
-        usersInWiFi.clear();
-        for (final String ip : scanedIPs) {
-            final String host = "http://" + ip + ":9595";
-            //如果验证通过...
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (isOnline(host)) {
-                        System.out.println("发现WLAN用户：" + ip);
-                    }
-                }
-            }).start();
-        }
-        try {
-            Thread.sleep(5555);
-            if (TextUtils.isEmpty(App.WIFI_HOST)) {
-                System.out.println("没有发现服务器");
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+    private static void checkServer(String ip) {
+        new CheckServerTask(ip).execute();
     }
 
 
@@ -188,7 +158,7 @@ public class NetUtils {
     public static List<User> usersInWiFi = new ArrayList<>();
     public static Map<String, String> userHostMap = new HashMap<>();
 
-    private static boolean isOnline(String host) {
+    public static boolean isOnline(String host) {
         final String urlStr = host + "/isOnline?user=" + userJson;
         boolean serviceAvaliable = false;
         String encodeType = "utf-8";
@@ -220,7 +190,7 @@ public class NetUtils {
                     if (user.isHost) {
                         App.WIFI_HOST = host;
                     }
-                    if (!Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())) {
+                    if (!Utils.getCurrentShortUserId().equals(user.getObjectId())) {
                         App.getHandler().post(() -> Utils.updateUser(user));
                         usersInWiFi.add(user);
                         userHostMap.put(user.getObjectId(), host);

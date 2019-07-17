@@ -197,7 +197,6 @@ public class ChatsFragment extends BaseFragment {
             return;
         }
         addUser(user);
-        mAdapter.notifyDataSetChanged();
 //        if (xRecyclerView != null) {
 //            xRecyclerView.scrollToPosition(View.SCROLL_INDICATOR_TOP);
 //        }
@@ -205,9 +204,11 @@ public class ChatsFragment extends BaseFragment {
 
     private void addUser(User user) {
         boolean found = false;
-        for (IMUserRealm item : datas) {
+        for(int i = 0; i < datas.size(); i++){
+            IMUserRealm item = datas.get(i);
             if (item.objectId.equals(user.getObjectId())) {
                 found = true;
+                mAdapter.notifyItemChanged(i+1);
                 break;
             }
         }
@@ -216,7 +217,9 @@ public class ChatsFragment extends BaseFragment {
             realm.updateTime = System.currentTimeMillis();
             realm.lastMsg = "TA在你身边";
             datas.add(0,realm);
+            mAdapter.notifyItemInserted(1);
         }
+        updateResultPage();
     }
 
     private void loadConversationsData() {

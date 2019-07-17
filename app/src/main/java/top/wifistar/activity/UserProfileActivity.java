@@ -328,7 +328,12 @@ public class UserProfileActivity extends AppCompatActivity {
                 follow.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
-                        waitDialog.dismiss();
+                        App.getHandler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                waitDialog.dismiss();
+                            }
+                        },123);
                         if (e == null) {
                             follow.setObjectId(s);
                             followRealm = follow.toRealmObject();

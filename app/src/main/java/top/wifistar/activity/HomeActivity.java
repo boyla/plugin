@@ -71,13 +71,12 @@ public class HomeActivity extends BottomInputActivity {
         mServerManager.register();
         mServerManager.startService();
         NetUtils.userJson = App.gson.toJson(Utils.getCurrentShortUser());
-        new Thread(() -> NetUtils.scan()).start();
+        NetUtils.scan();
         try {
             UpdateUtils.check4Update(this);
         } catch (Exception e) {
             System.out.println("Update exception:" + e.getMessage());
         }
-        checkLogin();
     }
 
     @Override
@@ -99,6 +98,7 @@ public class HomeActivity extends BottomInputActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        checkLogin();
     }
 
     @Override
