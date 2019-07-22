@@ -31,6 +31,7 @@ public class User extends BmobObject implements ToRealmObject {
 	public String birth;
 	public String follows;
 	public String topicCreate;
+	public String ip;
 	public boolean isHost = false;
 
 	public User(){}

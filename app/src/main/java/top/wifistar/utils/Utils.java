@@ -73,6 +73,7 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.chain.user.UserChainHandler;
+import top.wifistar.httpserver.NetUtils;
 import top.wifistar.view.CircleImageView;
 import top.wifistar.view.TopReminder;
 import top.wifistar.realm.BaseRealmDao;
@@ -1135,7 +1136,9 @@ public class Utils {
                     if (TextUtils.isEmpty(userRealm.name)) {
                         queryUserByNet(id, null);
                     }
-                    return userRealm.toBmobObject();
+                    User res = userRealm.toBmobObject();
+                    res.ip = NetUtils.getLocAddress();
+                    return res;
                 }
             }
         }

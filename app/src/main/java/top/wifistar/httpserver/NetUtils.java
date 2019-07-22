@@ -30,14 +30,23 @@ import org.apache.http.conn.util.InetAddressUtils;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.text.TextUtils;
+import android.text.format.Formatter;
 import android.util.Log;
 
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import top.wifistar.app.App;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.event.EurekaEvent;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
+
+import static android.content.Context.WIFI_SERVICE;
 
 
 public class NetUtils {
@@ -107,6 +116,13 @@ public class NetUtils {
     //获取本地ip地址  
     public static String getLocAddress() {
 
+        WifiManager wifiManager = (WifiManager) App.getApp().getApplicationContext().getSystemService(WIFI_SERVICE);
+        WifiInfo info = wifiManager.getConnectionInfo();
+        String wifiip = Formatter.formatIpAddress(info.getIpAddress());
+        if (!TextUtils.isEmpty(wifiip)) {
+            return wifiip;
+        }
+
         String ipaddress = "";
 
         try {
@@ -157,36 +173,25 @@ public class NetUtils {
 
     public static List<User> usersInWiFi = new ArrayList<>();
     public static Map<String, String> userHostMap = new HashMap<>();
+    static OkHttpClient okHttpClient = new OkHttpClient();
 
     public static boolean isOnline(String host) {
         final String urlStr = host + "/isOnline?user=" + userJson;
         boolean serviceAvaliable = false;
-        String encodeType = "utf-8";
-        URL infoUrl;
-        InputStream inStream = null;
-        HttpURLConnection httpConnection = null;
-        try {
-            infoUrl = new URL(urlStr);
-            URLConnection connection = infoUrl.openConnection();
-            httpConnection = (HttpURLConnection) connection;
-            httpConnection.setRequestMethod("GET");
-            httpConnection.setReadTimeout(2000);
-            httpConnection.setConnectTimeout(2000);
-            int responseCode = httpConnection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                inStream = httpConnection.getInputStream();
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(inStream, encodeType));
-                StringBuilder strber = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    strber.append(line + "\n");
-                }
-                String res = strber.toString();
+        Request request = new Request.Builder()
+                .url(urlStr)
+                .build();
+        Call call  = okHttpClient.newCall(request);
+        try{
+            Response response = call.execute();
+            if(response.isSuccessful()){
+                //The call was successful.print it to the log
+                String res = response.body().string();
+                Log.v("OKHttp",res);
                 if (!TextUtils.isEmpty(res) && res.contains("OK")) {
                     serviceAvaliable = true;
-                    ResponseWrapper response = App.gson.fromJson(res, ResponseWrapper.class);
-                    User user = App.gson.fromJson(response.data, User.class);
+                    ResponseWrapper responseWrapper = App.gson.fromJson(res, ResponseWrapper.class);
+                    User user = App.gson.fromJson(responseWrapper.data, User.class);
                     if (user.isHost) {
                         App.WIFI_HOST = host;
                     }
@@ -198,18 +203,10 @@ public class NetUtils {
                     }
                 }
             }
-        } catch (Exception e) {
-            System.out.println("访问失败:" + host);
-        } finally {
-            try {
-                if (inStream != null)
-                    inStream.close();
-                if (httpConnection != null)
-                    httpConnection.disconnect();
-            } catch (Exception ex) {
-                System.out.println("关闭连接异常");
-            }
+        }catch(IOException e){
+            e.printStackTrace();
         }
+
         return serviceAvaliable;
     }
 
