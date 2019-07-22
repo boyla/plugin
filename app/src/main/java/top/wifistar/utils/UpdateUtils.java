@@ -41,7 +41,7 @@ public class UpdateUtils {
                             .getInstance()
                             .downloadOnly(createUIData(newestVersion.url, newestVersion.versionInfo))
                             .setCustomVersionDialogListener(createCustomDialogTwo())
-                            .excuteMission(activity);
+                            .executeMission(activity);
                 }
             }
         });

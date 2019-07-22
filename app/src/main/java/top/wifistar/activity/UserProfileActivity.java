@@ -72,6 +72,7 @@ import top.wifistar.bean.bmob.Topic;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.chain.user.NetUserRequest;
+import top.wifistar.httpserver.AppImageUrl;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.utils.DialogUtils;
 import top.wifistar.view.CircleImageView;
@@ -380,7 +381,7 @@ public class UserProfileActivity extends AppCompatActivity {
             ivHeadBg.setImageResource(R.color.darkgray);
         } else {
             ivHeadBg.setImageResource(R.color.darkgray);
-            Glide.with(this).load(shortUser.headBgUrl.split("_wh_")[0]).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
+            Glide.with(this).load(new AppImageUrl(shortUser.getObjectId(),shortUser.headBgUrl.split("_wh_")[0])).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
         }
         tvName.setText(shortUser.getName());
         if (shortUser.sex == 1) {

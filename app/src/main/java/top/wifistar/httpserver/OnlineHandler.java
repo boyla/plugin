@@ -23,6 +23,8 @@ import top.wifistar.event.EurekaEvent;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
+import static top.wifistar.httpserver.NetUtils.userHostMap;
+
 
 public class OnlineHandler implements RequestHandler {
 
@@ -52,11 +54,10 @@ public class OnlineHandler implements RequestHandler {
             if(Utils.getCurrentShortUser()!=null && !Utils.getCurrentShortUser().getObjectId().equals(user.getObjectId())){
                 Utils.updateUser(user);
                 NetUtils.usersInWiFi.add(user);
+                userHostMap.put(user.getObjectId(), request.toString());
                 EventUtils.post(new EurekaEvent(user));
             }
         });
-
-
 
         ResponseWrapper responseWrapper = new ResponseWrapper();
         String data = NetUtils.userJson;
