@@ -155,9 +155,9 @@ public class NetUtils {
     //获取IP前缀  
     public static String getLocAddrIndex() {
 
-        String str = getLocAddress();
+        String str = WiFiServerService.hostAddress;
 
-        if (!str.equals("")) {
+        if (!TextUtils.isEmpty(str)) {
             return str.substring(0, str.lastIndexOf(".") + 1);
         }
 
@@ -175,8 +175,10 @@ public class NetUtils {
     public static Map<String, String> userHostMap = new HashMap<>();
     static OkHttpClient okHttpClient = new OkHttpClient();
 
-    public static boolean isOnline(String host) {
+    public static boolean isOnline(String ip) {
+        final String host = "http://" + ip + ":9595";
         final String urlStr = host + "/isOnline?user=" + userJson;
+        System.out.println("Check user: " + urlStr);
         boolean serviceAvaliable = false;
         Request request = new Request.Builder()
                 .url(urlStr)
@@ -198,7 +200,7 @@ public class NetUtils {
                     if (!Utils.getCurrentShortUserId().equals(user.getObjectId())) {
                         App.getHandler().post(() -> Utils.updateUser(user));
                         usersInWiFi.add(user);
-                        userHostMap.put(user.getObjectId(), host);
+                        userHostMap.put(user.getObjectId(), ip);
                         EventUtils.post(new EurekaEvent(user));
                     }
                 }

@@ -1,20 +1,24 @@
 package top.wifistar.httpserver;
 
+import android.text.TextUtils;
+
 import com.yanzhenjie.andserver.SimpleRequestHandler;
+import com.yanzhenjie.andserver.util.HttpRequestParser;
 import com.yanzhenjie.andserver.view.View;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.httpcore.HttpRequest;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
+import java.net.URLDecoder;
 
-import top.wifistar.app.App;
+import top.wifistar.activity.HomeActivity;
+import top.wifistar.utils.Utils;
+
 import org.apache.httpcore.HttpEntity;
 import org.apache.httpcore.HttpException;
 import java.io.IOException;
+import java.util.Map;
+
 import org.apache.httpcore.entity.FileEntity;
 
 /**
@@ -25,14 +29,25 @@ public class FileHandler extends SimpleRequestHandler {
 
     @Override
     public View handle(HttpRequest request) throws HttpException, IOException {
-        // 为了示例，创建一个临时文件。
-        File file = File.createTempFile("AndServer", ".txt", new File("/dfdf"));
-        OutputStream outputStream = new FileOutputStream(file);
-        IOUtils.write("天上掉下个林妹妹。", outputStream, Charset.defaultCharset());
-
-        HttpEntity httpEntity = new FileEntity(file);
+        Map<String, String> params = HttpRequestParser.parseParams(request);
+        String imageUrl = URLDecoder.decode(params.get("image"), "utf-8");
+        final boolean[] findFinish = {false};
+        final File[] file = new File[1];
+        if(!TextUtils.isEmpty(imageUrl)){
+            System.out.println("请求本机图片：" + imageUrl);
+            //这里应该使用线程池和队列处理
+//            Executors.getInstance().submit(new Runnable() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    file[0] = Utils.getCacheGlideFile(imageUrl, HomeActivity.INSTANCE);
+                    findFinish[0] = true;
+                }
+            }).start();
+            while(!findFinish[0]){}
+        }
+        HttpEntity httpEntity = new FileEntity(file[0]);
         View view = new View(200, httpEntity);
-        view.addHeader("Content-Disposition", "attachment;filename=AndServer.txt");
         return view;
     }
 }

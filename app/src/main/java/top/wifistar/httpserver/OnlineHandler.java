@@ -55,7 +55,6 @@ public class OnlineHandler implements RequestHandler {
                 Utils.updateUser(user);
                 NetUtils.usersInWiFi.add(user);
                 userHostMap.put(user.getObjectId(), user.ip);
-                Utils.showToast(user.ip);
                 EventUtils.post(new EurekaEvent(user));
             }
         });

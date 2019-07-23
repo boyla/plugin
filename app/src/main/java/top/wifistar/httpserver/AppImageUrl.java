@@ -8,16 +8,16 @@ public class AppImageUrl extends GlideUrl {
     private String keyUrl;
 
     public AppImageUrl(String userId, String url) {
-        super(getRealUrl(userId,url));
+        super(getRealUrl(userId, url));
         keyUrl = url;
     }
 
     private static String getRealUrl(String userId, String url) {
         String wifiHost = NetUtils.userHostMap.get(userId);
-        if(TextUtils.isEmpty(wifiHost)){
+        if (TextUtils.isEmpty(wifiHost)) {
             return url;
-        }else{
-            return wifiHost;
+        } else {
+            return "http://" + wifiHost + ":9595/download?image=" + url;
         }
     }
 

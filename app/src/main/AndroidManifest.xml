@@ -60,7 +60,7 @@
 
 
     <meta-data
-    android:name="com.bumptech.glide.integration.okhttp.OkHttpGlideModule"
+    android:name="top.wifistar.httpserver.AppGlideModule"
     android:value="GlideModule"/>
 
     <application

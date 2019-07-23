@@ -71,7 +71,7 @@ public class HomeActivity extends BottomInputActivity {
         mServerManager.register();
         mServerManager.startService();
         NetUtils.userJson = App.gson.toJson(Utils.getCurrentShortUser());
-        NetUtils.scan();
+        App.getHandler().postDelayed(() -> NetUtils.scan(),567);
         try {
             UpdateUtils.check4Update(this);
         } catch (Exception e) {

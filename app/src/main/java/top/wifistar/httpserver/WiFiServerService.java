@@ -38,6 +38,8 @@ public class WiFiServerService extends Service {
      */
     private static Server mServer;
 
+    public static String hostAddress;
+
     @Override
     public void onCreate() {
             initServer();
@@ -48,7 +50,7 @@ public class WiFiServerService extends Service {
         mServer = AndServer.serverBuilder()
                 .inetAddress(NetUtils.getLocalIPAddress()) // Bind IP address.
                 .port(9595)
-                .timeout(10, TimeUnit.SECONDS)
+                .timeout(55, TimeUnit.SECONDS)
                 .website(new AssetsWebsite(getAssets(), "web"))
                 .registerHandler("/download", new FileHandler())
                 .registerHandler("/image", new ImageHandler())
@@ -68,7 +70,7 @@ public class WiFiServerService extends Service {
             if(mServer==null || mServer.getInetAddress()==null){
                 return;
             }
-            String hostAddress = mServer.getInetAddress().getHostAddress();
+            hostAddress = mServer.getInetAddress().getHostAddress();
             if(TextUtils.isEmpty(hostAddress)){
                 hostAddress = "127.0.0.1";
             }

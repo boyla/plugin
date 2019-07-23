@@ -73,7 +73,8 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.BmobUtils;
 import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.chain.user.UserChainHandler;
-import top.wifistar.httpserver.NetUtils;
+import top.wifistar.httpserver.AppImageUrl;
+import top.wifistar.httpserver.WiFiServerService;
 import top.wifistar.view.CircleImageView;
 import top.wifistar.view.TopReminder;
 import top.wifistar.realm.BaseRealmDao;
@@ -99,6 +100,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.kongzue.dialog.v2.Notification.TYPE_NORMAL;
@@ -983,7 +985,7 @@ public class Utils {
                     .into(imageView);
         } else {
             Glide.with(context)
-                    .load(headImg)
+                    .load(new AppImageUrl(shortProfile.getObjectId(), headImg))
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .bitmapTransform(new GlideCircleTransform(context))
                     .into(imageView);
@@ -1137,7 +1139,7 @@ public class Utils {
                         queryUserByNet(id, null);
                     }
                     User res = userRealm.toBmobObject();
-                    res.ip = NetUtils.getLocAddress();
+                    res.ip = WiFiServerService.hostAddress;
                     return res;
                 }
             }
@@ -1378,8 +1380,10 @@ public class Utils {
             return false;
     }
 
-    interface GetCacheGlideFileCallBack {
+    public interface GetCacheGlideFileCallBack {
         void onFinish(File result);
+
+        void onCancelled();
     }
 
     private static class GetImageCacheAsyncTask extends AsyncTask<String, Void, File> {
@@ -1398,7 +1402,7 @@ public class Utils {
                 return Glide.with(context)
                         .load(imgUrl)
                         .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                        .get();
+                        .get(3000, TimeUnit.SECONDS);
             } catch (Exception ex) {
                 return null;
             }
@@ -1407,6 +1411,18 @@ public class Utils {
         @Override
         protected void onPostExecute(File result) {
             callBack.onFinish(result);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            callBack.onCancelled();
+        }
+
+        @Override
+        protected void onCancelled(File file) {
+            super.onCancelled(file);
+            callBack.onCancelled();
         }
     }
 
@@ -1457,9 +1473,18 @@ public class Utils {
     }
 
 
-    public static void getCacheGlideFile(String url, Context context, GetCacheGlideFileCallBack callBack) {
-        GetImageCacheAsyncTask task = new GetImageCacheAsyncTask(context, callBack);
-        task.equals(url);
+    public static File getCacheGlideFile(String url, Context context) {
+//        GetImageCacheAsyncTask task = new GetImageCacheAsyncTask(context, callBack);
+//        task.execute(url);
+        File res = null;
+        try{
+            res =  Glide.with(context)
+                    .load(url)
+                    .downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .get(3000, TimeUnit.SECONDS);
+        }catch (Exception e){
+        }
+        return res;
     }
 
     public static String getTimeByMills() {
@@ -1551,20 +1576,20 @@ public class Utils {
         return retBuf.toString();
     }
 
-    public static void showGlobalNotify(Context context, int id, Drawable drawable, String name, String msg,Intent intent) {
+    public static void showGlobalNotify(Context context, int id, Drawable drawable, String name, String msg, Intent intent) {
         Notification.show(context, id, drawable, name, msg, 3000, TYPE_NORMAL)
                 .setOnNotificationClickListener(new Notification.OnNotificationClickListener() {
-            @Override
-            public void OnClick(int id) {
-                //open chat
+                    @Override
+                    public void OnClick(int id) {
+                        //open chat
 //                Utils.showToast("点击了通知");
-                context.startActivity(intent);
-            }
-        });
+                        context.startActivity(intent);
+                    }
+                });
 //        Notification.show(App.getApp(), 0, "", "这是一条消息", Notification.SHOW_TIME_SHORT, TYPE_NORMAL);
     }
 
-    public static String getCurrentShortUserId(){
+    public static String getCurrentShortUserId() {
         return ACache.get(App.APP_INSTANCE).getAsString(SHORT_USER_ID_CACHE + BUser.getCurrentUser().getObjectId());
     }
 }

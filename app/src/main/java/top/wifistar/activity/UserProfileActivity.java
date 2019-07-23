@@ -51,7 +51,6 @@ import java.util.Date;
 import java.util.List;
 
 import cn.bmob.newim.bean.BmobIMConversation;
-import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
@@ -71,7 +70,6 @@ import top.wifistar.bean.bmob.QueryUtils;
 import top.wifistar.bean.bmob.Topic;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
-import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.httpserver.AppImageUrl;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.utils.DialogUtils;
@@ -334,7 +332,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             public void run() {
                                 waitDialog.dismiss();
                             }
-                        },123);
+                        }, 123);
                         if (e == null) {
                             follow.setObjectId(s);
                             followRealm = follow.toRealmObject();
@@ -381,7 +379,7 @@ public class UserProfileActivity extends AppCompatActivity {
             ivHeadBg.setImageResource(R.color.darkgray);
         } else {
             ivHeadBg.setImageResource(R.color.darkgray);
-            Glide.with(this).load(new AppImageUrl(shortUser.getObjectId(),shortUser.headBgUrl.split("_wh_")[0])).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
+            Glide.with(this).load(new AppImageUrl(shortUser.getObjectId(), shortUser.headBgUrl.split("_wh_")[0])).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivHeadBg);
         }
         tvName.setText(shortUser.getName());
         if (shortUser.sex == 1) {
@@ -938,7 +936,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 if (i == ivList.length) {
                     break;
                 }
-                Glide.with(this).load(urls[i].split("_wh_")[0]).into(ivList[i]);
+                Glide.with(this).load(new AppImageUrl(shortUser.getObjectId(), urls[i].split("_wh_")[0])).into(ivList[i]);
             }
             llMoments.setOnClickListener(new View.OnClickListener() {
                 @Override
