@@ -34,6 +34,7 @@ import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
+
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -76,7 +77,7 @@ public class NetUtils {
         final List<String> scanedIPs = new CopyOnWriteArrayList<>();
         if (TextUtils.isEmpty(locAddress)) {
             System.out.println("扫描 WIFI IP 失败，请检查wifi网络");
-        }else{
+        } else {
             System.out.println("Start scan " + locAddress);
             new Thread(new Runnable() {
                 public void run() {
@@ -182,13 +183,13 @@ public class NetUtils {
         Request request = new Request.Builder()
                 .url(urlStr)
                 .build();
-        Call call  = okHttpClient.newCall(request);
-        try{
+        Call call = okHttpClient.newCall(request);
+        try {
             Response response = call.execute();
-            if(response.isSuccessful()){
+            if (response.isSuccessful() && response.body() != null) {
                 //The call was successful.print it to the log
                 String res = response.body().string();
-                Log.v("OKHttp",res);
+                Log.v("OKHttp", res);
                 if (!TextUtils.isEmpty(res) && res.contains("OK")) {
                     serviceAvaliable = true;
                     ResponseWrapper responseWrapper = App.gson.fromJson(res, ResponseWrapper.class);
@@ -204,7 +205,7 @@ public class NetUtils {
                     }
                 }
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
