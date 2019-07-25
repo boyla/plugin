@@ -936,7 +936,7 @@ public class UserProfileActivity extends AppCompatActivity {
                 if (i == ivList.length) {
                     break;
                 }
-                Glide.with(this).load(new AppImageUrl(shortUser.getObjectId(), urls[i].split("_wh_")[0])).into(ivList[i]);
+                Glide.with(this).load(new AppImageUrl(shortUser.getObjectId(), urls[i].split("_wh_")[0])).diskCacheStrategy(DiskCacheStrategy.ALL).into(ivList[i]);
             }
             llMoments.setOnClickListener(new View.OnClickListener() {
                 @Override

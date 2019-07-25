@@ -16,7 +16,6 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,6 @@ import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
-
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -78,34 +76,35 @@ public class NetUtils {
         final List<String> scanedIPs = new CopyOnWriteArrayList<>();
         if (TextUtils.isEmpty(locAddress)) {
             System.out.println("扫描 WIFI IP 失败，请检查wifi网络");
-            return;
-        }
-        new Thread(new Runnable() {
-            public void run() {
-                //去ping 0-255
-                for (int i = 0; i < 256; i++) {
-                    j = i;
-                    final int currentIndex = i;
-                    String p = ping + locAddress + currentIndex;
-                    String current_ip = locAddress + currentIndex;
-                    try {
-                        proc = run.exec(p);
-                        int result = proc.waitFor();
-                        if (result == 0) {
-                            System.out.println("发现主机：" + current_ip);
-                            scanedIPs.add(current_ip);
-                            checkServer(current_ip);
+        }else{
+            System.out.println("Start scan " + locAddress);
+            new Thread(new Runnable() {
+                public void run() {
+                    //去ping 0-255
+                    for (int i = 0; i < 256; i++) {
+                        j = i;
+                        final int currentIndex = i;
+                        String p = ping + locAddress + currentIndex;
+                        String current_ip = locAddress + currentIndex;
+                        try {
+                            proc = run.exec(p);
+                            int result = proc.waitFor();
+                            if (result == 0) {
+                                System.out.println("发现主机：" + current_ip);
+                                scanedIPs.add(current_ip);
+                                checkServer(current_ip);
+                            }
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        } catch (InterruptedException e2) {
+                            e2.printStackTrace();
+                        } finally {
+                            proc.destroy();
                         }
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } catch (InterruptedException e2) {
-                        e2.printStackTrace();
-                    } finally {
-                        proc.destroy();
                     }
                 }
-            }
-        }).start();
+            }).start();
+        }
     }
 
     private static void checkServer(String ip) {
