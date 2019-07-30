@@ -194,6 +194,9 @@ public class NetUtils {
                     serviceAvaliable = true;
                     ResponseWrapper responseWrapper = App.gson.fromJson(res, ResponseWrapper.class);
                     User user = App.gson.fromJson(responseWrapper.data, User.class);
+                    if (user == null) {
+                        return false;
+                    }
                     if (user.isHost) {
                         App.WIFI_HOST = host;
                     }
