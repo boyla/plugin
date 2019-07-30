@@ -74,17 +74,17 @@ public class WiFiServerService extends Service {
             if(TextUtils.isEmpty(hostAddress)){
                 hostAddress = "127.0.0.1";
             }
-            ServerManager.serverStart(WiFiServerService.this, hostAddress);
+            WiFiServerManager.serverStart(WiFiServerService.this, hostAddress);
         }
 
         @Override
         public void onStopped() {
-            ServerManager.serverStop(WiFiServerService.this);
+            WiFiServerManager.serverStop(WiFiServerService.this);
         }
 
         @Override
         public void onError(Exception e) {
-            ServerManager.serverError(WiFiServerService.this, e.getMessage());
+            WiFiServerManager.serverError(WiFiServerService.this, e.getMessage());
         }
     };
 
@@ -111,7 +111,7 @@ public class WiFiServerService extends Service {
                     return;
                 }
                 String hostAddress = mServer.getInetAddress().getHostAddress();
-                ServerManager.serverStart(WiFiServerService.this, hostAddress);
+                WiFiServerManager.serverStart(WiFiServerService.this, hostAddress);
             } else {
                 mServer.startup();
             }

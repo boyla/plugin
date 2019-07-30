@@ -30,7 +30,7 @@ import top.wifistar.view.TopReminder;
 import top.wifistar.event.BottomMenuItemClickEvent;
 import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.httpserver.NetUtils;
-import top.wifistar.httpserver.ServerManager;
+import top.wifistar.httpserver.WiFiServerManager;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
@@ -50,7 +50,7 @@ public class HomeActivity extends BottomInputActivity {
     protected String currentPageStr = null;
     boolean isFirstIn = true;
     public static HomeActivity INSTANCE;
-    ServerManager mServerManager;
+    WiFiServerManager mServerManager;
 
     @Override
     protected void initUI() {
@@ -67,7 +67,7 @@ public class HomeActivity extends BottomInputActivity {
         refreshPage();
         selfAvatarsInMomentList.add(mCustomLogo);
         //LAN server
-        mServerManager = new ServerManager(this);
+        mServerManager = new WiFiServerManager(this);
         mServerManager.register();
         mServerManager.startService();
         NetUtils.userJson = App.gson.toJson(Utils.getCurrentShortUser());
@@ -103,6 +103,7 @@ public class HomeActivity extends BottomInputActivity {
     @Override
     protected void onDestroy() {
         EventUtils.unregisterEventBus(this);
+        WiFiServerManager.serverStop(this);
         mServerManager.unRegister();
         super.onDestroy();
     }

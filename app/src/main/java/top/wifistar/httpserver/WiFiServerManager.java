@@ -25,7 +25,7 @@ import top.wifistar.activity.HomeActivity;
 /**
  * Created by Yan Zhenjie on 2017/3/17.
  */
-public class ServerManager extends BroadcastReceiver {
+public class WiFiServerManager extends BroadcastReceiver {
 
     private static final String ACTION = "com.yanzhenjie.andserver.receiver";
 
@@ -77,7 +77,7 @@ public class ServerManager extends BroadcastReceiver {
     private HomeActivity mActivity;
     private Intent mService;
 
-    public ServerManager(HomeActivity activity) {
+    public WiFiServerManager(HomeActivity activity) {
         this.mActivity = activity;
         mService = new Intent(activity, WiFiServerService.class);
     }
