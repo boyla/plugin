@@ -409,7 +409,7 @@ public class App extends MultiDexApplication {
         User currentUser = Utils.getCurrentShortUser();
         if (currentUser == null || TextUtils.isEmpty(currentUser.getName())) {
 //            Utils.makeSysToast("未取得用户信息,请重新登陆");
-            App.getApp().showReloginDialog("提    示","未取得用户信息,请重新登陆");
+            App.getApp().showReloginDialog("提    示", "未取得用户信息,请重新登陆");
             return;
         }
         BmobIM.connect(currentUser.getObjectId(), new ConnectListener() {
@@ -444,6 +444,9 @@ public class App extends MultiDexApplication {
                     KICK_ASS(-2, "kick off by other user");
                 **/
                 currentIMStatus = status;
+                if (status.getCode() == 0 || status.getCode() == -1) {
+                    connectIM();
+                }
 //                Utils.makeSysToast(status.getMsg());
                 LogUtils.logI(status.getMsg());
             }
@@ -457,11 +460,11 @@ public class App extends MultiDexApplication {
         }
         MessageDialog msgDialog = MessageDialog.show(curActivity, title, message, "确定", (dialog, which) -> {
 //                App.getApp().appExit();
-            if(curActivity instanceof SplashActivity){
+            if (curActivity instanceof SplashActivity) {
                 App.getHandler().post(new Runnable() {
                     @Override
                     public void run() {
-                        ((SplashActivity)curActivity).refreshStart();
+                        ((SplashActivity) curActivity).refreshStart();
                     }
                 });
                 return;

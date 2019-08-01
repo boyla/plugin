@@ -24,6 +24,8 @@ import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.adapter.IMUsersAdapter;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.utils.DecryptUtil;
+import top.wifistar.utils.Utils;
 import top.wifistar.view.OnTouchXRecyclerView;
 import top.wifistar.view.ProgressCombineView;
 import top.wifistar.view.RecyclerViewDivider;
@@ -204,19 +206,19 @@ public class ChatsFragment extends BaseFragment {
 
     private void addUser(User user) {
         boolean found = false;
-        for(int i = 0; i < datas.size(); i++){
+        for (int i = 0; i < datas.size(); i++) {
             IMUserRealm item = datas.get(i);
             if (item.objectId.equals(user.getObjectId())) {
                 found = true;
-                mAdapter.notifyItemChanged(i+1);
+                mAdapter.notifyItemChanged(i + 1);
                 break;
             }
         }
         if (!found) {
             IMUserRealm realm = user.toIMRealm();
             realm.updateTime = System.currentTimeMillis();
-            realm.lastMsg = "TA在你身边";
-            datas.add(0,realm);
+            realm.lastMsg = DecryptUtil.encrypt(Utils.getCurrentShortUserId(), realm.objectId, "TA在你身边");
+            datas.add(0, realm);
             mAdapter.notifyItemInserted(1);
         }
         updateResultPage();
@@ -243,14 +245,14 @@ public class ChatsFragment extends BaseFragment {
             }
         }
 
-        for(User item: NetUtils.usersInWiFi){
+        for (User item : NetUtils.usersInWiFi) {
             addUser(item);
         }
-        if(datas.size()>0){
+        if (datas.size() > 0) {
             progressCombineView.showContent();
             mAdapter.notifyDataSetChanged();
             xRecyclerView.refreshComplete();
-        }else{
+        } else {
             xRecyclerView.refreshComplete();
             progressCombineView.showCustom();
         }

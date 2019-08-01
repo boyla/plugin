@@ -570,22 +570,22 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
 //        });
 
         btnSend.setOnClickListener(v -> {
-            Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
-                @Override
-                public void onPermissionResult(Permiso.ResultSet resultSet) {
-                    if (resultSet.isPermissionGranted(Manifest.permission.READ_PHONE_STATE)) {
-                        sendMessage();
-                    } else {
-                        Utils.makeSysToast("需要读取手机状态权限，请到应用权限中进行设置");
-                    }
-                }
-
-                @Override
-                public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
-                    Permiso.getInstance().showRationaleInDialog("需要权限", "需要读取手机状态权限，请到应用权限中进行设置", null, callback);
-                }
-            }, Manifest.permission.READ_PHONE_STATE);
-
+            sendMessage();
+//            Permiso.getInstance().requestPermissions(new Permiso.IOnPermissionResult() {
+//                @Override
+//                public void onPermissionResult(Permiso.ResultSet resultSet) {
+//                    if (resultSet.isPermissionGranted(Manifest.permission.READ_PHONE_STATE)) {
+//                        sendMessage();
+//                    } else {
+//                        Utils.makeSysToast("需要读取手机状态权限，请到应用权限中进行设置");
+//                    }
+//                }
+//
+//                @Override
+//                public void onRationaleRequested(Permiso.IOnRationaleProvided callback, String... permissions) {
+//                    Permiso.getInstance().showRationaleInDialog("需要权限", "需要读取手机状态权限，请到应用权限中进行设置", null, callback);
+//                }
+//            }, Manifest.permission.READ_PHONE_STATE);
         });
         llMore.findViewById(R.id.tv_picture).setOnClickListener(v -> {
             sendLocalImage();
@@ -679,7 +679,8 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         //TODO 发送消息：6.1、发送文本消息
         BmobIMTextMessage msg = new BmobIMTextMessage();
         msg.setBmobIMUserInfo(IMUtils.getIMUserInfoByUser(Utils.getCurrentShortUser()));
-        msg.setContent(DecryptUtil.encrypt(shortUserMe.getObjectId(), shortUserTalkTo.getObjectId(), text));
+        text = DecryptUtil.encrypt(shortUserMe.getObjectId(), shortUserTalkTo.getObjectId(), text);
+        msg.setContent(text);
         //可随意设置额外信息
         Map<String, Object> map = new HashMap<>();
         map.put("level", "1");
