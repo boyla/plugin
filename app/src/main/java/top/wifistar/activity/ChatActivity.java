@@ -1,7 +1,6 @@
 package top.wifistar.activity;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,8 +21,6 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greysonparrelli.permiso.Permiso;
-import com.lidong.photopicker.Image;
 import com.lidong.photopicker.ImageCaptureManager;
 import com.lidong.photopicker.PhotoPickerActivity;
 import com.lidong.photopicker.SelectModel;
@@ -68,12 +64,12 @@ import top.wifistar.R;
 import top.wifistar.adapter.ChatMsgAdapter;
 import top.wifistar.adapter.viewholder.im.BaseViewHolder;
 import top.wifistar.adapter.viewholder.im.OnRecyclerViewListener;
-import top.wifistar.app.App;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
+import top.wifistar.utils.DecryptUtil;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.IntentUtils;
 import top.wifistar.utils.Utils;
@@ -112,7 +108,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     ChatMsgAdapter adapter;
     protected LinearLayoutManager layoutManager;
     BmobIMConversation mConversationManager;
-    User shortUser;
+    public static User shortUserTalkTo, shortUserMe;
     boolean isFromProfile;
     public static final int REQUEST_CAMERA_CODE = 101;
     private EmotionKeyboard mEmotionKeyboard;
@@ -142,11 +138,12 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         llContent = bindViewById(R.id.llContent);
         elEmotion = bindViewById(R.id.elEmotion);
         BmobIMConversation conversationEntrance = (BmobIMConversation) getIntent().getExtras().getSerializable("c");
-        shortUser = (User) getIntent().getExtras().getSerializable("ShortUser");
-        BaseViewHolder.setLeftUser(shortUser);
+        shortUserTalkTo = (User) getIntent().getExtras().getSerializable("ShortUser");
+        shortUserMe = Utils.getCurrentShortUser();
+        BaseViewHolder.setLeftUser(shortUserTalkTo);
         BaseViewHolder.setRightUser(Utils.getCurrentShortUser());
         isFromProfile = getIntent().getExtras().getBoolean("isFromProfile");
-        setCenterTitle(shortUser.getName());
+        setCenterTitle(shortUserTalkTo.getName());
         //TODO 消息：5.1、根据会话入口获取消息管理，聊天页面
         mConversationManager = BmobIMConversation.obtain(BmobIMClient.getInstance(), conversationEntrance);
         initSwipeLayout();
@@ -238,7 +235,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         ivAudio.setVisibility(View.VISIBLE);
         etContent.setVisibility(View.VISIBLE);
         ivKeyboardl.setVisibility(View.GONE);
-        ((ImageView)ivAudio).setImageResource(R.mipmap.ic_cheat_voice);
+        ((ImageView) ivAudio).setImageResource(R.mipmap.ic_cheat_voice);
     }
 
     private void showMoreLayout() {
@@ -353,7 +350,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     }
 
     public User getCurrentUser() {
-        return shortUser;
+        return shortUserTalkTo;
     }
 
     /**
@@ -602,7 +599,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
     }
 
     private void showAudioButton() {
-        ((ImageView)ivAudio).setImageResource(R.mipmap.ic_cheat_keyboard);
+        ((ImageView) ivAudio).setImageResource(R.mipmap.ic_cheat_keyboard);
         btnAudio.setVisibility(View.VISIBLE);
         etContent.setVisibility(View.GONE);
 
@@ -682,13 +679,13 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         //TODO 发送消息：6.1、发送文本消息
         BmobIMTextMessage msg = new BmobIMTextMessage();
         msg.setBmobIMUserInfo(IMUtils.getIMUserInfoByUser(Utils.getCurrentShortUser()));
-        msg.setContent(text);
+        msg.setContent(DecryptUtil.encrypt(shortUserMe.getObjectId(), shortUserTalkTo.getObjectId(), text));
         //可随意设置额外信息
         Map<String, Object> map = new HashMap<>();
         map.put("level", "1");
         msg.setExtraMap(map);
         //save to local
-        IMUserRealm userToSave = shortUser.toIMRealm();
+        IMUserRealm userToSave = shortUserTalkTo.toIMRealm();
         userToSave.updateTime = System.currentTimeMillis();
         userToSave.unReadNum = 0;
         userToSave.isInConversation = true;
@@ -963,6 +960,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
      * 添加未读的通知栏消息到聊天界面
      */
     boolean firtsIn = true;
+
     private void addUnReadMessage() {
         List<MessageEvent> cache = BmobNotificationManager.getInstance(this).getNotificationCacheList();
         if (cache.size() > 0) {
@@ -972,7 +970,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
                 addMessage2Chat(event);
             }
         }
-        if(firtsIn){
+        if (firtsIn) {
             firtsIn = false;
             scrollToBottom();
         }
