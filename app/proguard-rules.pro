@@ -253,3 +253,4 @@
 -dontwarn android.net.**
 -dontwarn javax.annotation.**
 -keep public class top.wifistar.fragment.MomentsFragment
+-ignorewarnings
