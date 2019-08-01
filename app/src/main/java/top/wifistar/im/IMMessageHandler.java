@@ -33,6 +33,7 @@ import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.event.RefreshEvent;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
+import top.wifistar.utils.DecryptUtil;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
@@ -189,7 +190,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
                                     info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
                             return;
                         }
-                        Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(largeIcon), info.getName(), msg.getContent(), pendingIntent);
+                        Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(largeIcon), info.getName(), DecryptUtil.decrypt(info.getUserId(), Utils.getCurrentShortUserId(), msg.getContent()), pendingIntent);
                         return;
                     }
                     Utils.getDrawableByUrl(user.headUrl.split("_")[0], context, new Utils.GetDrawableCallBack() {
@@ -200,7 +201,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
                                         info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
                                 return;
                             }
-                            Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(result), info.getName(), msg.getContent(), pendingIntent);
+                            Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(result), info.getName(), DecryptUtil.decrypt(info.getUserId(), Utils.getCurrentShortUserId(), msg.getContent()), pendingIntent);
                         }
                     });
 
@@ -215,7 +216,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
                                 info.getName(), msg.getContent(), "您有一条新消息", pendingIntent);
                         return;
                     }
-                    Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(largeIcon), info.getName(), msg.getContent(), pendingIntent);
+                    Utils.showGlobalNotify(HomeActivity.INSTANCE, 0, new BitmapDrawable(largeIcon), info.getName(), DecryptUtil.decrypt(info.getUserId(), Utils.getCurrentShortUserId(), msg.getContent()), pendingIntent);
                 }
             });
             //这里可以是应用图标，也可以将聊天头像转成bitmap

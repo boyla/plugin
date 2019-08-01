@@ -26,6 +26,7 @@ import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
 import top.wifistar.utils.ChatUtils;
+import top.wifistar.utils.DecryptUtil;
 import top.wifistar.utils.Utils;
 
 public class IMUsersAdapter extends BaseRecycleViewAdapter {
@@ -91,7 +92,7 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
 
         textViewHolder.mTime.setText(Utils.getFuzzyTime2(imUser.updateTime));
         if (!TextUtils.isEmpty(imUser.lastMsg)) {
-            showMessageContent(imUser.lastMsg, textViewHolder.mMessageInfo);
+            showMessageContent(imUser.lastMsg, textViewHolder.mMessageInfo, imUser.objectId);
         }
         if (imUser.unReadNum > 0) {
             textViewHolder.mNewPoint.setText("" + imUser.unReadNum);
@@ -109,8 +110,8 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
         textViewHolder.tvWiFi.setVisibility(found ? View.VISIBLE : View.GONE);
     }
 
-    private void showMessageContent(String str, TextView textView) {
-        textView.setText(ChatUtils.getEmotionContent(textView, str));
+    private void showMessageContent(String str, TextView textView, String userId) {
+        textView.setText(ChatUtils.getEmotionContent(textView, DecryptUtil.decrypt(userId, Utils.getCurrentShortUserId(), str)));
     }
 
     static public class ChildViewHolder extends RecyclerView.ViewHolder {
