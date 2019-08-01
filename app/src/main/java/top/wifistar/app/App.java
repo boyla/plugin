@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
+import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -25,6 +26,7 @@ import com.kongzue.dialog.v2.DialogSettings;
 import com.kongzue.dialog.v2.MessageDialog;
 import com.lqr.emoji.IImageLoader;
 import com.lqr.emoji.LQREmotionKit;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -43,6 +45,8 @@ import cn.bmob.v3.InstallationListener;
 import cn.bmob.v3.exception.BmobException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
+import top.wifistar.BuildConfig;
+import top.wifistar.R;
 import top.wifistar.activity.SplashActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.User;
@@ -103,11 +107,11 @@ public class App extends MultiDexApplication {
     public static final ExecutorService pool = Executors.newFixedThreadPool(5);
     RealmConfiguration realmConfig;
 
-//    @Override
-//    protected void attachBaseContext(Context base) {
-//        super.attachBaseContext(base);
-//        MultiDex.install(this);
-//    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 //
 //    public static void loadNotification() {
 //        RequestHelper.refreshNotice(new HttpHelper(), new CustomRequestCallBack(mContext) {
@@ -175,9 +179,6 @@ public class App extends MultiDexApplication {
 
             }
         });
-
-
-        AppCrashHandler.getInstance().init(this);
         APP_INSTANCE = this;
         Realm.init(this);
         realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
@@ -230,6 +231,8 @@ public class App extends MultiDexApplication {
                 Glide.with(context).load(path).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
             }
         });
+        CrashReport.initCrashReport(this, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
+        CrashHandler.getInstance().init(this);
     }
 
 
