@@ -210,6 +210,7 @@ public class ChatsFragment extends BaseFragment {
             IMUserRealm item = datas.get(i);
             if (item.objectId.equals(user.getObjectId())) {
                 found = true;
+                datas.set(i, BaseRealmDao.realm.where(IMUserRealm.class).equalTo("objectId", item.objectId).findFirst());
                 mAdapter.notifyItemChanged(i + 1);
                 break;
             }

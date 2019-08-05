@@ -35,6 +35,7 @@ import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.util.Log;
 
+import cn.bmob.newim.bean.BmobIMTextMessage;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -91,7 +92,7 @@ public class NetUtils {
                             proc = run.exec(p);
                             int result = proc.waitFor();
                             if (result == 0) {
-                                System.out.println("发现主机：" + current_ip);
+                                System.out.println("发现设备：" + current_ip);
                                 scanedIPs.add(current_ip);
                                 checkServer(current_ip);
                             }
@@ -386,5 +387,31 @@ public class NetUtils {
             return true;
         }
         return false;
+    }
+
+    public static boolean sendMsg(String id, BmobIMTextMessage msg) {
+        final String host = "http://" + userHostMap.get(id) + ":9595";
+        final String urlStr = host + "/msg?msg=" + App.gson.toJson(msg);
+        System.out.println("Send msg: " + urlStr);
+        boolean serviceAvaliable = false;
+        Request request = new Request.Builder()
+                .url(urlStr)
+                .build();
+        Call call = okHttpClient.newCall(request);
+        try {
+            Response response = call.execute();
+            if (response.isSuccessful() && response.body() != null) {
+                //The call was successful.print it to the log
+                String res = response.body().string();
+                Log.v("OKHttp", res);
+                if (!TextUtils.isEmpty(res) && res.contains("OK")) {
+                    serviceAvaliable = true;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return serviceAvaliable;
     }
 }  

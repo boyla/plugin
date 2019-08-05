@@ -1,9 +1,6 @@
 package top.wifistar.utils;
 
 import android.text.TextUtils;
-
-import com.scottyab.aescrypt.AESCrypt;
-
 import java.security.GeneralSecurityException;
 
 /**
@@ -17,7 +14,7 @@ public class DecryptUtil {
             return "";
         String result = "";
         try {
-            result = AESCrypt.encrypt(getDecryptWord(user1,user2), ciphertext);
+            result = AESCrypt.encrypt(getDecryptWord(user1, user2), ciphertext);
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
         }
@@ -29,8 +26,8 @@ public class DecryptUtil {
             return "";
         String result = "";
         try {
-            result = AESCrypt.decrypt(getDecryptWord(user1,user2), ciphertext);
-        } catch (GeneralSecurityException e) {
+            result = AESCrypt.decrypt(getDecryptWord(user1, user2), ciphertext);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return result;

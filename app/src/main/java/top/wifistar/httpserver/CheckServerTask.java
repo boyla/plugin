@@ -17,7 +17,7 @@ public class CheckServerTask extends AsyncTask<Void, Void, Void>{
     @Override
     protected Void doInBackground(Void... v) {
         if (NetUtils.isOnline(ip)) {
-            System.out.println("发现WLAN用户：" + ip);
+            System.out.println("发现用户：" + ip);
         }
         return null;
     }

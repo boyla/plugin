@@ -106,6 +106,7 @@ public class App extends MultiDexApplication {
 
     public static final ExecutorService pool = Executors.newFixedThreadPool(5);
     RealmConfiguration realmConfig;
+    public IMMessageHandler imMessageHandler;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -191,7 +192,8 @@ public class App extends MultiDexApplication {
         String processName = getMyProcessName();
         if (packageName.equals(processName)) {
             BmobIM.init(this);
-            BmobIM.registerDefaultMessageHandler(new IMMessageHandler(this));
+            imMessageHandler = new IMMessageHandler(this);
+            BmobIM.registerDefaultMessageHandler(imMessageHandler);
         }
 
         initPush();

@@ -83,7 +83,7 @@ public class IMMessageHandler extends BmobIMMessageHandler {
         final IMUserRealm rawUser = BaseRealmDao.realm.where(IMUserRealm.class).equalTo("objectId", event.getFromUserInfo().getUserId()).findFirst();
         if (rawUser == null || TextUtils.isEmpty(rawUser.name)) {
             //获取用户信息
-            Utils.queryShortUser(event.getFromUserInfo().getUserId(), new NetUserRequest.NetRequestCallBack() {
+            Utils.queryShortUser(!TextUtils.isEmpty(event.getFromUserInfo().getUserId()) ? event.getFromUserInfo().getUserId() : event.getMessage().getBmobIMUserInfo().getUserId(), new NetUserRequest.NetRequestCallBack() {
                 @Override
                 public void onSuccess(User user) {
                     handleMsg(user.toIMRealm(), event, false);

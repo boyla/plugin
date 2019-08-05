@@ -37,6 +37,10 @@ import com.lidong.photopicker.intent.PhotoPickerIntent;
 import com.lqr.emoji.EmotionKeyboard;
 import com.lqr.emoji.EmotionLayout;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +54,7 @@ import cn.bmob.newim.bean.BmobIMImageMessage;
 import cn.bmob.newim.bean.BmobIMLocationMessage;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMTextMessage;
+import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.bean.BmobIMVideoMessage;
 import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.core.BmobRecordManager;
@@ -64,8 +69,11 @@ import top.wifistar.R;
 import top.wifistar.adapter.ChatMsgAdapter;
 import top.wifistar.adapter.viewholder.im.BaseViewHolder;
 import top.wifistar.adapter.viewholder.im.OnRecyclerViewListener;
+import top.wifistar.app.App;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.event.RefreshAvatarsEvent;
+import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.IMUserRealm;
@@ -151,6 +159,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         initBottomView();
         initEmotionKeyboard();
         setClickListener();
+        EventUtils.registerEventBus(this);
     }
 
 
@@ -695,7 +704,24 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         BaseRealmDao.insertOrUpdate(userToSave);
         EventUtils.post(userToSave);
         this.userToSave = userToSave;
-        mConversationManager.sendMessage(msg, listener);
+        msg.setFromId(Utils.getCurrentShortUserId());
+        msg.setToId(shortUserTalkTo.getObjectId());
+        if (inWiFi) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    NetUtils.sendMsg(shortUserTalkTo.getObjectId(), msg);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.done(msg,null);
+                        }
+                    });
+                }
+            }).start();
+        } else {
+            mConversationManager.sendMessage(msg, listener);
+        }
     }
 
     /**
@@ -955,6 +981,12 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
         BmobIM.getInstance().addMessageListHandler(this);
         // 有可能锁屏期间，在聊天界面出现通知栏，这时候需要清除通知
         BmobNotificationManager.getInstance(this).cancelNotification();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                checkInWiFi();
+            }
+        }).start();
     }
 
     /**
@@ -995,6 +1027,7 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             mConversationManager.updateLocalCache();
         }
 //        hideSoftInputView();
+        EventUtils.unregisterEventBus(this);
         super.onDestroy();
     }
 
@@ -1032,4 +1065,61 @@ public class ChatActivity extends ToolbarActivity implements MessageListHandler 
             }
         }
     }
+
+    boolean inWiFi;
+
+    boolean checkInWiFi() {
+        inWiFi = false;
+        for (User user : NetUtils.usersInWiFi) {
+            if (user.getObjectId().equals(shortUserTalkTo.getObjectId())) {
+                if (NetUtils.isOnline(NetUtils.userHostMap.get(user.getObjectId()))) {
+                    inWiFi = true;
+                }
+                break;
+            }
+        }
+        return inWiFi;
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReceiveWiFiMsg(BmobIMMessage msg) {
+        MessageEvent event = new MessageEvent();
+        Class<?> classu = event.getClass();
+        //得到user类的全部属性（修饰符+类型+名字）
+        Field[] fields = classu.getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            // AccessibleTest类中的成员变量为private,故必须进行此操作
+            // 取消属性的访问权限控制，即使private属性也可以进行访问。
+            fields[i].setAccessible(true);
+            /**
+                 BmobIMMessage a;
+                 BmobIMConversation b;
+                 BmobIMUserInfo c;
+             */
+            if (fields[i].getName().equals("a")) {
+                try {
+                    fields[i].set(event, msg);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (fields[i].getName().equals("b")) {
+                try {
+                    fields[i].set(event, mConversationManager);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            BmobIMUserInfo info = new BmobIMUserInfo();
+            if (fields[i].getName().equals("c")) {
+                try {
+                    fields[i].set(event, info);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        App.getApp().imMessageHandler.onMessageReceive(event);
+    }
+
 }

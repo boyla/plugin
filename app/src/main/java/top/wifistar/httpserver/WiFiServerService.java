@@ -56,6 +56,7 @@ public class WiFiServerService extends Service {
                 .registerHandler("/image", new ImageHandler())
                 .registerHandler("/atService", new ServerHandler())
                 .registerHandler("/isOnline", new OnlineHandler())
+                .registerHandler("/msg", new MsgHandler())
                 .filter(new HttpCacheFilter())
                 .listener(mListener)
                 .build();
