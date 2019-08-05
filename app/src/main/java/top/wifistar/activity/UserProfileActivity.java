@@ -779,6 +779,10 @@ public class UserProfileActivity extends AppCompatActivity {
                     }
                 });
                 break;
+
+            case R.id.exit:
+                App.getApp().showReloginDialog("提示", "您已退出登陆");
+                break;
         }
         return true;
     }
@@ -959,7 +963,7 @@ public class UserProfileActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (isSelfProfile()) {
-            getMenuInflater().inflate(R.menu.add_topic, menu);
+            getMenuInflater().inflate(R.menu.profile_more, menu);
             return true;
         } else {
             return super.onCreateOptionsMenu(menu);
