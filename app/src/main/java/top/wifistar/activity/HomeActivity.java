@@ -1,11 +1,12 @@
 package top.wifistar.activity;
 
 
-
 import android.view.View;
 import android.widget.ImageView;
+
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.Installation;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
+import top.wifistar.utils.NetUtil;
 import top.wifistar.utils.UpdateUtils;
 import top.wifistar.view.BottomMenuView;
 import top.wifistar.R;
@@ -76,6 +78,14 @@ public class HomeActivity extends BottomInputActivity {
         } catch (Exception e) {
             System.out.println("Update exception:" + e.getMessage());
         }
+        NetUtil.Companion.registerNetConnChangedReceiver(this);
+        NetUtil.Companion.addNetConnChangedListener(new NetUtil.Companion.NetConnChangedListener() {
+            //网络类型变化
+            @Override
+            public void onNetConnChanged(@NotNull NetUtil.Companion.ConnectStatus connectStatus) {
+                refreshNetState();
+            }
+        });
     }
 
     @Override
@@ -98,6 +108,12 @@ public class HomeActivity extends BottomInputActivity {
     protected void onResume() {
         super.onResume();
         checkLogin();
+        App.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                refreshNetState();
+            }
+        },234);
     }
 
     @Override
@@ -105,6 +121,7 @@ public class HomeActivity extends BottomInputActivity {
         EventUtils.unregisterEventBus(this);
         WiFiServerManager.serverStop(this);
         mServerManager.unRegister();
+        NetUtil.Companion.unregisterNetConnChangedReceiver(this);
         super.onDestroy();
     }
 
@@ -170,7 +187,7 @@ public class HomeActivity extends BottomInputActivity {
             case BottomMenuView.Item_Discover:
                 title = getResources().getString(R.string.discover);
                 ConnectionStatus status = BmobIM.getInstance().getCurrentStatus();
-                App.getApp().showReloginDialog("当前IM连接状态",status.getMsg());
+                App.getApp().showReloginDialog("当前IM连接状态", status.getMsg());
                 break;
             default:
                 title = getResources().getString(R.string.chats);
@@ -180,7 +197,7 @@ public class HomeActivity extends BottomInputActivity {
         lastBottomItem = bottomMenuView.currentItem;
     }
 
-//    @Override
+    //    @Override
 //    public boolean onKeyDown(int keyCode, KeyEvent event) {
 //        if (keyCode == KeyEvent.KEYCODE_BACK) {
 //            moveTaskToBack(true);
@@ -190,9 +207,9 @@ public class HomeActivity extends BottomInputActivity {
 //    }
     @Override
     public void onBackPressed() {
-        if(editTextBodyLl!=null && editTextBodyLl.getVisibility() == View.VISIBLE){
+        if (editTextBodyLl != null && editTextBodyLl.getVisibility() == View.VISIBLE) {
             editTextBodyLl.setVisibility(View.GONE);
-        }else{
+        } else {
             moveTaskToBack(true);
         }
     }
@@ -235,11 +252,11 @@ public class HomeActivity extends BottomInputActivity {
         }
     }
 
-    public void checkLogin(){
+    public void checkLogin() {
         BmobInstallation bi = BmobInstallationManager.getInstance().getCurrentInstallation();
         BmobQuery<Installation> bmobQuery = new BmobQuery<>();
         User currentUser = Utils.getCurrentShortUser();
-        if(currentUser==null){
+        if (currentUser == null) {
             finish();
             return;
         }
@@ -254,9 +271,9 @@ public class HomeActivity extends BottomInputActivity {
                         if (installations.size() > 0) {
                             Installation installation = installations.get(0);
                             String currentId = installation.getInstallationId();
-                            if(!localId.equals(currentId)){
+                            if (!localId.equals(currentId)) {
                                 //不同设备登陆，发送PUSH，将上一个设备挤下线
-                                App.getApp().pushAndroidMessage("LOGIN ON OTHER DEVICE",currentId);
+                                App.getApp().pushAndroidMessage("LOGIN ON OTHER DEVICE", currentId);
                                 //更新数据
                                 installation.userId = "";
                                 installation.update();
@@ -304,13 +321,13 @@ public class HomeActivity extends BottomInputActivity {
                                 @Override
                                 public void done(List<Installation> list, BmobException e) {
                                     Installation ins;
-                                    if(e!=null || list==null || list.size()==0){
+                                    if (e != null || list == null || list.size() == 0) {
                                         //save data
                                         ins = new Installation();
                                         ins.setInstallationId(localId);
                                         ins.userId = userId;
                                         ins.save();
-                                    }else{
+                                    } else {
                                         //update data
                                         ins = list.get(0);
                                         ins.userId = userId;
@@ -324,10 +341,22 @@ public class HomeActivity extends BottomInputActivity {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        System.out.println("查询设备数据失败：" );
+                        System.out.println("查询设备数据失败：");
                     }
                 });
     }
 
-
+    public void refreshNetState() {
+        boolean hasNet = NetUtil.Companion.isNetConnected(this);
+        if (hasNet && NetUtil.Companion.isNetworkOnline()) {
+            topReminder.dismiss();
+            return;
+        }
+        boolean hasWiFi = NetUtil.Companion.isWifiConnected(this);
+        if (hasWiFi) {
+            Utils.showToast(topReminder, "WiFi局域网可用");
+            return;
+        }
+        Utils.showToast(topReminder, "当前网络不可用");
+    }
 }
