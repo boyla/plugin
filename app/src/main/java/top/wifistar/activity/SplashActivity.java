@@ -191,7 +191,7 @@ public class SplashActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         refreshStart();
-
+        App.checkAndConnectIM();
         //queryData();
     }
 

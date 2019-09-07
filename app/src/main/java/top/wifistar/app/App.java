@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.StrictMode;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
@@ -86,8 +87,6 @@ public class App extends MultiDexApplication {
     public final static String ACACHE_KEY_DB_INSTALLED = "db_installed";
 
     public static Context mContext;
-
-    private static App sInstance;
 
     public static LinkedList<Activity> activityStack = new LinkedList<Activity>();
 
@@ -181,60 +180,63 @@ public class App extends MultiDexApplication {
             }
         });
         APP_INSTANCE = this;
-        Realm.init(this);
-        realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
-        Realm.setDefaultConfiguration(realmConfig);
-
-        //Bmob初始化
-        Bmob.initialize(this, "15210abb365601ec97b87f55b1efa0d4");
-        //IM
-        String packageName = getApplicationInfo().packageName;
-        String processName = getMyProcessName();
-        if (packageName.equals(processName)) {
-            BmobIM.init(this);
-            imMessageHandler = new IMMessageHandler(this);
-            BmobIM.registerDefaultMessageHandler(imMessageHandler);
-        }
-
-        initPush();
-
-        //第二：自v3.4.7版本开始,设置BmobConfig,允许设置请求超时时间、文件分片上传时每片的大小、文件的过期时间(单位为秒)，
-        //BmobConfig config =new BmobConfig.Builder(this)
-        ////设置appkey
-        //.setApplicationId("Your Application ID")
-        ////请求超时时间（单位为秒）：默认15s
-        //.setConnectTimeout(30)
-        ////文件分片上传时每片的大小（单位字节），默认512*1024
-        //.setUploadBlockSize(1024*1024)
-        ////文件的过期时间(单位为秒)：默认1800s
-        //.setFileExpiration(2500)
-        //.build();
-        //Bmob.initialize(config);
-
-        Runtime rt = Runtime.getRuntime();
-        long maxMemory = rt.maxMemory();
-        int memoryClass = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-        Log.d(TAG, "Max memory: " + Long.toString(maxMemory / (1024 * 1024)));
-        Log.d(TAG, "Memory class " + memoryClass);
-
-        sInstance = this;
-
-        mContext = getApplicationContext();
         init();
-
-        DialogSettings.style = DialogSettings.STYLE_IOS;
-        //In this way the VM ignores the file URI exposure
-        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());
-        //初始化表情包
-        LQREmotionKit.init(this, new IImageLoader() {
+        AppExecutor.getInstance().postWork(new Runnable() {
             @Override
-            public void displayImage(Context context, String path, ImageView imageView) {
-                Glide.with(context).load(path).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
+            public void run() {
+                Realm.init(APP_INSTANCE);
+                realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
+                Realm.setDefaultConfiguration(realmConfig);
             }
         });
-        CrashReport.initCrashReport(this, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
-        CrashHandler.getInstance().init(this);
+        AppExecutor.getInstance().postWork(new Runnable() {
+            @Override
+            public void run() {
+                //Bmob初始化
+                Bmob.initialize(APP_INSTANCE, "15210abb365601ec97b87f55b1efa0d4");
+                //IM
+                String packageName = getApplicationInfo().packageName;
+                String processName = getMyProcessName();
+                if (packageName.equals(processName)) {
+                    AppExecutor.getInstance().postMain(new Runnable() {
+                        @Override
+                        public void run() {
+                            BmobIM.init(APP_INSTANCE);
+                            imMessageHandler = new IMMessageHandler(APP_INSTANCE);
+                            BmobIM.registerDefaultMessageHandler(imMessageHandler);
+                        }
+                    });
+                }
+
+                initPush();
+            }
+        });
+        AppExecutor.getInstance().postWork(new Runnable() {
+            @Override
+            public void run() {
+                Runtime rt = Runtime.getRuntime();
+                long maxMemory = rt.maxMemory();
+                int memoryClass = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+                Log.d(TAG, "Max memory: " + Long.toString(maxMemory / (1024 * 1024)));
+                Log.d(TAG, "Memory class " + memoryClass);
+                mContext = getApplicationContext();
+
+                DialogSettings.style = DialogSettings.STYLE_IOS;
+                //In this way the VM ignores the file URI exposure
+                StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+                StrictMode.setVmPolicy(builder.build());
+                //初始化表情包
+                LQREmotionKit.init(APP_INSTANCE, new IImageLoader() {
+                    @Override
+                    public void displayImage(Context context, String path, ImageView imageView) {
+                        Glide.with(context).load(path).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
+                    }
+                });
+                CrashReport.initCrashReport(APP_INSTANCE, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
+                CrashHandler.getInstance().init(APP_INSTANCE);
+            }
+        });
+
     }
 
 
@@ -244,23 +246,11 @@ public class App extends MultiDexApplication {
     }
 
     private void initHandler() {
-        mHandler = new Handler();
-//        mHandler = new Handler() {
-//            @Override
-//            public void handleMessage(Message msg) {
-//                for (int i = 0; i < activityStack.size(); i++) {
-//                    Activity activity = activityStack.get(i);
-//                    if (activity instanceof BaseActivity) {
-//                        ((BaseActivity) activity).dispatcherMessage(msg);
-//                    }
-//                }
-//            }
-//
-//        };
+        mHandler = new Handler(Looper.myLooper());
     }
 
     public static App getInstance() {
-        return sInstance;
+        return APP_INSTANCE;
     }
 
 
@@ -511,5 +501,16 @@ public class App extends MultiDexApplication {
     public void onTerminate() {
         super.onTerminate();
         BaseRealmDao.realm.close();
+    }
+
+    public static void checkAndConnectIM() {
+        AppExecutor.getInstance().postBackground(new Runnable() {
+            @Override
+            public void run() {
+                if (App.currentIMStatus == null || !(App.currentIMStatus.getCode() == 2 || App.currentIMStatus.getCode() == 1)) {
+                    App.connectIM();
+                }
+            }
+        });
     }
 }

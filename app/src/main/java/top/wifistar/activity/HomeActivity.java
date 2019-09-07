@@ -114,6 +114,7 @@ public class HomeActivity extends BottomInputActivity {
                 refreshNetState();
             }
         },234);
+        App.checkAndConnectIM();
     }
 
     @Override

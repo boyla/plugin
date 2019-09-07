@@ -288,12 +288,4 @@ public abstract class ToolbarActivity extends BaseActivity {
         return null;
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        //connect im
-        if (App.currentIMStatus == null || !(App.currentIMStatus.getCode() == 2 || App.currentIMStatus.getCode() == 1)) {
-            App.connectIM();
-        }
-    }
 }
