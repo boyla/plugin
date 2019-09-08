@@ -1,4 +1,4 @@
-package com.lidong.photopicker;
+package top.wifistar.photopicker;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -30,7 +30,11 @@ import android.widget.Toast;
 
 import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
-import com.lidong.photopicker.intent.PhotoPreviewIntent;
+
+import top.wifistar.R;
+import top.wifistar.app.AppExecutor;
+import top.wifistar.imagelib.ImageLibUtils;
+import top.wifistar.photopicker.intent.PhotoPreviewIntent;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +65,10 @@ public class PhotoPickerActivity extends AppCompatActivity {
      * 最大图片选择次数，int类型
      */
     public static final String EXTRA_SELECT_COUNT = "max_select_count";
+    /**
+     * 是否根据url加载网络图片
+     */
+    public static final String EXTRA_IS_NET_IMG = "is_net_img";
     /**
      * 默认最大照片数量
      */
@@ -100,6 +108,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     // 最大照片数量
     private ImageCaptureManager captureManager;
     private int mDesireImageCount;
+    private boolean mIsNetImg;
     private ImageConfig imageConfig; // 照片配置
 
     private ImageGridAdapter mImageAdapter;
@@ -108,6 +117,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     private boolean hasFolderGened = false;
     private boolean mIsShowCamera = false;
+    private Folder netFolder = new Folder();
+    private List<String> urls = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,8 +132,14 @@ public class PhotoPickerActivity extends AppCompatActivity {
         // 照片属性
         imageConfig = getIntent().getParcelableExtra(EXTRA_IMAGE_CONFIG);
 
-        // 首次加载所有图片
-        getSupportLoaderManager().initLoader(LOADER_ALL, null, mLoaderCallback);
+        // 是否加载网络图片
+        mIsNetImg = getIntent().getBooleanExtra(EXTRA_IS_NET_IMG, false);
+        if (mIsNetImg) {
+
+        } else {
+            // 首次加载所有图片
+            getSupportLoaderManager().initLoader(LOADER_ALL, null, mLoaderCallback);
+        }
 
         // 选择图片数量
         mDesireImageCount = getIntent().getIntExtra(EXTRA_SELECT_COUNT, DEFAULT_MAX_TOTAL);
@@ -163,8 +180,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
                             public void onPermissionResult(Permiso.ResultSet resultSet) {
                                 if (resultSet.isPermissionGranted(Manifest.permission.WRITE_EXTERNAL_STORAGE) && resultSet.isPermissionGranted(Manifest.permission.CAMERA)) {
                                     showCameraAction();
-                                }else{
-                                    Toast.makeText(PhotoPickerActivity.this,"拍照需要获取相机和文件存储权限，请到应用权限中进行设置",Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(PhotoPickerActivity.this, "拍照需要获取相机和文件存储权限，请到应用权限中进行设置", Toast.LENGTH_LONG).show();
                                 }
                             }
 
@@ -217,14 +234,49 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 startActivityForResult(intent, PhotoPreviewActivity.REQUEST_PREVIEW);
             }
         });
+        netFolder.name = "网络图库";
+        netFolder.isNet = true;
+        AppExecutor.getInstance().postWork(new Runnable() {
+            @Override
+            public void run() {
+                getNetImgs();
+            }
+        });
+    }
 
+    private void getNetImgs() {
+        urls = ImageLibUtils.Companion.getUpsplashUrls();
+        if (urls == null || urls.size() == 0) {
+            ImageLibUtils.Companion.getBmobImageUrls(urls, new ImageLibUtils.LoadedNext() {
+                @Override
+                public void onNext() {
+                    generateImgs();
+                }
+            });
+        } else {
+            generateImgs();
+        }
+    }
+
+    private void generateImgs() {
+        if (urls.size() > 0) {
+            List<Image> list = new ArrayList<>();
+            for (String str : urls) {
+                Image image = new Image(str, "", System.currentTimeMillis());
+                list.add(image);
+            }
+            netFolder.cover = list.get(0);
+            netFolder.images = list;
+            mResultFolder.add(0, netFolder);
+            mFolderAdapter.setData(mResultFolder);
+        }
     }
 
     private void initViews() {
         mCxt = this;
         captureManager = new ImageCaptureManager(mCxt);
         // ActionBar Setting
-        Toolbar toolbar =  findViewById(R.id.pickerToolbar);
+        Toolbar toolbar = findViewById(R.id.pickerToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getResources().getString(R.string.image));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -406,15 +458,15 @@ public class PhotoPickerActivity extends AppCompatActivity {
             photoFile = captureManager.createImageFile();
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
-                                Uri.fromFile(photoFile));
-                    } else {
-                        ContentValues contentValues = new ContentValues(1);
-                        contentValues.put(MediaStore.Images.Media.DATA, photoFile.getAbsolutePath());
-                        Uri uri = this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                    }
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                            Uri.fromFile(photoFile));
+                } else {
+                    ContentValues contentValues = new ContentValues(1);
+                    contentValues.put(MediaStore.Images.Media.DATA, photoFile.getAbsolutePath());
+                    Uri uri = this.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                }
             }
         }
         return takePictureIntent;
@@ -572,7 +624,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     if (resultList != null && resultList.size() > 0) {
                         mImageAdapter.setDefaultSelected(resultList);
                     }
-
                     mFolderAdapter.setData(mResultFolder);
                     hasFolderGened = true;
 
@@ -658,4 +709,5 @@ public class PhotoPickerActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Permiso.getInstance().onRequestPermissionResult(requestCode, permissions, grantResults);
     }
+
 }

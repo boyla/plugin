@@ -1,4 +1,4 @@
-package com.lidong.photopicker;
+package top.wifistar.photopicker;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,6 +13,8 @@ import com.bumptech.glide.Glide;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import top.wifistar.R;
 
 /**
  * ͼƬAdapter
@@ -35,7 +37,7 @@ public class ImageGridAdapter extends BaseAdapter {
     private int mItemSize;
     private GridView.LayoutParams mItemLayoutParams;
 
-    public ImageGridAdapter(Context context, boolean showCamera, int itemSize){
+    public ImageGridAdapter(Context context, boolean showCamera, int itemSize) {
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.showCamera = showCamera;
@@ -45,31 +47,33 @@ public class ImageGridAdapter extends BaseAdapter {
 
     /**
      * 显示选择指示器
+     *
      * @param b
      */
     public void showSelectIndicator(boolean b) {
         showSelectIndicator = b;
     }
 
-    public void setShowCamera(boolean b){
-        if(showCamera == b) return;
+    public void setShowCamera(boolean b) {
+        if (showCamera == b) return;
 
         showCamera = b;
         notifyDataSetChanged();
     }
 
-    public boolean isShowCamera(){
+    public boolean isShowCamera() {
         return showCamera;
     }
 
     /**
      * 选择某个图片，改变选择状态
+     *
      * @param image
      */
     public void select(Image image) {
-        if(mSelectedImages.contains(image)){
+        if (mSelectedImages.contains(image)) {
             mSelectedImages.remove(image);
-        }else{
+        } else {
             mSelectedImages.add(image);
         }
         notifyDataSetChanged();
@@ -77,23 +81,24 @@ public class ImageGridAdapter extends BaseAdapter {
 
     /**
      * 通过图片路径设置默认选择
+     *
      * @param resultList
      */
     public void setDefaultSelected(ArrayList<String> resultList) {
         mSelectedImages.clear();
-        for(String path : resultList){
+        for (String path : resultList) {
             Image image = getImageByPath(path);
-            if(image != null){
+            if (image != null) {
                 mSelectedImages.add(image);
             }
         }
         notifyDataSetChanged();
     }
 
-    private Image getImageByPath(String path){
-        if(mImages != null && mImages.size() > 0){
-            for(Image image : mImages){
-                if(image.path.equalsIgnoreCase(path)){
+    private Image getImageByPath(String path) {
+        if (mImages != null && mImages.size() > 0) {
+            for (Image image : mImages) {
+                if (image.path.equalsIgnoreCase(path)) {
                     return image;
                 }
             }
@@ -103,14 +108,15 @@ public class ImageGridAdapter extends BaseAdapter {
 
     /**
      * 设置数据集
+     *
      * @param images
      */
     public void setData(List<Image> images) {
         mSelectedImages.clear();
 
-        if(images != null && images.size() > 0){
+        if (images != null && images.size() > 0) {
             mImages = images;
-        }else{
+        } else {
             mImages.clear();
         }
         notifyDataSetChanged();
@@ -118,11 +124,12 @@ public class ImageGridAdapter extends BaseAdapter {
 
     /**
      * 重置每个Column的Size
+     *
      * @param columnWidth
      */
     public void setItemSize(int columnWidth) {
 
-        if(mItemSize == columnWidth){
+        if (mItemSize == columnWidth) {
             return;
         }
 
@@ -140,7 +147,7 @@ public class ImageGridAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if(showCamera){
+        if (showCamera) {
             return position == 0 ? TYPE_CAMERA : TYPE_NORMAL;
         }
         return TYPE_NORMAL;
@@ -153,12 +160,12 @@ public class ImageGridAdapter extends BaseAdapter {
 
     @Override
     public Image getItem(int i) {
-        if(showCamera){
-            if(i == 0){
+        if (showCamera) {
+            if (i == 0) {
                 return null;
             }
             return mImages.get(i - 1);
-        }else{
+        } else {
             return mImages.get(i);
         }
     }
@@ -172,29 +179,29 @@ public class ImageGridAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
 
         int type = getItemViewType(i);
-        if(type == TYPE_CAMERA){
+        if (type == TYPE_CAMERA) {
             view = mInflater.inflate(R.layout.item_camera, viewGroup, false);
             view.setTag(null);
-        }else if(type == TYPE_NORMAL){
+        } else if (type == TYPE_NORMAL) {
             ViewHolde holde;
-            if(view == null){
+            if (view == null) {
                 view = mInflater.inflate(R.layout.item_select_image, viewGroup, false);
                 holde = new ViewHolde(view);
-            }else{
+            } else {
                 holde = (ViewHolde) view.getTag();
-                if(holde == null){
+                if (holde == null) {
                     view = mInflater.inflate(R.layout.item_select_image, viewGroup, false);
                     holde = new ViewHolde(view);
                 }
             }
-            if(holde != null) {
+            if (holde != null) {
                 holde.bindData(getItem(i));
             }
         }
 
         /** Fixed View Size */
         GridView.LayoutParams lp = (GridView.LayoutParams) view.getLayoutParams();
-        if(lp.height != mItemSize){
+        if (lp.height != mItemSize) {
             view.setLayoutParams(mItemLayoutParams);
         }
 
@@ -206,36 +213,35 @@ public class ImageGridAdapter extends BaseAdapter {
         ImageView indicator;
         View mask;
 
-        ViewHolde(View view){
+        ViewHolde(View view) {
             image = (ImageView) view.findViewById(R.id.image);
             indicator = (ImageView) view.findViewById(R.id.checkmark);
             mask = view.findViewById(R.id.mask);
             view.setTag(this);
         }
 
-        void bindData(final Image data){
-            if(data == null) return;
+        void bindData(final Image data) {
+            if (data == null) return;
             // 处理单选和多选状态
-            if(showSelectIndicator){
+            if (showSelectIndicator) {
                 indicator.setVisibility(View.VISIBLE);
-                if(mSelectedImages.contains(data)){
+                if (mSelectedImages.contains(data)) {
                     // 设置选中状态
                     indicator.setImageResource(R.mipmap.btn_selected);
                     mask.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     // 未选择
                     indicator.setImageResource(R.mipmap.btn_unselected);
                     mask.setVisibility(View.GONE);
                 }
-            }else{
+            } else {
                 indicator.setVisibility(View.GONE);
             }
-            File imageFile = new File(data.path);
 
-            if(mItemSize > 0) {
+            if (mItemSize > 0) {
                 // 显示图片
                 Glide.with(mContext)
-                        .load(imageFile)
+                        .load(data.path.contains("http") ? data.path : new File(data.path))
                         .placeholder(R.mipmap.default_error)
                         .error(R.mipmap.default_error)
                         .override(mItemSize, mItemSize)

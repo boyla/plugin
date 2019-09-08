@@ -1,4 +1,4 @@
-package com.lidong.photopicker;
+package top.wifistar.photopicker;
 
 import java.util.List;
 
@@ -11,6 +11,7 @@ public class Folder {
     public String path;
     public Image cover;
     public List<Image> images;
+    boolean isNet;
 
     @Override
     public boolean equals(Object o) {

@@ -25,6 +25,7 @@
     <!-- Keeps the processor from sleeping when a message is received. -->
     <!--<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />-->
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-sdk tools:overrideLibrary="com.jaeger.library" />
     //接收IM消息的自定义权限
     <permission
         android:name="top.wifistar.permission.RECEIVE_MSG"
@@ -127,9 +128,9 @@
         <activity android:name=".activity.ChatActivity"
             android:windowSoftInputMode="adjustResize|stateHidden"/>
 
-        <activity android:name="com.lidong.photopicker.PhotoPickerActivity"/>
+        <activity android:name=".photopicker.PhotoPickerActivity"/>
 
-        <activity android:name="com.lidong.photopicker.PhotoPreviewActivity"/>
+        <activity android:name=".photopicker.PhotoPreviewActivity"/>
 
         <receiver android:name="cn.bmob.newim.core.ConnectChangeReceiver">
             <intent-filter>

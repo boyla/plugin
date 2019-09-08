@@ -1,9 +1,8 @@
-package com.lidong.photopicker;
+package top.wifistar.photopicker;
 
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -19,10 +18,11 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.jaeger.library.StatusBarUtil;
-import com.lidong.photopicker.widget.ViewPagerFixed;
+
+import top.wifistar.R;
+import top.wifistar.photopicker.widget.ViewPagerFixed;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -165,7 +165,7 @@ public class PhotoPreviewActivity extends AppCompatActivity implements PhotoPage
                                 onBackPressed();
                             }
                         })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.photo_picker_cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 dialogInterface.dismiss();

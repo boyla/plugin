@@ -30,10 +30,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.greysonparrelli.permiso.Permiso;
-import com.lidong.photopicker.ImageCaptureManager;
-import com.lidong.photopicker.PhotoPickerActivity;
-import com.lidong.photopicker.SelectModel;
-import com.lidong.photopicker.intent.PhotoPickerIntent;
+import top.wifistar.photopicker.ImageCaptureManager;
+import top.wifistar.photopicker.PhotoPickerActivity;
+import top.wifistar.photopicker.SelectModel;
+import top.wifistar.photopicker.intent.PhotoPickerIntent;
 import com.lqr.emoji.EmotionKeyboard;
 import com.lqr.emoji.EmotionLayout;
 
@@ -72,7 +72,6 @@ import top.wifistar.adapter.viewholder.im.OnRecyclerViewListener;
 import top.wifistar.app.App;
 import top.wifistar.app.ToolbarActivity;
 import top.wifistar.bean.bmob.User;
-import top.wifistar.event.RefreshAvatarsEvent;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
 import top.wifistar.realm.BaseRealmDao;

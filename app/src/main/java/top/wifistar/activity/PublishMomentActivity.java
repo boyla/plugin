@@ -23,19 +23,16 @@ import com.bumptech.glide.Glide;
 import com.greysonparrelli.permiso.Permiso;
 import com.kongzue.dialog.listener.OnMenuItemClickListener;
 import com.kongzue.dialog.v2.BottomMenu;
-import com.lidong.photopicker.ImageCaptureManager;
-import com.lidong.photopicker.PhotoPickerActivity;
-import com.lidong.photopicker.PhotoPreviewActivity;
-import com.lidong.photopicker.SelectModel;
-import com.lidong.photopicker.intent.PhotoPickerIntent;
-import com.lidong.photopicker.intent.PhotoPreviewIntent;
-
+import top.wifistar.photopicker.ImageCaptureManager;
+import top.wifistar.photopicker.PhotoPickerActivity;
+import top.wifistar.photopicker.PhotoPreviewActivity;
+import top.wifistar.photopicker.SelectModel;
+import top.wifistar.photopicker.intent.PhotoPickerIntent;
+import top.wifistar.photopicker.intent.PhotoPreviewIntent;
 import org.json.JSONArray;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -132,9 +129,10 @@ public class PublishMomentActivity extends ToolbarActivity {
     ArrayList<String> topicNameList = new ArrayList<>();
     ArrayList<String> topicList = new ArrayList<>();
     int menuIndex;
+
     private void showWhoCanSeeDialog() {
         User user = Utils.getCurrentShortUser();
-        if(user==null){
+        if (user == null) {
             Utils.showToast("似乎出了点问题");
             return;
         }
@@ -147,8 +145,8 @@ public class PublishMomentActivity extends ToolbarActivity {
         topicList.clear();
         topicNameList.add("公开");
         topicNameList.add("仅自己可见");
-        for(String str:raw){
-            if(str.contains("@")){
+        for (String str : raw) {
+            if (str.contains("@")) {
                 topicNameList.add(str.split("@")[1]);
                 topicList.add(str);
             }
@@ -159,7 +157,7 @@ public class PublishMomentActivity extends ToolbarActivity {
                 tvWhoCanSee.setText(text);
                 menuIndex = index;
             }
-        },true);
+        }, true);
     }
 
     private void jumpToPicSelectPage() {
@@ -230,7 +228,7 @@ public class PublishMomentActivity extends ToolbarActivity {
         tempMoment.setType(momentType);
         tempMoment.setContent(textView.getText().toString());
         if (filePaths.length > 0) {
-            for(int i = 0; i < filePaths.length; i++){
+            for (int i = 0; i < filePaths.length; i++) {
                 filePaths[i] += Utils.getImageUrlWithWidthHeight(filePaths[i]);
             }
             tempMoment.localPhotos = TextUtils.join(",", filePaths);
@@ -248,11 +246,20 @@ public class PublishMomentActivity extends ToolbarActivity {
     }
 
     private void uploadPics() {
-        String[] filePaths = new String[imagePaths.size() - 1];
-        String[] src = new String[imagePaths.size()];
-        imagePaths.toArray(src);
+        ArrayList<String> httpList = new ArrayList<>();
+        ArrayList<String> fileList = new ArrayList<>();
+        for (String s : imagePaths) {
+            if (s.contains("http")) {
+                httpList.add(s);
+            } else {
+                fileList.add(s);
+            }
+        }
+        String[] filePaths = new String[fileList.size() - 1];
+        String[] src = new String[fileList.size()];
+        fileList.toArray(src);
         System.arraycopy(src, 0, filePaths, 0,
-                imagePaths.size() - 1);
+                fileList.size() - 1);
         //为提升用户体验，进行网络操作的时候，不进入等待页面，先发送一个模拟Moment Event给Fragment,待请求完成后,再发送有效的Moment Event替换之
         BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
 
@@ -265,8 +272,9 @@ public class PublishMomentActivity extends ToolbarActivity {
                     for (int i = 0; i < urls.size(); i++) {
                         urls.set(i, urls.get(i) + Utils.getImageUrlWithWidthHeight(filePaths[i]));
                     }
-                    saveMoment(urls);
+                    httpList.addAll(urls);
                 }
+                saveMoment(httpList);
             }
 
             @Override
@@ -292,9 +300,9 @@ public class PublishMomentActivity extends ToolbarActivity {
         Moment momentToPost = new Moment();
         momentToPost.setType(momentType);
         momentToPost.setContent(textView.getText().toString());
-        momentToPost.isPrivate = menuIndex==1;
-        if(menuIndex>1){
-            momentToPost.topic = topicList.get(menuIndex-2);
+        momentToPost.isPrivate = menuIndex == 1;
+        if (menuIndex > 1) {
+            momentToPost.topic = topicList.get(menuIndex - 2);
         }
         String urlsStr = null;
         if (urls != null) {

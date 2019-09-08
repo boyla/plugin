@@ -1,4 +1,4 @@
-package com.lidong.photopicker;
+package top.wifistar.photopicker;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,6 +14,8 @@ import com.github.chrisbanes.photoview.PhotoView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import top.wifistar.R;
 
 
 /**

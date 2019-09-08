@@ -1316,17 +1316,17 @@ public class Utils {
     public static String getFuzzyTime2(long createTime) {
         long current = System.currentTimeMillis();
         SimpleDateFormat resSdf;
-        SimpleDateFormat isSameDay = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat isSameDay = new SimpleDateFormat("yyyy-M-d");
         if (isSameDay.format(new Date(createTime)).equals(isSameDay.format(new Date(current)))) {
-            resSdf = new SimpleDateFormat("HH:mm");
+            resSdf = new SimpleDateFormat("H:m");
             return resSdf.format(new Date(createTime));
         }
         SimpleDateFormat isSameYear = new SimpleDateFormat("yyyy");
         if (isSameYear.format(new Date(createTime)).equals(isSameYear.format(new Date(current)))) {
-            resSdf = new SimpleDateFormat("MM月dd日");
+            resSdf = new SimpleDateFormat("M月d日");
             return resSdf.format(new Date(createTime));
         } else {
-            resSdf = new SimpleDateFormat("yyyy年MM月dd日");
+            resSdf = new SimpleDateFormat("yyyy年M月d日");
             return resSdf.format(new Date(createTime));
         }
     }

@@ -1,4 +1,4 @@
-package com.lidong.photopicker.widget;
+package top.wifistar.photopicker.widget;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

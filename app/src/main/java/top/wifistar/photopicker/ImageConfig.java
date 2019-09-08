@@ -1,4 +1,4 @@
-package com.lidong.photopicker;
+package top.wifistar.photopicker;
 
 import android.os.Parcel;
 import android.os.Parcelable;

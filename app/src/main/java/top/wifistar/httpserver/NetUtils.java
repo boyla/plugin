@@ -41,6 +41,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import top.wifistar.app.App;
+import top.wifistar.app.AppExecutor;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.event.EurekaEvent;
 import top.wifistar.utils.EventUtils;
@@ -80,7 +81,8 @@ public class NetUtils {
             System.out.println("扫描 WIFI IP 失败，请检查wifi网络");
         } else {
             System.out.println("Start scan " + locAddress);
-            new Thread(new Runnable() {
+            AppExecutor.getInstance().postBackground(new Runnable() {
+                @Override
                 public void run() {
                     //去ping 0-255
                     for (int i = 0; i < 256; i++) {
@@ -105,7 +107,7 @@ public class NetUtils {
                         }
                     }
                 }
-            }).start();
+            });
         }
     }
 

@@ -1,11 +1,11 @@
-package com.lidong.photopicker.intent;
+package top.wifistar.photopicker.intent;
 
 import android.content.Context;
 import android.content.Intent;
 
-import com.lidong.photopicker.ImageConfig;
-import com.lidong.photopicker.PhotoPickerActivity;
-import com.lidong.photopicker.SelectModel;
+import top.wifistar.photopicker.ImageConfig;
+import top.wifistar.photopicker.PhotoPickerActivity;
+import top.wifistar.photopicker.SelectModel;
 
 import java.util.ArrayList;
 

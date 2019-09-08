@@ -18,8 +18,7 @@ import java.util.List;
 import cn.bmob.newim.bean.BmobIMConversation;
 import top.wifistar.R;
 import top.wifistar.activity.ChatActivity;
-import top.wifistar.app.App;
-import top.wifistar.app.BaseActivity;
+import top.wifistar.app.AppExecutor;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.httpserver.NetUtils;
 import top.wifistar.im.IMUtils;
@@ -151,9 +150,14 @@ public class IMUsersAdapter extends BaseRecycleViewAdapter {
                             bundle.putSerializable("ShortUser", shortUser);
                             Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
                             intent.putExtras(bundle);
-                            BaseRealmDao.realm.beginTransaction();
-                            imUser.unReadNum = 0;
-                            BaseRealmDao.realm.commitTransaction();
+                            AppExecutor.getInstance().postMain(new Runnable() {
+                                @Override
+                                public void run() {
+                                    BaseRealmDao.realm.beginTransaction();
+                                    imUser.unReadNum = 0;
+                                    BaseRealmDao.realm.commitTransaction();
+                                }
+                            },234);
                             mNewPoint.setVisibility(View.GONE);
                             itemView.getContext().startActivity(intent);
                             return;

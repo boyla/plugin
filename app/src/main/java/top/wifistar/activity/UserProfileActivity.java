@@ -31,9 +31,9 @@ import com.google.gson.Gson;
 import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
 import com.kongzue.dialog.v2.WaitDialog;
-import com.lidong.photopicker.PhotoPickerActivity;
-import com.lidong.photopicker.SelectModel;
-import com.lidong.photopicker.intent.PhotoPickerIntent;
+import top.wifistar.photopicker.PhotoPickerActivity;
+import top.wifistar.photopicker.SelectModel;
+import top.wifistar.photopicker.intent.PhotoPickerIntent;
 import com.ruffian.library.RTextView;
 
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +61,7 @@ import cn.bmob.v3.listener.UploadBatchListener;
 import top.wifistar.R;
 
 import top.wifistar.app.App;
+import top.wifistar.app.AppExecutor;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.LocationBean;
 import top.wifistar.bean.CNLocationBean;
@@ -469,6 +470,9 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private int getAgeByBirth(String birthStr) {
         int age = 0;
+        if(TextUtils.isEmpty(birthStr)){
+            return age;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date birthDate;
         try {
@@ -901,27 +905,43 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Permiso.getInstance().setActivity(this);
-        if (isSelfProfile()) {
-            shortUser = Utils.getCurrentShortUser();
-            App.currentUserProfile = (UserProfile) ACache.get(this).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
-            UserProfile userProfile = App.currentUserProfile;
-            tvName.setText(shortUser.getName());
-            userProfile.nickName = shortUser.getName();
-            userProfile.sex = shortUser.sex;
-            if (shortUser.sex == 1) {
-                vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
-            } else {
-                vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
+        AppExecutor.getInstance().postWork(new Runnable() {
+            @Override
+            public void run() {
+                if (isSelfProfile()) {
+                    shortUser = Utils.getCurrentShortUser();
+                    if (shortUser != null) {
+                        AppExecutor.getInstance().postMain(new Runnable() {
+                            @Override
+                            public void run() {
+                                tvName.setText(shortUser.getName());
+                                if (shortUser.sex == 1) {
+                                    vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_male));
+                                } else {
+                                    vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
+                                }
+                                if (!TextUtils.isEmpty(shortUser.startWord1)) {
+                                    tvStartWord1.setText(shortUser.startWord1);
+                                }
+                                tvInfo.setText(getAgeByBirth(shortUser.birth) + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
+                                if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
+                                    tvSelfIntro.setText(shortUser.selfIntroduce);
+                                }
+                            }
+                        });
+                        if (App.currentUserProfile == null) {
+                            App.currentUserProfile = (UserProfile) ACache.get(UserProfileActivity.this).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
+                        }
+                        if (App.currentUserProfile != null) {
+                            App.currentUserProfile.nickName = shortUser.getName();
+                            App.currentUserProfile.sex = shortUser.sex;
+                            App.currentUserProfile.save();
+                        }
+                    }
+                }
             }
-            if (!TextUtils.isEmpty(shortUser.startWord1)) {
-                tvStartWord1.setText(shortUser.startWord1);
-            }
-            tvInfo.setText(getAgeByBirth(shortUser.birth) + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
-            if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
-                tvSelfIntro.setText(shortUser.selfIntroduce);
-            }
-            userProfile.save();
-        }
+        });
+
     }
 
     @Override
