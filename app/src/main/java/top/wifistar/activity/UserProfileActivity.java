@@ -31,9 +31,11 @@ import com.google.gson.Gson;
 import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
 import com.kongzue.dialog.v2.WaitDialog;
+
 import top.wifistar.photopicker.PhotoPickerActivity;
 import top.wifistar.photopicker.SelectModel;
 import top.wifistar.photopicker.intent.PhotoPickerIntent;
+
 import com.ruffian.library.RTextView;
 
 import org.jetbrains.annotations.NotNull;
@@ -153,7 +155,7 @@ public class UserProfileActivity extends AppCompatActivity {
         BmobUtils.querySingleUser(shortUser.getObjectId(), new BmobUtils.BmobDoneListener() {
             @Override
             public void onSuccess(User res) {
-                if (!shortUser.equals(res)) {
+                if (!res.getUpdatedAt().equals(shortUser.getUpdatedAt())) {
                     shortUser = res;
                     BaseRealmDao.insertOrUpdate(shortUser.toRealmObject());
                     showUserInfo(shortUser);
@@ -470,7 +472,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
     private int getAgeByBirth(String birthStr) {
         int age = 0;
-        if(TextUtils.isEmpty(birthStr)){
+        if (TextUtils.isEmpty(birthStr)) {
             return age;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -611,8 +613,23 @@ public class UserProfileActivity extends AppCompatActivity {
 
     //changeHeadImgType 0:相册封面  1:头像
     private void uploadPic(int headIvType) {
+        if (imagePaths == null || imagePaths.size() == 0) {
+            return;
+        }
+        String url = imagePaths.get(0);
+        if (url.contains("http")) {
+            if (headIvType == HEAD_IMG_TYPE_BG) {
+                shortUser.headBgUrl = url;
+            } else {
+                shortUser.headUrl = url;
+            }
+            BmobUtils.updateUser(shortUser);
+            if (headIvType == HEAD_IMG_TYPE_AVATAR) {
+                EventUtils.post(new RefreshAvatarsEvent());
+            }
+            return;
+        }
         String[] src = new String[imagePaths.size()];
-        imagePaths.toArray(src);
         BmobFile.uploadBatch(imagePaths.toArray(src), new UploadBatchListener() {
 
             @Override
@@ -905,7 +922,7 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Permiso.getInstance().setActivity(this);
-        AppExecutor.getInstance().postWork(new Runnable() {
+        AppExecutor.getInstance().postBackground(new Runnable() {
             @Override
             public void run() {
                 if (isSelfProfile()) {
@@ -927,16 +944,16 @@ public class UserProfileActivity extends AppCompatActivity {
                                 if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
                                     tvSelfIntro.setText(shortUser.selfIntroduce);
                                 }
+                                if (App.currentUserProfile == null) {
+                                    App.currentUserProfile = (UserProfile) ACache.get(UserProfileActivity.this).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
+                                }
+                                if (App.currentUserProfile != null) {
+                                    App.currentUserProfile.nickName = shortUser.getName();
+                                    App.currentUserProfile.sex = shortUser.sex;
+                                    App.currentUserProfile.save();
+                                }
                             }
                         });
-                        if (App.currentUserProfile == null) {
-                            App.currentUserProfile = (UserProfile) ACache.get(UserProfileActivity.this).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
-                        }
-                        if (App.currentUserProfile != null) {
-                            App.currentUserProfile.nickName = shortUser.getName();
-                            App.currentUserProfile.sex = shortUser.sex;
-                            App.currentUserProfile.save();
-                        }
                     }
                 }
             }

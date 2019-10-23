@@ -5,6 +5,9 @@ import android.os.Looper;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by boyla on 2019/9/7.
@@ -23,7 +26,9 @@ public final class AppExecutor {
     private AppExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
         NUMBER_OF_CORES = cores > 1 ? cores : 1;
-        workService = Executors.newCachedThreadPool();
+        workService = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES + 1,
+                3L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>());
         backgroundService = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
     }

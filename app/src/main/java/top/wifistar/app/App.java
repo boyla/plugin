@@ -176,66 +176,60 @@ public class App extends MultiDexApplication {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-
+                if(curActivity == activity){
+                    curActivity = null;
+                }
             }
         });
         APP_INSTANCE = this;
         init();
-        AppExecutor.getInstance().postWork(new Runnable() {
-            @Override
-            public void run() {
-                Realm.init(APP_INSTANCE);
-                realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
-                Realm.setDefaultConfiguration(realmConfig);
-            }
-        });
-        AppExecutor.getInstance().postWork(new Runnable() {
-            @Override
-            public void run() {
-                //Bmob初始化
-                Bmob.initialize(APP_INSTANCE, "15210abb365601ec97b87f55b1efa0d4");
-                //IM
-                String packageName = getApplicationInfo().packageName;
-                String processName = getMyProcessName();
-                if (packageName.equals(processName)) {
-                    AppExecutor.getInstance().postMain(new Runnable() {
-                        @Override
-                        public void run() {
-                            BmobIM.init(APP_INSTANCE);
-                            imMessageHandler = new IMMessageHandler(APP_INSTANCE);
-                            BmobIM.registerDefaultMessageHandler(imMessageHandler);
-                        }
-                    });
-                }
 
-                initPush();
-            }
-        });
-        AppExecutor.getInstance().postWork(new Runnable() {
-            @Override
-            public void run() {
-                Runtime rt = Runtime.getRuntime();
-                long maxMemory = rt.maxMemory();
-                int memoryClass = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-                Log.d(TAG, "Max memory: " + Long.toString(maxMemory / (1024 * 1024)));
-                Log.d(TAG, "Memory class " + memoryClass);
-                mContext = getApplicationContext();
+        long last = System.currentTimeMillis();
+        Realm.init(APP_INSTANCE);
+        realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
+        Realm.setDefaultConfiguration(realmConfig);
+        System.out.println("Runnable Realm.init time : " + (System.currentTimeMillis() - last));
 
-                DialogSettings.style = DialogSettings.STYLE_IOS;
-                //In this way the VM ignores the file URI exposure
-                StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-                StrictMode.setVmPolicy(builder.build());
-                //初始化表情包
-                LQREmotionKit.init(APP_INSTANCE, new IImageLoader() {
-                    @Override
-                    public void displayImage(Context context, String path, ImageView imageView) {
-                        Glide.with(context).load(path).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
-                    }
-                });
-                CrashReport.initCrashReport(APP_INSTANCE, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
-                CrashHandler.getInstance().init(APP_INSTANCE);
+        last = System.currentTimeMillis();
+        //Bmob初始化
+        Bmob.initialize(APP_INSTANCE, "15210abb365601ec97b87f55b1efa0d4");
+        //IM
+        String packageName = getApplicationInfo().packageName;
+        String processName = getMyProcessName();
+        if (packageName.equals(processName)) {
+            BmobIM.init(APP_INSTANCE);
+            imMessageHandler = new IMMessageHandler(APP_INSTANCE);
+            BmobIM.registerDefaultMessageHandler(imMessageHandler);
+            System.out.println("Runnable BmobIM.init time : " + (System.currentTimeMillis() - last));
+        }
+
+        initPush();
+        System.out.println("Runnable initPush time : " + (System.currentTimeMillis() - last));
+
+        last = System.currentTimeMillis();
+        Runtime rt = Runtime.getRuntime();
+        long maxMemory = rt.maxMemory();
+        int memoryClass = ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+        Log.d(TAG, "Max memory: " + Long.toString(maxMemory / (1024 * 1024)));
+        Log.d(TAG, "Memory class " + memoryClass);
+        mContext = getApplicationContext();
+
+        DialogSettings.style = DialogSettings.STYLE_IOS;
+        //In this way the VM ignores the file URI exposure
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        //初始化表情包
+        LQREmotionKit.init(APP_INSTANCE, new IImageLoader() {
+            @Override
+            public void displayImage(Context context, String path, ImageView imageView) {
+                Glide.with(context).load(path).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(imageView);
             }
         });
+        System.out.println("Runnable LQREmotionKit.init time : " + (System.currentTimeMillis() - last));
+        last = System.currentTimeMillis();
+        CrashReport.initCrashReport(APP_INSTANCE, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
+        CrashHandler.getInstance().init(APP_INSTANCE);
+        System.out.println("Runnable bugly.init time : " + (System.currentTimeMillis() - last));
 
     }
 
@@ -504,13 +498,13 @@ public class App extends MultiDexApplication {
     }
 
     public static void checkAndConnectIM() {
-        AppExecutor.getInstance().postBackground(new Runnable() {
-            @Override
-            public void run() {
-                if (App.currentIMStatus == null || !(App.currentIMStatus.getCode() == 2 || App.currentIMStatus.getCode() == 1)) {
+        if (App.currentIMStatus == null || !(App.currentIMStatus.getCode() == 2 || App.currentIMStatus.getCode() == 1)) {
+            AppExecutor.getInstance().postMain(new Runnable() {
+                @Override
+                public void run() {
                     App.connectIM();
                 }
-            }
-        });
+            });
+        }
     }
 }

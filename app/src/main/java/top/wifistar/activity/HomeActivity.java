@@ -25,6 +25,7 @@ import top.wifistar.bean.bmob.Installation;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.utils.NetUtil;
+import top.wifistar.utils.TestUtils;
 import top.wifistar.utils.UpdateUtils;
 import top.wifistar.view.BottomMenuView;
 import top.wifistar.R;
@@ -178,6 +179,7 @@ public class HomeActivity extends BottomInputActivity {
         switch (bottomMenuView.currentItem) {
             case BottomMenuView.Item_Chats:
                 title = getResources().getString(R.string.chats);
+                TestUtils.showThreadsInfo();
                 break;
             case BottomMenuView.Item_Moments:
                 title = getResources().getString(R.string.moments);
