@@ -44,4 +44,6 @@
     <dimen name="image_size" >120dp</dimen>
     <dimen name="space_size" >4dp</dimen>
     <dimen name="action_text_size" >16sp</dimen>
+    <!--block canary-->
+    <integer name="block_canary_max_stored_count">1000</integer>
 </resources>

@@ -3,6 +3,7 @@ package top.wifistar.app;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.github.moduth.blockcanary.BlockCanary;
 import com.google.gson.Gson;
 import com.kongzue.dialog.v2.DialogSettings;
 import com.kongzue.dialog.v2.MessageDialog;
@@ -231,8 +233,14 @@ public class App extends MultiDexApplication {
         CrashHandler.getInstance().init(APP_INSTANCE);
         System.out.println("Runnable bugly.init time : " + (System.currentTimeMillis() - last));
 
+        initBlockCanary(this);
     }
-
+    private static void initBlockCanary(Application context) {
+        if (BuildConfig.DEBUG) {
+            // 在主进程初始化调用哈
+            BlockCanary.install(context, new AppBlockCanaryContext()).start();
+        }
+    }
 
     protected void init() {
         initHandler();

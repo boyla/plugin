@@ -123,4 +123,6 @@
     <string name="yes">确定</string>
     <string name="photo_picker_cancel">取消</string>
     <string name="undo">撤消</string>
+    <!--block canary-->
+    <string name="block_canary_display_activity_label">Blocks</string>
 </resources>
