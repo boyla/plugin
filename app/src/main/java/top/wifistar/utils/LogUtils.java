@@ -10,15 +10,35 @@ import android.util.Log;
 public class LogUtils {
 
     public static boolean logOn = true;
-    public static String DEFAULT_LOG_TAG = "WiFiStar_log";
+    public static String DEFAULT_LOG_TAG = "LogUtils";
 
-    public static void logI(String str) {
-        logI(null,str);
+    public static void i(String str) {
+        i(null,str);
     }
 
-    public static void logI(String tag, String str) {
+    public static void i(String tag, String str) {
         if (logOn) {
             Log.i(TextUtils.isEmpty(tag) ? DEFAULT_LOG_TAG : tag, str);
+        }
+    }
+
+    public static void d(String str) {
+        d(null,str);
+    }
+
+    public static void d(String tag, String str) {
+        if (logOn) {
+            Log.d(TextUtils.isEmpty(tag) ? DEFAULT_LOG_TAG : tag, str);
+        }
+    }
+
+    public static void e(String str) {
+        e(null,str);
+    }
+
+    public static void e(String tag, String str) {
+        if (logOn) {
+            Log.e(TextUtils.isEmpty(tag) ? DEFAULT_LOG_TAG : tag, str);
         }
     }
 }

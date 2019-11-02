@@ -44,6 +44,7 @@ import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.Topic;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.chain.user.NetUserRequest;
+import top.wifistar.utils.LogUtils;
 import top.wifistar.view.CircleVideoView;
 import top.wifistar.view.CommentListView;
 import top.wifistar.view.PraiseListView;
@@ -59,8 +60,8 @@ import top.wifistar.utils.Utils;
 
 public class MomentAdapter extends BaseRecycleViewAdapter {
 
+    private String TAG = "MomentAdapter";
     public final static int TYPE_HEAD = 0;
-
     private static final int STATE_IDLE = 0;
     private static final int STATE_ACTIVED = 1;
     private static final int STATE_DEACTIVED = 2;
@@ -460,10 +461,12 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
         if (moment.getUser() != null && moment.getUser().getName() != null) {
+            LogUtils.d(TAG,"get user in moment");
             setUserToHolder(moment, holder);
             return;
         }
         holder.headIv.setImageDrawable(null);
+        LogUtils.d(TAG,"queryUser from server");
         Utils.queryShortUser(moment.getUser().getObjectId(), new NetUserRequest.NetRequestCallBack() {
 
             @Override

@@ -20,6 +20,7 @@ import top.wifistar.bean.bmob.CommentConfig;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.MomentRealm;
+import top.wifistar.utils.LogUtils;
 import top.wifistar.utils.Utils;
 
 import static top.wifistar.fragment.MomentsFragment.TYPE_PULLDOWNREFRESH;
@@ -32,6 +33,7 @@ import static top.wifistar.fragment.MomentsFragment.TYPE_PULLDOWNREFRESH;
  * @date 2015-12-28 下午4:06:03
  */
 public class MomentsPresenter implements MomentsContract.Presenter {
+    private String TAG = "MomentsPresenter";
     private MomentsModel momentsModel;
     private MomentsContract.View view;
 
@@ -57,13 +59,15 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     }
 
     private void queryByUser(int loadType, String userId) {
+        LogUtils.d(TAG, "queryByUser");
         if (Utils.isNetworkConnected()) {
             //TODO 有待优化，根据订阅的时间节点请求Bmob
             BmobQuery<Moment> query = new BmobQuery<>();
             query.addWhereEqualTo("user", userId);
+            query.include("user");
             query.setLimit(PAGE_LIMIT);
             query.setSkip(SKIP);
-            if(Utils.getCurrentShortUser()==null || !userId.equals(Utils.getCurrentShortUser().getObjectId())){
+            if (Utils.getCurrentShortUser() == null || !userId.equals(Utils.getCurrentShortUser().getObjectId())) {
                 query.addWhereEqualTo("isPrivate", false);
             }
             query.order("-createdAt")
@@ -100,9 +104,11 @@ public class MomentsPresenter implements MomentsContract.Presenter {
     }
 
     private void queryBySubscribe(int loadType, String topic) {
+        LogUtils.d(TAG, "queryBySubscribe");
         if (Utils.isNetworkConnected()) {
             //TODO 有待优化，根据订阅的时间节点请求Bmob
             BmobQuery<Moment> query = new BmobQuery<>();
+            query.include("user");
             query.setLimit(PAGE_LIMIT);
             query.setSkip(SKIP);
             query.addWhereEqualTo("topic", topic)

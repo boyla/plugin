@@ -20,7 +20,7 @@ class QueryUtils {
                     if (e == null) {
                         callBack.onSuccess(result)
                     } else {
-                        LogUtils.logI("失败：" + e.message + "," + e.errorCode)
+                        LogUtils.i("失败：" + e.message + "," + e.errorCode)
                     }
                 }
             })

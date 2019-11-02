@@ -29,7 +29,6 @@ import com.kongzue.dialog.v2.DialogSettings;
 import com.kongzue.dialog.v2.MessageDialog;
 import com.lqr.emoji.IImageLoader;
 import com.lqr.emoji.LQREmotionKit;
-import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -49,7 +48,6 @@ import cn.bmob.v3.exception.BmobException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import top.wifistar.BuildConfig;
-import top.wifistar.R;
 import top.wifistar.activity.SplashActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.User;
@@ -229,9 +227,10 @@ public class App extends MultiDexApplication {
         });
         System.out.println("Runnable LQREmotionKit.init time : " + (System.currentTimeMillis() - last));
         last = System.currentTimeMillis();
-        CrashReport.initCrashReport(APP_INSTANCE, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
-        CrashHandler.getInstance().init(APP_INSTANCE);
-        System.out.println("Runnable bugly.init time : " + (System.currentTimeMillis() - last));
+        // init bugly
+//        CrashReport.initCrashReport(APP_INSTANCE, getString(R.string.bugly_app_id), BuildConfig.DEBUG);
+//        CrashHandler.getInstance().init(APP_INSTANCE);
+//        System.out.println("Runnable bugly.init time : " + (System.currentTimeMillis() - last));
 
         initBlockCanary(this);
     }
@@ -423,7 +422,7 @@ public class App extends MultiDexApplication {
                                     currentUser.getName(), url));
                 } else {
 //                    Utils.makeSysToast(e.getMessage());
-                    LogUtils.logI(e.getMessage());
+                    LogUtils.i(e.getMessage());
                 }
             }
         });
@@ -442,7 +441,7 @@ public class App extends MultiDexApplication {
                     connectIM();
                 }
 //                Utils.makeSysToast(status.getMsg());
-                LogUtils.logI(status.getMsg());
+                LogUtils.i(status.getMsg());
             }
         });
     }
