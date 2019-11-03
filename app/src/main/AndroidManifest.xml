@@ -4,80 +4,19 @@
     xmlns:uses-featureandroid="http://schemas.android.com/apk/res-auto"
     package="top.wifistar">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_LOGS" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
-
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-
-    <!-- REQUIRED PERMISSIONS (for Urban Airship GCM) -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--<uses-permission android:name="android.permission.VIBRATE" />-->
-    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />-->
-    <!-- GCM requires a Google account. -->
-    <!--<uses-permission android:name="android.permission.WAKE_LOCK" />-->
-    <!-- Keeps the processor from sleeping when a message is received. -->
-    <!--<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />-->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-sdk tools:overrideLibrary="com.jaeger.library" />
-    //接收IM消息的自定义权限
-    <permission
-        android:name="top.wifistar.permission.RECEIVE_MSG"
-        android:protectionLevel="signature" />
-    //使用接收IM消息权限
-    <uses-permission android:name="top.wifistar.permission.RECEIVE_MSG" />
-    //接收来电的自定义权限
-    <permission
-        android:name="top.wifistar.permission.INCOMING_CALL"
-        android:protectionLevel="signature" />
-    //使用接收来电权限
-    <uses-permission android:name="top.wifistar.permission.INCOMING_CALL" />
-    //允许程序录制音频
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    //允许应用程序修改全局声音设置的权限
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    //允许使用PowerManager的WakeLocks在进程休眠时能够后台保持
-
-    <!--推送所需的权限-->
-    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
-    <uses-feature android:name="android.hardware.location" android:required="false"/>
-    <uses-feature android:name="android.hardware.location.network" android:required="false"/>
-    <uses-feature android:name="android.hardware.telephony" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
-    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <uses-feature android:name="android.hardware.faketouch" android:required="false" />
-
-
-    <meta-data
-    android:name="top.wifistar.httpserver.AppGlideModule"
-    android:value="GlideModule"/>
-
     <application
         android:name=".app.App"
         android:configChanges="locale"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:usesCleartextTraffic="true"
+        android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:persistent="true"
-        android:largeHeap="true"
-        android:hardwareAccelerated="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:replace="name,icon,label,theme">
-        <activity android:name=".activity.HomeActivity"/>
+        <activity android:name=".activity.HomeActivity" />
         <activity
             android:name=".activity.LaunchActivity"
             android:theme="@style/SplashTheme">
@@ -89,48 +28,56 @@
         </activity>
         <activity android:name=".activity.SplashActivity">
             <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.MAIN" />-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
         <!--<activity-->
-            <!--android:name="io.rong.imkit.MainActivity"-->
-            <!--android:screenOrientation="portrait"-->
-            <!--android:windowSoftInputMode="stateHidden|adjustResize">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.intent.action.VIEW" />-->
+        <!--android:name="io.rong.imkit.MainActivity"-->
+        <!--android:screenOrientation="portrait"-->
+        <!--android:windowSoftInputMode="stateHidden|adjustResize">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.VIEW" />-->
 
-                <!--<category android:name="android.intent.category.DEFAULT" />-->
+        <!--<category android:name="android.intent.category.DEFAULT" />-->
 
-                <!--<data-->
-                    <!--android:host="top.wifistar"-->
-                    <!--android:pathPrefix="/conversation/"-->
-                    <!--android:scheme="rong" />-->
-            <!--</intent-filter>-->
+        <!--<data-->
+        <!--android:host="top.wifistar"-->
+        <!--android:pathPrefix="/conversation/"-->
+        <!--android:scheme="rong" />-->
+        <!--</intent-filter>-->
         <!--</activity>-->
 
-        <service android:name=".service.WiFiNetworkService" />
+        <activity android:name=".activity.Main2Activity" />
 
-        <activity android:name=".activity.Main2Activity"/>
+        <activity android:name=".activity.EditProfileActivity" />
 
-        <activity android:name=".activity.EditProfileActivity"/>
+        <activity
+            android:name=".activity.ImagePagerActivity"
+            android:screenOrientation="portrait" />
 
-        <activity android:name=".activity.ImagePagerActivity"
-            android:screenOrientation="portrait"/>
+        <activity android:name=".activity.UserProfileActivity" />
 
-        <activity android:name=".activity.UserProfileActivity"/>
+        <activity android:name=".activity.PublishMomentActivity" />
 
-        <activity android:name=".activity.PublishMomentActivity"/>
+        <activity android:name=".activity.UserMomentsActivity" />
 
-        <activity android:name=".activity.UserMomentsActivity"/>
+        <activity
+            android:name=".activity.ChatActivity"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
-        <activity android:name=".activity.ChatActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity android:name=".photopicker.PhotoPickerActivity" />
 
-        <activity android:name=".photopicker.PhotoPickerActivity"/>
+        <activity android:name=".photopicker.PhotoPreviewActivity" />
 
-        <activity android:name=".photopicker.PhotoPreviewActivity"/>
+        <meta-data
+            android:name="Bmob_APP_KEY"
+            android:value="15210abb365601ec97b87f55b1efa0d4" />
+
+        <provider
+            android:name="cn.bmob.v3.util.BmobContentProvider"
+            android:authorities="top.wifistar.BmobContentProvider" />
 
         <receiver android:name="cn.bmob.newim.core.ConnectChangeReceiver">
             <intent-filter>
@@ -140,33 +87,7 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <service
-            android:name="cn.bmob.newim.core.service.BmobIMService"
-            android:process=":bmobcore" />
-        <service
-            android:name="cn.bmob.newim.core.service.NotifyService"
-            android:process=":bmobcore" />
-        <service android:name="cn.bmob.newim.core.service.ReConnectService" />
-        <service android:name="cn.bmob.newim.core.service.HeartBeatService" />
-
-        <!--TODO 集成：1.2、添加推送所需要的服务和广播-->
-        <service
-            android:label="PushService"
-            android:name="cn.bmob.push.lib.service.PushService"
-            android:process=":bmobpush"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="cn.bmob.push.lib.service.PushService"/>
-            </intent-filter>
-        </service>
-
-        <!-- 用于进程保活 -->
-        <service
-            android:name="cn.bmob.push.lib.service.PushNotifyService"
-            android:process=":bmobpush" >
-        </service>
-
-        <receiver android:name="cn.bmob.push.PushReceiver" >
+        <receiver android:name="cn.bmob.push.PushReceiver">
             <intent-filter>
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -176,18 +97,15 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
-        <!-- 第3步中创建的消息接收器，在这里进行注册 -->
         <receiver android:name="top.wifistar.im.PushMessageReceiver">
-            <intent-filter >
-                <action android:name="cn.bmob.push.action.MESSAGE"/>
+            <intent-filter>
+                <action android:name="cn.bmob.push.action.MESSAGE" />
             </intent-filter>
         </receiver>
 
-        <!-- 接收心跳和唤醒的广播，要和PushService运行在同个进程 -->
         <receiver
             android:name="cn.bmob.push.PushNotifyReceiver"
-            android:process=":bmobpush" >
+            android:process=":bmobpush">
             <intent-filter>
                 <!-- 接收心跳广播的action -->
                 <action android:name="cn.bmob.push.action.HEARTBEAT" />
@@ -196,13 +114,124 @@
             </intent-filter>
         </receiver>
 
-        <meta-data
-            android:name="Bmob_APP_KEY"
-            android:value="15210abb365601ec97b87f55b1efa0d4" />
+        <!--TODO 集成：1.2、添加推送所需要的服务和广播-->
+        <service android:name=".service.WiFiNetworkService" />
+
+        <!-- 用于进程保活 -->
+        <service
+            android:name="cn.bmob.newim.core.service.BmobIMService"
+            android:process=":bmobcore" />
+
+        <service
+            android:name="cn.bmob.newim.core.service.NotifyService"
+            android:process=":bmobcore" />
+
+        <!-- 第3步中创建的消息接收器，在这里进行注册 -->
+        <service android:name="cn.bmob.newim.core.service.ReConnectService" />
+
+        <!-- 接收心跳和唤醒的广播，要和PushService运行在同个进程 -->
+        <service android:name="cn.bmob.newim.core.service.HeartBeatService" />
+
+        <service
+            android:name="cn.bmob.push.lib.service.PushService"
+            android:exported="true"
+            android:label="PushService"
+            android:process=":bmobpush">
+            <intent-filter>
+                <action android:name="cn.bmob.push.lib.service.PushService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="cn.bmob.push.lib.service.PushNotifyService"
+            android:process=":bmobpush"></service>
 
         <service
             android:name=".httpserver.WiFiServerService"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
+    <meta-data
+        android:name="top.wifistar.httpserver.AppGlideModule"
+        android:value="GlideModule" />
+
+    <permission
+        android:name="top.wifistar.permission.RECEIVE_MSG"
+        android:protectionLevel="signature" />
+    <permission
+        android:name="top.wifistar.permission.INCOMING_CALL"
+        android:protectionLevel="signature" />
+
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+
+    <!-- REQUIRED PERMISSIONS (for Urban Airship GCM) -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <!--<uses-permission android:name="android.permission.VIBRATE" />-->
+    <!--<uses-permission android:name="android.permission.GET_ACCOUNTS" />-->
+    <!-- GCM requires a Google account. -->
+    <!--<uses-permission android:name="android.permission.WAKE_LOCK" />-->
+    <!-- Keeps the processor from sleeping when a message is received. -->
+    <!--<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />-->
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    <!--    接收IM消息的自定义权限-->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <!--    使用接收IM消息权限-->
+    <uses-feature
+        android:name="android.hardware.faketouch"
+        android:required="false" />
+    <!--    接收来电的自定义权限-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--    使用接收来电权限-->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--    允许程序录制音频-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!--    允许应用程序修改全局声音设置的权限-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--    允许使用PowerManager的WakeLocks在进程休眠时能够后台保持-->
+
+    <!--推送所需的权限-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="top.wifistar.permission.RECEIVE_MSG" />
+    <uses-permission android:name="top.wifistar.permission.INCOMING_CALL" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-sdk tools:overrideLibrary="com.jaeger.library" />
 
 </manifest>

@@ -68,7 +68,7 @@ public class UserChainHandler {
     }
 
     public void updateUser(User user){
-        dbRequest.insertOrUpdate(user);
         memRequest.insertOrUpdate(user);
+        dbRequest.insertOrUpdate(user);
     }
 }

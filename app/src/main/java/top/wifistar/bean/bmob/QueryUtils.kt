@@ -44,4 +44,25 @@ class QueryUtils {
     }
 }
 
+//var bql = "select * from Follow where objectId = ?"
+//var query = BmobQuery<Follow>()
+////设置SQL语句
+//query.setSQL(bql)
+////设置占位符参数
+//query.setPreparedParams(arrayOf(objId))
+//query.doSQLQuery(object : SQLQueryListener<Follow>() {
+//    override fun done(result: BmobQueryResult<Follow>?, e: BmobException?) {
+//        if (e == null) {
+//            var list = result?.results
+//            if (list?.first() != null) {
+//
+//            } else {
+////                            Log.i("smile", "查询成功，无数据返回");
+//            }
+//        } else {
+////                        Log.i("smile", "错误码：" + e.getErrorCode() + "，错误描述：" + e.getMessage());
+//        }
+//    }
+//
+//})
 

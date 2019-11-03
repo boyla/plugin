@@ -1,7 +1,7 @@
 package top.wifistar.adapter.viewholder;
 
 import android.media.MediaPlayer;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.ImageView;

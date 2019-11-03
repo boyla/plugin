@@ -1,7 +1,7 @@
 package com.lqr.emoji;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.util.Log;

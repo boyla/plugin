@@ -16,7 +16,7 @@
 
 package top.wifistar.mvp;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public interface BaseView<T extends BasePresenter> {
 

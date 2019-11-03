@@ -1,7 +1,7 @@
 package top.wifistar.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -26,8 +26,6 @@ import top.wifistar.adapter.viewholder.im.SendLocationHolder;
 import top.wifistar.adapter.viewholder.im.SendTextHolder;
 import top.wifistar.adapter.viewholder.im.SendVideoHolder;
 import top.wifistar.adapter.viewholder.im.SendVoiceHolder;
-import top.wifistar.bean.bmob.User;
-import top.wifistar.chain.user.NetUserRequest;
 import top.wifistar.utils.Utils;
 
 /**

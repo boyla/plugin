@@ -15,6 +15,7 @@ import cn.bmob.newim.bean.BmobIMAudioMessage;
 import cn.bmob.newim.core.BmobDownloadManager;
 import cn.bmob.v3.BmobUser;
 import top.wifistar.R;
+import top.wifistar.bean.BUser;
 
 public class NewRecordPlayClickListener implements View.OnClickListener {
 
@@ -35,7 +36,7 @@ public class NewRecordPlayClickListener implements View.OnClickListener {
 		currentMsg = msg;
 		currentPlayListener = this;
 		try {
-			currentObjectId = BmobUser.getCurrentUser().getObjectId();
+			currentObjectId = BmobUser.getCurrentUser(BUser.class).getObjectId();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

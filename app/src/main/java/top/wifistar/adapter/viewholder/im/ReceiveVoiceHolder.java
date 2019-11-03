@@ -20,6 +20,7 @@ import cn.bmob.newim.listener.FileDownloadListener;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
 import top.wifistar.R;
+import top.wifistar.bean.BUser;
 import top.wifistar.utils.GlideCircleTransform;
 
 /**
@@ -41,7 +42,7 @@ public class ReceiveVoiceHolder extends BaseViewHolder {
         super(context, root, R.layout.item_chat_received_voice, onRecyclerViewListener);
         initView(itemView);
         try {
-            currentUid = BmobUser.getCurrentUser().getObjectId();
+            currentUid = BmobUser.getCurrentUser(BUser.class).getObjectId();
         } catch (Exception e) {
             e.printStackTrace();
         }

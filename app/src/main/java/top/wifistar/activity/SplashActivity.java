@@ -28,16 +28,12 @@ import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
 import top.wifistar.R;
 import top.wifistar.app.App;
 import top.wifistar.app.BaseActivity;
@@ -50,7 +46,6 @@ import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.ProgressDialogUtil;
 import top.wifistar.utils.Utils;
-
 import static top.wifistar.utils.ACache.CURRENT_USER_CACHE;
 import static top.wifistar.utils.ACache.PROFILE_CACHE;
 import static top.wifistar.utils.ACache.SHORT_USER_ID_CACHE;
@@ -73,7 +68,7 @@ public class SplashActivity extends BaseActivity {
     boolean canLogin;
     boolean isFirstIn = true;
 
-    private CompositeSubscription mCompositeSubscription;
+//    private CompositeSubscription mCompositeSubscription;
     private TextView tvWelcome;
 
     @Override
@@ -196,7 +191,7 @@ public class SplashActivity extends BaseActivity {
     }
 
     public void refreshStart() {
-        if (BmobUser.getCurrentUser() == null) {
+        if (BmobUser.getCurrentUser(BUser.class) == null) {
             canLogin = false;
         } else {
             canLogin = true;
@@ -311,8 +306,7 @@ public class SplashActivity extends BaseActivity {
         user.setUsername(username);
         user.setPassword(password);
         user.setEmail(email);
-
-        addSubscription(user.signUp(new SaveListener<BUser>() {
+        user.signUp(new SaveListener<BUser>() {
             @Override
             public void done(final BUser resultUser, BmobException e) {
                 if (e == null) {
@@ -326,8 +320,22 @@ public class SplashActivity extends BaseActivity {
                     Utils.showToast(topReminder, e.getMessage());
                 }
             }
-        }));
-
+        });
+//        addSubscription(user.signUp(new SaveListener<BUser>() {
+//            @Override
+//            public void done(final BUser resultUser, BmobException e) {
+//                if (e == null) {
+//                    Log.i("添加数据成功，返回objectId为：", resultUser.getObjectId());
+//                    clearRegister = true;
+//                    Utils.showToast(topReminder, getResources().getString(R.string.register_success), TopReminder.THEME_SUCCESS);
+//                    backLogin(llRegister);
+//                    //add profile by buser
+//                    addProfile(resultUser, nickname);
+//                } else {
+//                    Utils.showToast(topReminder, e.getMessage());
+//                }
+//            }
+//        }));
     }
 
     private void addProfile(BUser bmobUser, String nickname) {
@@ -494,80 +502,76 @@ public class SplashActivity extends BaseActivity {
         final BUser user = new BUser();
         user.setUsername(username);
         user.setPassword(password);
-        user.loginObservable(BUser.class).subscribe(new Subscriber<BUser>() {
+        user.login(new SaveListener<Object>() {
             @Override
-            public void onCompleted() {
-            }
-
-            @Override
-            public void onError(Throwable throwable) {
-                loadingDialog.dismiss();
-                Utils.makeToast(SplashActivity.this, throwable.getMessage());
-            }
-
-            @Override
-            public void onNext(final BUser bmobUser) {
-                //get profile and cache it
-                if (TextUtils.isEmpty(bmobUser.getProfileId())) {
-                    final UserProfile profile = new UserProfile();
-                    profile.setUserId(bmobUser.getObjectId());
-                    profile.setNickName(username.substring(0, (username.length() - 2)));
-                    profile.save(new SaveListener<String>() {
-                        @Override
-                        public void done(String profileId, BmobException e) {
-                            if (e != null) {
-                                Utils.showToast(topReminder, e.getMessage());
-                            } else {
-                                App.currentUserProfile = profile;
-                                bmobUser.setProfileId(profileId);
-                                bmobUser.update(bmobUser.getObjectId(), new UpdateListener() {
-                                    @Override
-                                    public void done(BmobException e) {
-                                        if (e != null) {
-                                            Utils.makeToast(SplashActivity.this, e.getMessage());
+            public void done(Object o, BmobException e) {
+                if (e == null) {
+                    BUser bmobUser = BmobUser.getCurrentUser(BUser.class);
+                    //get profile and cache it
+                    if (TextUtils.isEmpty(bmobUser.getProfileId())) {
+                        final UserProfile profile = new UserProfile();
+                        profile.setUserId(bmobUser.getObjectId());
+                        profile.setNickName(username.substring(0, (username.length() - 2)));
+                        profile.save(new SaveListener<String>() {
+                            @Override
+                            public void done(String profileId, BmobException e) {
+                                if (e != null) {
+                                    Utils.showToast(topReminder, e.getMessage());
+                                } else {
+                                    App.currentUserProfile = profile;
+                                    bmobUser.setProfileId(profileId);
+                                    bmobUser.update(bmobUser.getObjectId(), new UpdateListener() {
+                                        @Override
+                                        public void done(BmobException e) {
+                                            if (e != null) {
+                                                Utils.makeToast(SplashActivity.this, e.getMessage());
+                                            }
                                         }
-                                    }
-                                });
-                                generateNewUserAndSave(profileId);
-                                ACache.get(context).put(CURRENT_USER_CACHE + bmobUser.getObjectId(), bmobUser);
-                                ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), profile);
-                                loadingDialog.dismiss();
-                                goToMain();
+                                    });
+                                    generateNewUserAndSave(profileId);
+                                    ACache.get(context).put(CURRENT_USER_CACHE + bmobUser.getObjectId(), bmobUser);
+                                    ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), profile);
+                                    loadingDialog.dismiss();
+                                    goToMain();
+                                }
                             }
-                        }
-                    });
-                } else {
-                    count = 0;
-                    //get profile and update user
-                    BmobQuery<UserProfile> query = new BmobQuery<>();
-                    query.getObject(bmobUser.getProfileId(), new QueryListener<UserProfile>() {
-                        @Override
-                        public void done(UserProfile userProfile, BmobException e) {
-                            App.currentUserProfile = userProfile;
-                            ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), userProfile);
-                            loadingDialog.dismiss();
-                            count++;
-                            checkJump();
-                        }
-                    });
-
-                    //query user, then cache the obj id
-                    BmobQuery<User> queryUser = new BmobQuery<>();
-                    queryUser.addWhereEqualTo("id", bmobUser.getProfileId()).findObjects(new FindListener<User>() {
-                        @Override
-                        public void done(List<User> list, BmobException e) {
-                            if (e == null && list != null && list.size() > 0) {
-                                Utils.updateUser(list.get(0));
-                                String objId = list.get(0).getObjectId();
-                                ACache.get(context).put(SHORT_USER_ID_CACHE + BUser.getCurrentUser().getObjectId(), objId);
+                        });
+                    } else {
+                        count = 0;
+                        //get profile and update user
+                        BmobQuery<UserProfile> query = new BmobQuery<>();
+                        query.getObject(bmobUser.getProfileId(), new QueryListener<UserProfile>() {
+                            @Override
+                            public void done(UserProfile userProfile, BmobException e) {
+                                App.currentUserProfile = userProfile;
+                                ACache.get(context).put(PROFILE_CACHE + bmobUser.getObjectId(), userProfile);
+                                loadingDialog.dismiss();
                                 count++;
                                 checkJump();
-                            } else {
-                                generateNewUserAndSave(bmobUser.getProfileId());
-                                goToMain();
                             }
-                        }
-                    });
+                        });
+
+                        //query user, then cache the obj id
+                        BmobQuery<User> queryUser = new BmobQuery<>();
+                        queryUser.addWhereEqualTo("id", bmobUser.getProfileId()).findObjects(new FindListener<User>() {
+                            @Override
+                            public void done(List<User> list, BmobException e) {
+                                if (e == null && list != null && list.size() > 0) {
+                                    Utils.updateUser(list.get(0));
+                                    String objId = list.get(0).getObjectId();
+                                    ACache.get(context).put(SHORT_USER_ID_CACHE + BUser.getCurrentUser().getObjectId(), objId);
+                                    count++;
+                                    checkJump();
+                                } else {
+                                    generateNewUserAndSave(bmobUser.getProfileId());
+                                    goToMain();
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    loadingDialog.dismiss();
+                    Utils.makeToast(SplashActivity.this, e.getMessage());
                 }
             }
         });
@@ -607,10 +611,10 @@ public class SplashActivity extends BaseActivity {
      *
      * @param s
      */
-    protected void addSubscription(Subscription s) {
-        if (this.mCompositeSubscription == null) {
-            this.mCompositeSubscription = new CompositeSubscription();
-        }
-        this.mCompositeSubscription.add(s);
-    }
+//    protected void addSubscription(Subscription s) {
+//        if (this.mCompositeSubscription == null) {
+//            this.mCompositeSubscription = new CompositeSubscription();
+//        }
+//        this.mCompositeSubscription.add(s);
+//    }
 }

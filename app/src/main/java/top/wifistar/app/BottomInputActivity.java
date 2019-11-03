@@ -34,7 +34,7 @@ public class BottomInputActivity extends ToolbarActivity {
     @TargetApi(21)
     private void setCallback(final int enterPosition) {
         this.enterPosition = enterPosition;
-        setExitSharedElementCallback(new android.support.v4.app.SharedElementCallback() {
+        setExitSharedElementCallback(new androidx.core.app.SharedElementCallback() {
             @Override
             public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
                 if (exitPosition != enterPosition &&
@@ -45,7 +45,7 @@ public class BottomInputActivity extends ToolbarActivity {
                     names.add(view.getTransitionName());
                     sharedElements.put(view.getTransitionName(), view);
                 }
-                setExitSharedElementCallback((android.support.v4.app.SharedElementCallback) null);
+                setExitSharedElementCallback((androidx.core.app.SharedElementCallback) null);
                 sharedViews = null;
             }
         });

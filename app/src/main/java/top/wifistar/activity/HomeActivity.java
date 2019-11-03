@@ -17,7 +17,7 @@ import cn.bmob.v3.BmobInstallationManager;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import rx.functions.Action1;
+import io.reactivex.functions.Consumer;
 import top.wifistar.app.App;
 import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.BUser;
@@ -266,9 +266,9 @@ public class HomeActivity extends BottomInputActivity {
         final String userId = currentUser.getObjectId();
         bmobQuery.addWhereEqualTo("userId", userId);
         bmobQuery.findObjectsObservable(Installation.class)
-                .subscribe(new Action1<List<Installation>>() {
+                .subscribe(new Consumer<List<Installation>>() {
                     @Override
-                    public void call(List<Installation> installations) {
+                    public void accept(List<Installation> installations) {
                         String localId = BmobInstallationManager.getInstallationId();
                         //有用户信息
                         if (installations.size() > 0) {
@@ -279,13 +279,13 @@ public class HomeActivity extends BottomInputActivity {
                                 App.getApp().pushAndroidMessage("LOGIN ON OTHER DEVICE", currentId);
                                 //更新数据
                                 installation.userId = "";
-                                installation.update();
+                                installation.update(null);
 
                                 Installation ins = new Installation();
                                 ins.setObjectId(bi.getObjectId());
                                 ins.setInstallationId(localId);
                                 ins.userId = userId;
-                                ins.update();
+                                ins.update(null);
                             }
 //                            //删除多余的数据
 //                            if (installations.size() > 1){
@@ -329,21 +329,21 @@ public class HomeActivity extends BottomInputActivity {
                                         ins = new Installation();
                                         ins.setInstallationId(localId);
                                         ins.userId = userId;
-                                        ins.save();
+                                        ins.save(null);
                                     } else {
                                         //update data
                                         ins = list.get(0);
                                         ins.userId = userId;
-                                        ins.update();
+                                        ins.update(null);
                                     }
 
                                 }
                             });
                         }
                     }
-                }, new Action1<Throwable>() {
+                }, new Consumer<Throwable>() {
                     @Override
-                    public void call(Throwable throwable) {
+                    public void accept(Throwable throwable) {
                         System.out.println("查询设备数据失败：");
                     }
                 });

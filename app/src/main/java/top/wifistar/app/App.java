@@ -14,9 +14,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
-import android.support.multidex.MultiDex;
-import android.support.multidex.MultiDexApplication;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
@@ -32,6 +31,8 @@ import com.lqr.emoji.LQREmotionKit;
 
 import org.greenrobot.eventbus.EventBus;
 
+import androidx.multidex.MultiDex;
+import androidx.multidex.MultiDexApplication;
 import cn.bmob.newim.BmobIM;
 import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.ConnectionStatus;
@@ -76,7 +77,7 @@ import java.util.concurrent.Executors;
  * @description:TODO
  * @time: Jan 29, 201511:23:57 AM
  */
-public class App extends MultiDexApplication {
+public class App extends Application {
 
     public static App APP_INSTANCE = null;
 
@@ -161,12 +162,13 @@ public class App extends MultiDexApplication {
 
             @Override
             public void onActivityPaused(Activity activity) {
-                curActivity = null;
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-
+                if (curActivity == activity) {
+                    curActivity = null;
+                }
             }
 
             @Override
@@ -176,9 +178,6 @@ public class App extends MultiDexApplication {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-                if(curActivity == activity){
-                    curActivity = null;
-                }
             }
         });
         APP_INSTANCE = this;
@@ -234,6 +233,7 @@ public class App extends MultiDexApplication {
 
         initBlockCanary(this);
     }
+
     private static void initBlockCanary(Application context) {
         if (BuildConfig.DEBUG) {
             // 在主进程初始化调用哈

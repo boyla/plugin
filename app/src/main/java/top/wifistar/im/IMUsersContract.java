@@ -16,10 +16,9 @@
 
 package top.wifistar.im;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 
-import io.realm.RealmResults;
 import top.wifistar.mvp.BasePresenter;
 import top.wifistar.mvp.BaseView;
 

@@ -14,7 +14,7 @@ import android.view.View.OnTouchListener;
  * @Description: 实现图像根据按下抬起动作变化颜色
  * @date 2016-02-26
  */
-public class ColorFilterImageView extends android.support.v7.widget.AppCompatImageView implements OnTouchListener {
+public class ColorFilterImageView extends androidx.appcompat.widget.AppCompatImageView implements OnTouchListener {
 
 //    private ViewTarget<ColorFilterImageView, GlideDrawable> viewTarget;
     public int adapterPosition = -1;

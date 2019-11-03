@@ -10,7 +10,6 @@ import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.datatype.BmobRelation;
 import io.realm.Realm;
 import io.realm.RealmList;
-import io.realm.RealmObject;
 import top.wifistar.app.App;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.realm.CommentRealm;

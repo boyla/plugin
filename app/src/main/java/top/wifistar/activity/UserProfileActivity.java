@@ -7,10 +7,10 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -313,7 +313,7 @@ public class UserProfileActivity extends AppCompatActivity {
                         if (thisUser != null) {
                             thisUser.follows = thisUser.follows.replace(shortUser.getObjectId() + "_", "");
                             Utils.updateUser(thisUser);
-                            thisUser.update();
+                            thisUser.update(null);
                         }
                     } else {
                         Utils.makeSysToast(e.getMessage());
@@ -344,7 +344,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             if (thisUser != null) {
                                 thisUser.follows += shortUser.getObjectId() + "_";
                                 Utils.updateUser(thisUser);
-                                thisUser.update();
+                                thisUser.update(null);
                             }
                         } else {
                             Utils.makeSysToast(e.getMessage());
@@ -365,7 +365,7 @@ public class UserProfileActivity extends AppCompatActivity {
                             if (thisUser != null) {
                                 thisUser.follows += shortUser.getObjectId() + "_";
                                 Utils.updateUser(thisUser);
-                                thisUser.update();
+                                thisUser.update(null);
                             }
                         } else {
                             Utils.makeSysToast(e.getMessage());
@@ -778,7 +778,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                                                 } else {
                                                                     user.topicCreate += topicId + "@" + topicName + "_";
                                                                 }
-                                                                user.update();
+                                                                user.update(null);
                                                                 Utils.updateUser(user);
                                                                 shortUser.topicCreate = user.topicCreate;
                                                                 initTopicCreated();
@@ -950,7 +950,7 @@ public class UserProfileActivity extends AppCompatActivity {
                                 if (App.currentUserProfile != null) {
                                     App.currentUserProfile.nickName = shortUser.getName();
                                     App.currentUserProfile.sex = shortUser.sex;
-                                    App.currentUserProfile.save();
+                                    App.currentUserProfile.save(null);
                                 }
                             }
                         });

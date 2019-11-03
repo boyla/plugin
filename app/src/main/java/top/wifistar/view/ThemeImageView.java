@@ -4,14 +4,14 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.util.AttributeSet;
 
 import top.wifistar.R;
 import top.wifistar.utils.Utils;
 
 
-public class ThemeImageView extends android.support.v7.widget.AppCompatImageView {
+public class ThemeImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     private int fixedColor;
     private TypedArray typedArray;

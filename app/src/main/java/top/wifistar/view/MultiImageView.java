@@ -2,7 +2,7 @@ package top.wifistar.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;

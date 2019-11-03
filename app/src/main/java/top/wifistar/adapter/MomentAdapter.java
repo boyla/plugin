@@ -1,8 +1,8 @@
 package top.wifistar.adapter;
 
 import android.content.Context;
-import android.support.transition.TransitionManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.transition.TransitionManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +34,7 @@ import top.wifistar.adapter.viewholder.TextViewHolder;
 import top.wifistar.adapter.viewholder.URLViewHolder;
 import top.wifistar.adapter.viewholder.VideoViewHolder;
 import top.wifistar.app.App;
+import top.wifistar.app.AppExecutor;
 import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.ActionItem;
@@ -463,6 +464,12 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         if (moment.getUser() != null && moment.getUser().getName() != null) {
             LogUtils.d(TAG,"get user in moment");
             setUserToHolder(moment, holder);
+            AppExecutor.getInstance().postBackground(new Runnable() {
+                @Override
+                public void run() {
+                    Utils.updateUser(moment.getUser());
+                }
+            });
             return;
         }
         holder.headIv.setImageDrawable(null);

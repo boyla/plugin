@@ -12,7 +12,7 @@ public class ImageUrl extends BmobObject {
     public static String uploadUrl(String url){
         ImageUrl imageUrl = new ImageUrl();
         imageUrl.url = url;
-        imageUrl.save();
+        imageUrl.save(null);
         return url;
     }
 }
