@@ -9,6 +9,9 @@ import android.net.NetworkInfo
 import android.telephony.TelephonyManager
 import android.util.Log
 import top.wifistar.BuildConfig
+import top.wifistar.app.AppExecutor
+import top.wifistar.constant.NetConstant
+import top.wifistar.event.NetStateEvent
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
@@ -65,7 +68,8 @@ class NetUtil {
          */
         public fun isMobileConnected(context: Context): Boolean {
             val activeInfo = getActiveNetworkInfo(context)
-            return activeInfo?.run { isConnected && type == ConnectivityManager.TYPE_MOBILE } ?: false
+            return activeInfo?.run { isConnected && type == ConnectivityManager.TYPE_MOBILE }
+                    ?: false
         }
 
         /**
@@ -312,6 +316,22 @@ class NetUtil {
                     e.printStackTrace()
                 }
                 return false
+            }
+        }
+
+        fun refreshNetState(ctx: Context) {
+            AppExecutor.getInstance().postWork {
+                val hasNet = isNetConnected(ctx)
+                if (hasNet && isNetworkOnline()) {
+                    EventUtils.post(NetStateEvent(NetConstant.WAN))
+                    return@postWork
+                }
+                val hasWiFi = isWifiConnected(ctx)
+                if (hasWiFi) {
+                    EventUtils.post(NetStateEvent(NetConstant.WIFI))
+                    return@postWork
+                }
+                EventUtils.post(NetStateEvent(NetConstant.NONET))
             }
         }
     }

@@ -169,5 +169,12 @@ dependencies {
     implementation 'com.tencent.bugly:nativecrashreport:3.7.1'
 
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-beta-2'
-    debugImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
+
+    //blockcanary
+    // most often used way, enable notification to notify block event
+    implementation 'com.github.markzhai:blockcanary-android:1.5.0'
+
+    // this way you only enable BlockCanary in debug package
+//     debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
+//     releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
 }

@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -190,7 +192,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         menu.clear();
         if (getActivity() instanceof HomeActivity) {
             inflater.inflate(R.menu.add, menu);
-        }if (getActivity() instanceof UserMomentsActivity && !TextUtils.isEmpty(topic)) {
+        }
+        if (getActivity() instanceof UserMomentsActivity && !TextUtils.isEmpty(topic)) {
             inflater.inflate(R.menu.edit_topic, menu);
         }
         super.onCreateOptionsMenu(menu, inflater);
@@ -201,7 +204,8 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
         if (item.getItemId() == R.id.publish) {
             Intent intent = new Intent(getActivity(), PublishMomentActivity.class);
             startActivity(intent);
-        }if (item.getItemId() == R.id.edit) {
+        }
+        if (item.getItemId() == R.id.edit) {
             //TODO edit topic, topic是本人创建
         }
         return super.onOptionsItemSelected(item);
@@ -355,6 +359,11 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
 
     @Override
     public void update2loadData(int loadType, List<Moment> datas) {
+        if (datas != null) {
+            for (Moment m : datas) {
+                Utils.updateUser(m.user);
+            }
+        }
         if (loadType == TYPE_PULLDOWNREFRESH) {
             momentAdapter.setDatas(datas);
             updateDataList(loadType);

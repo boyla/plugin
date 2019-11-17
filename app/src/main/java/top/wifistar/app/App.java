@@ -138,7 +138,7 @@ public class App extends Application {
         super.onConfigurationChanged(newConfig);
     }
 
-    private AppCompatActivity curActivity;
+    private Activity curActivity;
 
     @Override
     public void onCreate() {
@@ -157,7 +157,7 @@ public class App extends Application {
 
             @Override
             public void onActivityResumed(Activity activity) {
-                curActivity = (AppCompatActivity) activity;
+                curActivity = activity;
             }
 
             @Override

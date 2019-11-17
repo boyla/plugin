@@ -24,6 +24,8 @@ import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.Installation;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
+import top.wifistar.constant.NetConstant;
+import top.wifistar.event.NetStateEvent;
 import top.wifistar.utils.NetUtil;
 import top.wifistar.utils.TestUtils;
 import top.wifistar.utils.UpdateUtils;
@@ -84,7 +86,7 @@ public class HomeActivity extends BottomInputActivity {
             //网络类型变化
             @Override
             public void onNetConnChanged(@NotNull NetUtil.Companion.ConnectStatus connectStatus) {
-                refreshNetState();
+                NetUtil.Companion.refreshNetState(HomeActivity.this);
             }
         });
     }
@@ -109,12 +111,7 @@ public class HomeActivity extends BottomInputActivity {
     protected void onResume() {
         super.onResume();
         checkLogin();
-        App.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                refreshNetState();
-            }
-        },234);
+        NetUtil.Companion.refreshNetState(HomeActivity.this);
         App.checkAndConnectIM();
     }
 
@@ -132,6 +129,20 @@ public class HomeActivity extends BottomInputActivity {
         for (ImageView item : selfAvatarsInMomentList) {
             Utils.setUserAvatar(Utils.getCurrentShortUser(), item);
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshNetState(NetStateEvent event) {
+        System.out.println("=======NetStateEvent======:" + event.netState);
+        if (event.netState == NetConstant.WAN) {
+            topReminder.dismiss();
+            return;
+        }
+        if (event.netState == NetConstant.WIFI) {
+            Utils.showToast(topReminder, "WiFi局域网可用");
+            return;
+        }
+        Utils.showToast(topReminder, "当前网络不可用");
     }
 
     public void refreshTopAvatar() {
@@ -347,19 +358,5 @@ public class HomeActivity extends BottomInputActivity {
                         System.out.println("查询设备数据失败：");
                     }
                 });
-    }
-
-    public void refreshNetState() {
-        boolean hasNet = NetUtil.Companion.isNetConnected(this);
-        if (hasNet && NetUtil.Companion.isNetworkOnline()) {
-            topReminder.dismiss();
-            return;
-        }
-        boolean hasWiFi = NetUtil.Companion.isWifiConnected(this);
-        if (hasWiFi) {
-            Utils.showToast(topReminder, "WiFi局域网可用");
-            return;
-        }
-        Utils.showToast(topReminder, "当前网络不可用");
     }
 }
