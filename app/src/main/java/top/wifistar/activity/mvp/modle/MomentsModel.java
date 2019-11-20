@@ -108,29 +108,32 @@ public class MomentsModel {
         comment.setUser(Utils.getCurrentShortUser());
         comment.setMomentId(momentId);
         comment.setContent(content);
-        if (toReplyUser!=null) {
+        Moment moment = new Moment();
+        moment.setObjectId(momentId);
+        comment.moment = moment;
+        if (toReplyUser != null) {
             comment.setToReplyUser(toReplyUser);
         }
         comment.save(new SaveListener<String>() {
             @Override
             public void done(String objId, BmobException e) {
-                if(e==null){
+                if (e == null) {
                     comment.setObjectId(objId);
                     listener.onSuccess(comment);
-                }else{
+                } else {
                     Utils.makeSysToast(e.getMessage());
                 }
             }
         });
     }
 
-    public void deleteComment(final String commentId,final IDataRequestListener listener) {
+    public void deleteComment(final String commentId, final IDataRequestListener listener) {
         Comment comment = new Comment();
         comment.setObjectId(commentId);
         comment.delete(new UpdateListener() {
             @Override
             public void done(BmobException e) {
-                if(TextUtils.isEmpty(commentId) || e==null || e.getErrorCode()==101){
+                if (TextUtils.isEmpty(commentId) || e == null || e.getErrorCode() == 101) {
                     listener.onSuccess();
                 }
             }

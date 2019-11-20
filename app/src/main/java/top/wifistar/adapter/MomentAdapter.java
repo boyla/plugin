@@ -1,8 +1,10 @@
 package top.wifistar.adapter;
 
 import android.content.Context;
+
 import androidx.transition.TransitionManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -381,7 +383,8 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             return;
         }
         BmobQuery<Comment> query = new BmobQuery<Comment>();
-        query.addWhereEqualTo("momentId", moment.getObjectId());
+        query.addWhereEqualTo("moment", new BmobPointer(moment));
+        query.include("user,toReplyUser");
 //返回50条数据，如果不加上这条语句，默认返回10条数据
         query.setLimit(50);
 //执行查询方法
@@ -462,7 +465,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
 
     private void queryUser(Moment moment, MomentViewHolder holder) {
         if (moment.getUser() != null && moment.getUser().getName() != null) {
-            LogUtils.d(TAG,"get user in moment");
+            LogUtils.d(TAG, "get user in moment");
             setUserToHolder(moment, holder);
             AppExecutor.getInstance().postBackground(new Runnable() {
                 @Override
@@ -473,7 +476,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
             return;
         }
         holder.headIv.setImageDrawable(null);
-        LogUtils.d(TAG,"queryUser from server");
+        LogUtils.d(TAG, "queryUser from server");
         Utils.queryShortUser(moment.getUser().getObjectId(), new NetUserRequest.NetRequestCallBack() {
 
             @Override

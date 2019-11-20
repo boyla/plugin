@@ -16,6 +16,7 @@ public class Comment extends BmobObject implements ToRealmObject {
     public User user;
     public User toReplyUser;
     public String content;
+    public Moment moment;
 
     public String getMomentId() {
         return momentId;
