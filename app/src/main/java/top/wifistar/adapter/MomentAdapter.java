@@ -467,7 +467,7 @@ public class MomentAdapter extends BaseRecycleViewAdapter {
         if (moment.getUser() != null && moment.getUser().getName() != null) {
             LogUtils.d(TAG, "get user in moment");
             setUserToHolder(moment, holder);
-            AppExecutor.getInstance().postBackground(new Runnable() {
+            AppExecutor.getInstance().postMain(new Runnable() {
                 @Override
                 public void run() {
                     Utils.updateUser(moment.getUser());

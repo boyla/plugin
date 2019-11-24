@@ -1,6 +1,7 @@
 package top.wifistar.photopicker;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,12 +10,16 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import top.wifistar.R;
+import top.wifistar.imagelib.ImageUrl;
 
 /**
  * ͼƬAdapter
@@ -221,6 +226,7 @@ public class ImageGridAdapter extends BaseAdapter {
         }
 
         void bindData(final Image data) {
+            image.setImageDrawable(null);
             if (data == null) return;
             // 处理单选和多选状态
             if (showSelectIndicator) {
@@ -242,11 +248,24 @@ public class ImageGridAdapter extends BaseAdapter {
                 // 显示图片
                 Glide.with(mContext)
                         .load(data.path.contains("http") ? data.path : new File(data.path))
+                        .asBitmap()
                         .placeholder(R.mipmap.default_error)
                         .error(R.mipmap.default_error)
                         .override(mItemSize, mItemSize)
-                        .centerCrop()
-                        .into(image);
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                        .centerCrop()
+                        .into(new SimpleTarget<Bitmap>() {
+                            @Override
+                            public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
+                                image.setImageBitmap(bitmap);
+                                // _wh_2210&1242
+                                if (data.path.contains("http")) {
+                                    int width = bitmap.getWidth();
+                                    int height = bitmap.getHeight();
+                                    ImageUrl.uploadUrl(data.path + "_wh_" + width + "&" + height);
+                                }
+                            }
+                        });
             }
         }
     }

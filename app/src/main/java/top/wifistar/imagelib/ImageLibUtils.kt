@@ -17,19 +17,25 @@ class ImageLibUtils {
 
     companion object {
         private val url = "https://api.unsplash.com/photos/random?count=20&client_id=b857113bf0cbc6f62db5b4a5eba82ae4f67cec6a1427a9572d919cd14bea1c6b"
+        var response = ""
         fun getUnsplashImages(): UnsplashResult? {
             var res: UnsplashResult? = null
-            var response = OkhttpUtils.getResponseStr(url)
+            if (TextUtils.isEmpty(response)) {
+                response = OkhttpUtils.getResponseStr(url)
+            }
             if (TextUtils.isEmpty(response)) {
                 return res
             }
+            println("Unsplash imgs: " + response)
             res = App.gson.fromJson("{list:$response}", UnsplashResult::class.java)
             return res
         }
 
         fun getUpsplashUrls(): List<String>? {
             var unsplashData = getUnsplashImages()
-            return unsplashData?.list?.map { ImageUrl.uploadUrl(it.urls.regular) }
+            return unsplashData?.list?.map {
+                it.urls.regular
+            }
         }
 
         fun getBmobImageUrls(list: MutableList<String>?, action: LoadedNext) {

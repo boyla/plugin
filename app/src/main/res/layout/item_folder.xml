@@ -14,7 +14,7 @@
         android:layout_marginLeft="10dp"
         android:id="@+id/cover"
         android:layout_gravity="center_vertical"
-        android:scaleType="centerInside"
+        android:scaleType="centerCrop"
         android:src="@mipmap/default_error"
         android:layout_width="@dimen/folder_cover_size"
         android:layout_height="@dimen/folder_cover_size" />

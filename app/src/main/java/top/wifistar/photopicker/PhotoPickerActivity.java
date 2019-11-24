@@ -13,12 +13,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ListPopupWindow;
 import androidx.appcompat.widget.Toolbar;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -91,9 +93,9 @@ public class PhotoPickerActivity extends AppCompatActivity {
     public static final String EXTRA_RESULT = "select_result";
 
     // 结果数据
-    private ArrayList<String> resultList = new ArrayList<>();
+    private ArrayList<String> pickList = new ArrayList<>();
     // 文件夹数据
-    private ArrayList<Folder> mResultFolder = new ArrayList<>();
+    private ArrayList<Folder> allFolders = new ArrayList<>();
 
     // 不同loader定义
     private static final int LOADER_ALL = 0;
@@ -118,6 +120,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
     private boolean hasFolderGened = false;
     private boolean mIsShowCamera = false;
     private Folder netFolder = new Folder();
+    List<Image> allImage = new ArrayList<>();
+
     private List<String> urls = new ArrayList<>();
 
     @Override
@@ -151,7 +155,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
         if (mode == MODE_MULTI) {
             ArrayList<String> tmp = getIntent().getStringArrayListExtra(EXTRA_DEFAULT_SELECTED_LIST);
             if (tmp != null && tmp.size() > 0) {
-                resultList.addAll(tmp);
+                pickList.addAll(tmp);
             }
         }
 
@@ -170,7 +174,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     if (i == 0) {
                         if (mode == MODE_MULTI) {
                             // 判断选择数量问题
-                            if (mDesireImageCount == resultList.size() - 1) {
+                            if (mDesireImageCount == pickList.size() - 1) {
                                 Toast.makeText(mCxt, R.string.msg_amount_limit, Toast.LENGTH_SHORT).show();
                                 return;
                             }
@@ -230,7 +234,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 PhotoPreviewIntent intent = new PhotoPreviewIntent(mCxt);
                 intent.setCurrentItem(0);
-                intent.setPhotoPaths(resultList);
+                intent.setPhotoPaths(pickList);
                 startActivityForResult(intent, PhotoPreviewActivity.REQUEST_PREVIEW);
             }
         });
@@ -267,8 +271,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
             }
             netFolder.cover = list.get(0);
             netFolder.images = list;
-            mResultFolder.add(0, netFolder);
-            mFolderAdapter.setData(mResultFolder);
+            allFolders.add(0, netFolder);
+            mFolderAdapter.setData(allFolders);
         }
     }
 
@@ -347,8 +351,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
                                 mImageAdapter.setData(folder.images);
                                 btnAlbum.setText(folder.name);
                                 // 设定默认选择
-                                if (resultList != null && resultList.size() > 0) {
-                                    mImageAdapter.setDefaultSelected(resultList);
+                                if (pickList != null && pickList.size() > 0) {
+                                    mImageAdapter.setDefaultSelected(pickList);
                                 }
                             }
                             mImageAdapter.setShowCamera(false);
@@ -364,22 +368,22 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     public void onSingleImageSelected(String path) {
         Intent data = new Intent();
-        resultList.add(path);
-        data.putStringArrayListExtra(EXTRA_RESULT, resultList);
+        pickList.add(path);
+        data.putStringArrayListExtra(EXTRA_RESULT, pickList);
         setResult(RESULT_OK, data);
         finish();
     }
 
     public void onImageSelected(String path) {
-        if (!resultList.contains(path)) {
-            resultList.add(path);
+        if (!pickList.contains(path)) {
+            pickList.add(path);
         }
         refreshActionStatus();
     }
 
     public void onImageUnselected(String path) {
-        if (resultList.contains(path)) {
-            resultList.remove(path);
+        if (pickList.contains(path)) {
+            pickList.remove(path);
         }
         refreshActionStatus();
     }
@@ -394,7 +398,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 case ImageCaptureManager.REQUEST_TAKE_PHOTO:
                     if (captureManager.getCurrentPhotoPath() != null) {
                         captureManager.galleryAddPic();
-                        resultList.add(captureManager.getCurrentPhotoPath());
+                        pickList.add(captureManager.getCurrentPhotoPath());
                     }
                     complete();
                     break;
@@ -402,10 +406,10 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 case PhotoPreviewActivity.REQUEST_PREVIEW:
                     ArrayList<String> pathArr = data.getStringArrayListExtra(PhotoPreviewActivity.EXTRA_RESULT);
                     // 刷新页面
-                    if (pathArr != null && pathArr.size() != resultList.size()) {
-                        resultList = pathArr;
+                    if (pathArr != null && pathArr.size() != pickList.size()) {
+                        pickList = pathArr;
                         refreshActionStatus();
-                        mImageAdapter.setDefaultSelected(resultList);
+                        mImageAdapter.setDefaultSelected(pickList);
                     }
                     break;
             }
@@ -482,16 +486,16 @@ public class PhotoPickerActivity extends AppCompatActivity {
         if (image != null) {
             // 多选模式
             if (mode == MODE_MULTI) {
-                if (resultList.contains(image.path)) {
-                    resultList.remove(image.path);
+                if (pickList.contains(image.path)) {
+                    pickList.remove(image.path);
                     onImageUnselected(image.path);
                 } else {
                     // 判断选择数量问题
-                    if (mDesireImageCount == resultList.size()) {
+                    if (mDesireImageCount == pickList.size()) {
                         Toast.makeText(mCxt, R.string.msg_amount_limit, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    resultList.add(image.path);
+                    pickList.add(image.path);
                     onImageSelected(image.path);
                 }
                 mImageAdapter.select(image);
@@ -506,16 +510,16 @@ public class PhotoPickerActivity extends AppCompatActivity {
      * 刷新操作按钮状态
      */
     private void refreshActionStatus() {
-        if (resultList.contains("000000")) {
-            resultList.remove("000000");
+        if (pickList.contains("000000")) {
+            pickList.remove("000000");
         }
-        String text = getString(R.string.done_with_count, resultList.size(), mDesireImageCount);
+        String text = getString(R.string.done_with_count, pickList.size(), mDesireImageCount);
         menuDoneItem.setTitle(text);
-        boolean hasSelected = resultList.size() > 0;
+        boolean hasSelected = pickList.size() > 0;
         menuDoneItem.setVisible(hasSelected);
         btnPreview.setEnabled(hasSelected);
         if (hasSelected) {
-            btnPreview.setText(getResources().getString(R.string.preview) + "(" + (resultList.size()) + ")");
+            btnPreview.setText(getResources().getString(R.string.preview) + "(" + (pickList.size()) + ")");
         } else {
             btnPreview.setText(getResources().getString(R.string.preview));
         }
@@ -531,25 +535,20 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
             // 根据图片设置参数新增验证条件
             StringBuilder selectionArgs = new StringBuilder();
-
             if (imageConfig != null) {
                 if (imageConfig.minWidth != 0) {
                     selectionArgs.append(MediaStore.Images.Media.WIDTH + " >= " + imageConfig.minWidth);
                 }
-
                 if (imageConfig.minHeight != 0) {
                     selectionArgs.append("".equals(selectionArgs.toString()) ? "" : " and ");
                     selectionArgs.append(MediaStore.Images.Media.HEIGHT + " >= " + imageConfig.minHeight);
                 }
-
                 if (imageConfig.minSize != 0f) {
                     selectionArgs.append("".equals(selectionArgs.toString()) ? "" : " and ");
                     selectionArgs.append(MediaStore.Images.Media.SIZE + " >= " + imageConfig.minSize);
                 }
-
                 if (imageConfig.mimeType != null) {
                     selectionArgs.append(" and (");
                     for (int i = 0, len = imageConfig.mimeType.length; i < len; i++) {
@@ -561,7 +560,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     selectionArgs.append(")");
                 }
             }
-
             if (id == LOADER_ALL) {
                 CursorLoader cursorLoader = new CursorLoader(mCxt,
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI, IMAGE_PROJECTION,
@@ -584,8 +582,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            if (data != null) {
-                List<Image> images = new ArrayList<>();
+            if (data != null && allImage.size() == 0) {
                 int count = data.getCount();
                 if (count > 0) {
                     data.moveToFirst();
@@ -593,9 +590,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
                         String path = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[0]));
                         String name = data.getString(data.getColumnIndexOrThrow(IMAGE_PROJECTION[1]));
                         long dateTime = data.getLong(data.getColumnIndexOrThrow(IMAGE_PROJECTION[2]));
-
                         Image image = new Image(path, name, dateTime);
-                        images.add(image);
+                        allImage.add(image);
                         if (!hasFolderGened) {
                             // 获取文件夹名称
                             File imageFile = new File(path);
@@ -604,27 +600,26 @@ public class PhotoPickerActivity extends AppCompatActivity {
                             folder.name = folderFile.getName();
                             folder.path = folderFile.getAbsolutePath();
                             folder.cover = image;
-                            if (!mResultFolder.contains(folder)) {
+                            if (!allFolders.contains(folder)) {
                                 List<Image> imageList = new ArrayList<>();
                                 imageList.add(image);
                                 folder.images = imageList;
-                                mResultFolder.add(folder);
+                                allFolders.add(folder);
                             } else {
                                 // 更新
-                                Folder f = mResultFolder.get(mResultFolder.indexOf(folder));
+                                Folder f = allFolders.get(allFolders.indexOf(folder));
                                 f.images.add(image);
                             }
                         }
-
                     } while (data.moveToNext());
 
-                    mImageAdapter.setData(images);
+                    mImageAdapter.setData(allImage);
 
                     // 设定默认选择
-                    if (resultList != null && resultList.size() > 0) {
-                        mImageAdapter.setDefaultSelected(resultList);
+                    if (pickList != null && pickList.size() > 0) {
+                        mImageAdapter.setDefaultSelected(pickList);
                     }
-                    mFolderAdapter.setData(mResultFolder);
+                    mFolderAdapter.setData(allFolders);
                     hasFolderGened = true;
 
                 }
@@ -687,7 +682,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     // 返回已选择的图片数据
     private void complete() {
         Intent data = new Intent();
-        data.putStringArrayListExtra(EXTRA_RESULT, resultList);
+        data.putStringArrayListExtra(EXTRA_RESULT, pickList);
         setResult(RESULT_OK, data);
         finish();
     }
