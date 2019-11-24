@@ -4,7 +4,9 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.RequiresApi;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,16 +25,20 @@ import com.bumptech.glide.Glide;
 import com.greysonparrelli.permiso.Permiso;
 import com.kongzue.dialog.listener.OnMenuItemClickListener;
 import com.kongzue.dialog.v2.BottomMenu;
+
 import top.wifistar.photopicker.ImageCaptureManager;
 import top.wifistar.photopicker.PhotoPickerActivity;
 import top.wifistar.photopicker.PhotoPreviewActivity;
 import top.wifistar.photopicker.SelectModel;
 import top.wifistar.photopicker.intent.PhotoPickerIntent;
 import top.wifistar.photopicker.intent.PhotoPreviewIntent;
+
 import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -261,35 +267,39 @@ public class PublishMomentActivity extends ToolbarActivity {
         System.arraycopy(src, 0, filePaths, 0,
                 fileList.size() - 1);
         //为提升用户体验，进行网络操作的时候，不进入等待页面，先发送一个模拟Moment Event给Fragment,待请求完成后,再发送有效的Moment Event替换之
-        BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
+        if (filePaths.length > 0) {
+            BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
 
-            @Override
-            public void onSuccess(List<BmobFile> files, List<String> urls) {
-                //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
-                //2、urls-上传文件的完整url地址
-                if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
-                    //获取图片宽高，并保存
-                    for (int i = 0; i < urls.size(); i++) {
-                        urls.set(i, urls.get(i) + Utils.getImageUrlWithWidthHeight(filePaths[i]));
+                @Override
+                public void onSuccess(List<BmobFile> files, List<String> urls) {
+                    //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
+                    //2、urls-上传文件的完整url地址
+                    if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
+                        //获取图片宽高，并保存
+                        for (int i = 0; i < urls.size(); i++) {
+                            urls.set(i, urls.get(i) + Utils.getImageUrlWithWidthHeight(filePaths[i]));
+                        }
+                        httpList.addAll(urls);
                     }
-                    httpList.addAll(urls);
+                    saveMoment(httpList);
                 }
-                saveMoment(httpList);
-            }
 
-            @Override
-            public void onError(int statuscode, String errormsg) {
-                //ShowToast("错误码"+statuscode +",错误描述："+errormsg);
-            }
+                @Override
+                public void onError(int statuscode, String errormsg) {
+                    //ShowToast("错误码"+statuscode +",错误描述："+errormsg);
+                }
 
-            @Override
-            public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
-                //1、curIndex--表示当前第几个文件正在上传
-                //2、curPercent--表示当前上传文件的进度值（百分比）
-                //3、total--表示总的上传文件数
-                //4、totalPercent--表示总的上传进度（百分比）
-            }
-        });
+                @Override
+                public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+                    //1、curIndex--表示当前第几个文件正在上传
+                    //2、curPercent--表示当前上传文件的进度值（百分比）
+                    //3、total--表示总的上传文件数
+                    //4、totalPercent--表示总的上传进度（百分比）
+                }
+            });
+        } else {
+            saveMoment(httpList);
+        }
     }
 
     private void saveMoment() {

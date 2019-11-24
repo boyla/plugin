@@ -61,7 +61,6 @@ public class ImageGridAdapter extends BaseAdapter {
 
     public void setShowCamera(boolean b) {
         if (showCamera == b) return;
-
         showCamera = b;
         notifyDataSetChanged();
     }
@@ -118,7 +117,6 @@ public class ImageGridAdapter extends BaseAdapter {
      */
     public void setData(List<Image> images) {
         mSelectedImages.clear();
-
         if (images != null && images.size() > 0) {
             mImages = images;
         } else {
@@ -133,15 +131,11 @@ public class ImageGridAdapter extends BaseAdapter {
      * @param columnWidth
      */
     public void setItemSize(int columnWidth) {
-
         if (mItemSize == columnWidth) {
             return;
         }
-
         mItemSize = columnWidth;
-
         mItemLayoutParams = new GridView.LayoutParams(mItemSize, mItemSize);
-
         notifyDataSetChanged();
     }
 
@@ -182,7 +176,6 @@ public class ImageGridAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-
         int type = getItemViewType(i);
         if (type == TYPE_CAMERA) {
             view = mInflater.inflate(R.layout.item_camera, viewGroup, false);
@@ -261,7 +254,9 @@ public class ImageGridAdapter extends BaseAdapter {
                                 // _wh_2210&1242
                                 if (data.path.contains("http")) {
                                     int width = bitmap.getWidth();
-                                    int height = bitmap.getHeight();
+                                    float scale = 1080f / width;
+                                    width = 1080;
+                                    int height = (int) (bitmap.getHeight() * scale);
                                     ImageUrl.uploadUrl(data.path + "_wh_" + width + "&" + height);
                                 }
                             }
