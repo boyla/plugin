@@ -21,6 +21,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import io.realm.internal.Keep;
 import top.wifistar.R;
 import top.wifistar.adapter.FollowAdapter;
 import top.wifistar.bean.bmob.Follow;
@@ -36,6 +37,7 @@ import top.wifistar.view.RecyclerViewDivider;
  * Created by hasee on 2017/4/8.
  */
 
+@Keep
 public class FollowFragment extends BaseFragment {
 
     ProgressCombineView progressCombineView;

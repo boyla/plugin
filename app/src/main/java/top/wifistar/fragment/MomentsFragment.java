@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.AppCompatActivity;
@@ -67,6 +68,7 @@ import static top.wifistar.activity.mvp.presenter.MomentsPresenter.NO_MORE_DATA;
  * Created by hasee on 2017/4/8.
  */
 
+@Keep
 public class MomentsFragment extends BaseFragment implements MomentsContract.View {
 
     //TextView tvNoData;

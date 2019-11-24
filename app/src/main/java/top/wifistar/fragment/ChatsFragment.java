@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.RealmResults;
+import io.realm.internal.Keep;
 import top.wifistar.R;
 import top.wifistar.activity.HomeActivity;
 import top.wifistar.adapter.IMUsersAdapter;
@@ -40,6 +41,7 @@ import top.wifistar.utils.EventUtils;
  * Created by hasee on 2017/4/8.
  */
 
+@Keep
 public class ChatsFragment extends BaseFragment {
 
 
