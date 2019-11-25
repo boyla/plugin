@@ -15,8 +15,8 @@ android {
         applicationId "top.wifistar"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 3
-        versionName "Cupcake"
+        versionCode 4
+        versionName "Donut"
         // If you do enable multidex, you must also set
         // minSdkVersion to 21 or higher.
         multiDexEnabled true
