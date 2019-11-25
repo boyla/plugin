@@ -49,7 +49,6 @@
             android:layout_centerVertical="true"
             android:background="@null"
             android:textSize="@dimen/action_text_size"
-            android:enabled="false"
             android:textColor="@color/action_text_color"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>

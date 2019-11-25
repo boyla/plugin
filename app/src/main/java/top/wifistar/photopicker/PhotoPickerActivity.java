@@ -289,6 +289,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
         mGridView.setNumColumns(getNumColnums());
 
         mPopupAnchorView = findViewById(R.id.photo_picker_footer);
+        mPopupAnchorView.setOnClickListener(v -> {
+        });
         btnAlbum = findViewById(R.id.btnAlbum);
         btnPreview = findViewById(R.id.btnPreview);
     }
@@ -517,7 +519,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
         menuDoneItem.setTitle(text);
         boolean hasSelected = pickList.size() > 0;
         menuDoneItem.setVisible(hasSelected);
-        btnPreview.setEnabled(hasSelected);
+        btnPreview.setVisibility(hasSelected ? View.VISIBLE : View.GONE);
         if (hasSelected) {
             btnPreview.setText(getResources().getString(R.string.preview) + "(" + (pickList.size()) + ")");
         } else {
