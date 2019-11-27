@@ -251,6 +251,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     private void getNetImgs() {
         urls = ImageLibUtils.Companion.getUpsplashUrls();
         if (urls == null || urls.size() == 0) {
+            System.out.println("Unsplash getBmobImageUrls");
             ImageLibUtils.Companion.getBmobImageUrls(urls, new ImageLibUtils.LoadedNext() {
                 @Override
                 public void onNext() {
@@ -258,6 +259,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 }
             });
         } else {
+            System.out.println("Unsplash generateImgs");
             generateImgs();
         }
     }

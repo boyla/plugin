@@ -1,9 +1,12 @@
 package top.wifistar.photopicker;
 
+import androidx.annotation.Keep;
+
 /**
  * 图片实体
  * Created by Nereo on 2015/4/7.
  */
+@Keep
 public class Image {
     public String path;
     public String name;

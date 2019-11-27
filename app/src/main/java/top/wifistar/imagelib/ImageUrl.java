@@ -1,5 +1,6 @@
 package top.wifistar.imagelib;
 
+import androidx.annotation.Keep;
 import cn.bmob.v3.BmobObject;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
@@ -8,6 +9,7 @@ import top.wifistar.utils.LogUtils;
 /**
  * Created by suneee on 2016/11/17.
  */
+@Keep
 public class ImageUrl extends BmobObject {
     String url;
 

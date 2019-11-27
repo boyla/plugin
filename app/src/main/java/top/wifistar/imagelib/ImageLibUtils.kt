@@ -1,6 +1,7 @@
 package top.wifistar.imagelib
 
 import android.text.TextUtils
+import androidx.annotation.Keep
 
 import top.wifistar.app.App
 import top.wifistar.http.OkhttpUtils
@@ -13,6 +14,7 @@ import cn.bmob.v3.listener.FindListener
  * Created by boyla on 2019/9/8.
  */
 
+@Keep
 class ImageLibUtils {
 
     companion object {
@@ -26,8 +28,8 @@ class ImageLibUtils {
             if (TextUtils.isEmpty(response)) {
                 return res
             }
-            println("Unsplash imgs: " + response)
             res = App.gson.fromJson("{list:$response}", UnsplashResult::class.java)
+            println("Unsplash imgs: " + res?.list?.size)
             return res
         }
 
@@ -44,7 +46,7 @@ class ImageLibUtils {
             query.findObjects(object : FindListener<ImageUrl>() {
                 override fun done(res: List<ImageUrl>?, e: BmobException?) {
                     if (e == null && res != null && res.isNotEmpty()) {
-                        list?.addAll(res.map { it.url })
+                        list?.addAll(res.map { it.url.split("_wh_")[0] })
                         action.onNext()
                     }
                 }

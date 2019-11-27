@@ -3,10 +3,12 @@ package top.wifistar.imagelib;
 import java.io.Serializable;
 import java.util.List;
 
+import androidx.annotation.Keep;
+
 /**
  * Created by boyla on 2019/9/8.
  */
-
+@Keep
 public class UnsplashData implements Serializable{
 
     /**
@@ -203,6 +205,7 @@ public class UnsplashData implements Serializable{
         this.current_user_collections = current_user_collections;
     }
 
+    @Keep
     public static class UrlsBean {
         /**
          * raw : https://images.unsplash.com/photo-1567170566706-e2d2db258886?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjkwMjg4fQ
@@ -259,6 +262,7 @@ public class UnsplashData implements Serializable{
         }
     }
 
+    @Keep
     public static class LinksBean {
         /**
          * self : https://api.unsplash.com/photos/u4gwRbr2_j0
@@ -305,6 +309,7 @@ public class UnsplashData implements Serializable{
         }
     }
 
+    @Keep
     public static class UserBean {
         /**
          * id : UmSr3GimnHA
@@ -480,6 +485,7 @@ public class UnsplashData implements Serializable{
             this.accepted_tos = accepted_tos;
         }
 
+        @Keep
         public static class LinksBeanX {
             /**
              * self : https://api.unsplash.com/users/ramche
@@ -556,6 +562,7 @@ public class UnsplashData implements Serializable{
             }
         }
 
+        @Keep
         public static class ProfileImageBean {
             /**
              * small : https://images.unsplash.com/profile-1548418196506-4b6079886fd9?ixlib=rb-1.2.1&q=80&fm=jpg&crop=faces&cs=tinysrgb&fit=crop&h=32&w=32
@@ -593,6 +600,7 @@ public class UnsplashData implements Serializable{
         }
     }
 
+    @Keep
     public static class ExifBean {
         /**
          * make : Canon
@@ -659,6 +667,7 @@ public class UnsplashData implements Serializable{
         }
     }
 
+    @Keep
     public static class LocationBean {
         /**
          * title :
@@ -714,6 +723,7 @@ public class UnsplashData implements Serializable{
             this.position = position;
         }
 
+        @Keep
         public static class PositionBean {
             /**
              * latitude : null
