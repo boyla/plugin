@@ -224,11 +224,17 @@ public class PublishMomentActivity extends ToolbarActivity {
 
     private void sendTempEvent() {
         //生成模拟Moment Event
-        String[] filePaths = new String[imagePaths.size() - 1];
+        int dataSize;
+        if (imagePaths.size() > 0 && "000000".equals(imagePaths.get(imagePaths.size() - 1))) {
+            dataSize = imagePaths.size() - 1;
+        } else {
+            dataSize = imagePaths.size();
+        }
+        String[] filePaths = new String[dataSize];
         String[] src = new String[imagePaths.size()];
         imagePaths.toArray(src);
         System.arraycopy(src, 0, filePaths, 0,
-                imagePaths.size() - 1);
+                dataSize);
         PublishMomentEvent event = new PublishMomentEvent(true);
         Moment tempMoment = new Moment();
         tempMoment.setType(momentType);
@@ -261,11 +267,13 @@ public class PublishMomentActivity extends ToolbarActivity {
                 fileList.add(s);
             }
         }
-        String[] filePaths = new String[fileList.size() - 1];
+        String[] filePaths = new String[fileList.size() > 0 ? fileList.size() - 1 : 0];
         String[] src = new String[fileList.size()];
-        fileList.toArray(src);
-        System.arraycopy(src, 0, filePaths, 0,
-                fileList.size() - 1);
+        if (fileList.size() > 0) {
+            fileList.toArray(src);
+            System.arraycopy(src, 0, filePaths, 0,
+                    fileList.size() - 1);
+        }
         //为提升用户体验，进行网络操作的时候，不进入等待页面，先发送一个模拟Moment Event给Fragment,待请求完成后,再发送有效的Moment Event替换之
         if (filePaths.length > 0) {
             BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
