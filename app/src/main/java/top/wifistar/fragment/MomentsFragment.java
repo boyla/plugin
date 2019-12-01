@@ -44,11 +44,13 @@ import top.wifistar.activity.mvp.contract.MomentsContract;
 import top.wifistar.activity.mvp.presenter.MomentsPresenter;
 import top.wifistar.adapter.MomentAdapter;
 import top.wifistar.app.App;
+import top.wifistar.app.AppExecutor;
 import top.wifistar.app.BottomInputActivity;
 import top.wifistar.bean.bmob.Comment;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.Moment;
 import top.wifistar.bean.bmob.CommentConfig;
+import top.wifistar.imagelib.ImageLibUtils;
 import top.wifistar.view.CommentListView;
 import top.wifistar.view.OnTouchXRecyclerView;
 import top.wifistar.view.ProgressCombineView;
@@ -155,6 +157,12 @@ public class MomentsFragment extends BaseFragment implements MomentsContract.Vie
                     replyUser = null;
                 }
                 updateEditTextBodyVisible(View.GONE, null);
+            }
+        });
+        AppExecutor.getInstance().postWork(new Runnable() {
+            @Override
+            public void run() {
+                ImageLibUtils.Companion.getUnsplashImages();
             }
         });
     }
