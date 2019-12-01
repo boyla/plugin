@@ -44,6 +44,7 @@ import top.wifistar.app.App;
 import top.wifistar.app.AppExecutor;
 import top.wifistar.bean.bmob.User;
 import top.wifistar.event.EurekaEvent;
+import top.wifistar.http.OkhttpUtils;
 import top.wifistar.utils.EventUtils;
 import top.wifistar.utils.Utils;
 
@@ -176,7 +177,7 @@ public class NetUtils {
 
     public static List<User> usersInWiFi = new ArrayList<>();
     public static Map<String, String> userHostMap = new HashMap<>();
-    static OkHttpClient okHttpClient = new OkHttpClient();
+    static OkHttpClient okHttpClient = OkhttpUtils.getOkHttpClient();
 
     public static boolean isOnline(String ip) {
         final String host = "http://" + ip + ":9595";

@@ -14,14 +14,15 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.StrictMode;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.model.GlideUrl;
 import com.github.moduth.blockcanary.BlockCanary;
 import com.google.gson.Gson;
 import com.kongzue.dialog.v2.DialogSettings;
@@ -55,6 +56,7 @@ import top.wifistar.bean.bmob.User;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.corepage.CorePageManager;
 import top.wifistar.event.RefreshEvent;
+import top.wifistar.http.OkhttpUtils;
 import top.wifistar.im.IMMessageHandler;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.LogUtils;
@@ -63,6 +65,7 @@ import top.wifistar.utils.Utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -143,7 +146,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -182,7 +184,7 @@ public class App extends Application {
         });
         APP_INSTANCE = this;
         init();
-
+        Glide.get(this).register(GlideUrl.class, InputStream.class, new OkHttpUrlLoader.Factory(OkhttpUtils.getOkHttpClient()));
         long last = System.currentTimeMillis();
         Realm.init(APP_INSTANCE);
         realmConfig = new RealmConfiguration.Builder().name("UserData.realm").schemaVersion(1).build();
