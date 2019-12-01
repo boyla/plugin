@@ -149,6 +149,10 @@
         <service
             android:name=".httpserver.WiFiServerService"
             android:exported="false" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
     <meta-data
         android:name="top.wifistar.httpserver.AppGlideModule"

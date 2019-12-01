@@ -1318,7 +1318,7 @@ public class Utils {
         SimpleDateFormat resSdf;
         SimpleDateFormat isSameDay = new SimpleDateFormat("yyyy-M-d");
         if (isSameDay.format(new Date(createTime)).equals(isSameDay.format(new Date(current)))) {
-            resSdf = new SimpleDateFormat("H:m");
+            resSdf = new SimpleDateFormat("HH:mm");
             return resSdf.format(new Date(createTime));
         }
         SimpleDateFormat isSameYear = new SimpleDateFormat("yyyy");
