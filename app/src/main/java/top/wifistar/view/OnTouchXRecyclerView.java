@@ -19,7 +19,7 @@ public class OnTouchXRecyclerView extends XRecyclerView {
     public OnTouchListener onTouchListener;
 
     public OnTouchXRecyclerView(Context context) {
-        super(context);
+        super(context, null);
     }
 
     public OnTouchXRecyclerView(Context context, AttributeSet attrs) {
