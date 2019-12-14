@@ -253,3 +253,6 @@
 -dontwarn android.net.**
 -dontwarn javax.annotation.**
 -ignorewarnings
+
+-dontwarn androidx.**
+-keepclassmembers class androidx.** { *; }

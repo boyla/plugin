@@ -26,9 +26,11 @@ public final class AppExecutor {
     private AppExecutor() {
         int cores = Runtime.getRuntime().availableProcessors();
         NUMBER_OF_CORES = cores > 1 ? cores : 1;
-        workService = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES + 1,
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(NUMBER_OF_CORES, NUMBER_OF_CORES + 2,
                 3L, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>());
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy());
+        workService = executor;
         backgroundService = Executors.newSingleThreadExecutor();
         handler = new Handler(Looper.getMainLooper());
     }
