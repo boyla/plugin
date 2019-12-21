@@ -288,8 +288,8 @@ public class PublishMomentActivity extends ToolbarActivity {
                             urls.set(i, urls.get(i) + Utils.getImageUrlWithWidthHeight(filePaths[i]));
                         }
                         httpList.addAll(urls);
+                        saveMoment(httpList);
                     }
-                    saveMoment(httpList);
                 }
 
                 @Override
