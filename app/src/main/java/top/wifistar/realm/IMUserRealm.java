@@ -31,9 +31,7 @@ public class IMUserRealm extends RealmObject implements ToBmobObject {
     public Integer sex;
     public Integer age;
     public String recentImgs;
-    public String startWord1;
-    public String startWord2;
-    public String startWord3;
+    public String startWords;
     public String selfIntroduce;
     public String birth;
     public String follows;
@@ -66,9 +64,7 @@ public class IMUserRealm extends RealmObject implements ToBmobObject {
         user.city = city;
         user.recentImgs = recentImgs;
         user.setObjectId(objectId);
-        user.startWord1 = startWord1;
-        user.startWord2 = startWord2;
-        user.startWord3 = startWord3;
+        user.startWords = startWords;
         user.selfIntroduce = selfIntroduce;
         user.birth = birth;
         user.follows = follows;

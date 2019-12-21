@@ -201,9 +201,6 @@ public class NetUtils {
                     if (user == null) {
                         return false;
                     }
-                    if (user.isHost) {
-                        App.WIFI_HOST = host;
-                    }
                     if (!Utils.getCurrentShortUserId().equals(user.getObjectId())) {
                         App.getHandler().post(() -> Utils.updateUser(user));
                         usersInWiFi.add(user);

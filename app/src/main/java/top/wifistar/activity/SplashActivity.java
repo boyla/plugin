@@ -24,10 +24,12 @@ import org.json.JSONArray;
 import cn.bmob.v3.BmobUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
@@ -40,12 +42,14 @@ import top.wifistar.app.BaseActivity;
 import top.wifistar.bean.BUser;
 import top.wifistar.bean.bmob.UserProfile;
 import top.wifistar.bean.bmob.User;
+import top.wifistar.constant.Constants;
 import top.wifistar.view.TopReminder;
 import top.wifistar.dialog.LoadingDialog;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.ACache;
 import top.wifistar.utils.ProgressDialogUtil;
 import top.wifistar.utils.Utils;
+
 import static top.wifistar.utils.ACache.CURRENT_USER_CACHE;
 import static top.wifistar.utils.ACache.PROFILE_CACHE;
 import static top.wifistar.utils.ACache.SHORT_USER_ID_CACHE;
@@ -68,7 +72,7 @@ public class SplashActivity extends BaseActivity {
     boolean canLogin;
     boolean isFirstIn = true;
 
-//    private CompositeSubscription mCompositeSubscription;
+    //    private CompositeSubscription mCompositeSubscription;
     private TextView tvWelcome;
 
     @Override
@@ -106,23 +110,16 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void setSplashWord() {
-        String[] originStrs = getResources().getStringArray(R.array.splash_word);
-        ArrayList<String> userStrs = new ArrayList();
         if (Utils.getCurrentShortUser() != null) {
-            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord1)) {
-                userStrs.add(Utils.getCurrentShortUser().startWord1);
-            }
-            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord2)) {
-                userStrs.add(Utils.getCurrentShortUser().startWord2);
-            }
-            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWord3)) {
-                userStrs.add(Utils.getCurrentShortUser().startWord3);
-            }
-            if (userStrs.size() > 0) {
-                originStrs = new String[userStrs.size()];
-                originStrs = userStrs.toArray(originStrs);
+            if (!TextUtils.isEmpty(Utils.getCurrentShortUser().startWords)) {
+                String[] strs = Utils.getCurrentShortUser().startWords.split(Constants.JOIN_STR);
+                if (strs.length > 0) {
+                    tvWelcome.setText(strs[new Random().nextInt(strs.length)]);
+                    return;
+                }
             }
         }
+        String[] originStrs = getResources().getStringArray(R.array.splash_word);
         if (originStrs.length > 0) {
             tvWelcome.setText(originStrs[new Random().nextInt(originStrs.length)]);
         }
@@ -130,7 +127,7 @@ public class SplashActivity extends BaseActivity {
 
 
     private void goToMain() {
-        if(BUser.getCurrentUser()==null){
+        if (BUser.getCurrentUser() == null) {
             return;
         }
         App.currentUserProfile = (UserProfile) ACache.get(context).getAsObject(PROFILE_CACHE + BUser.getCurrentUser().getObjectId());
@@ -218,7 +215,7 @@ public class SplashActivity extends BaseActivity {
                 }
             }, 2500);
             isFirstIn = false;
-        }else{
+        } else {
             handler.postDelayed(() -> {
                 Animation animation = AnimationUtils.loadAnimation(SplashActivity.this, R.anim.translate_anim);
                 ivBackground.startAnimation(animation);

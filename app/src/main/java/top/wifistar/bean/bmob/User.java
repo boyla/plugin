@@ -24,15 +24,12 @@ public class User extends BmobObject implements ToRealmObject {
 	public String city;
 	public String headBgUrl;
 	public String recentImgs;
-	public String startWord1;
-	public String startWord2;
-	public String startWord3;
+	public String startWords;
 	public String selfIntroduce;
 	public String birth;
 	public String follows;
 	public String topicCreate;
 	public String ip;
-	public boolean isHost = false;
 
 	public User(){}
 
@@ -87,9 +84,7 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.city = city;
 		realm.headBgUrl = headBgUrl;
 		realm.recentImgs = recentImgs;
-		realm.startWord1 = startWord1;
-		realm.startWord2 = startWord2;
-		realm.startWord3 = startWord3;
+		realm.startWords = startWords;
 		realm.selfIntroduce = selfIntroduce;
 		realm.birth = birth;
 		realm.follows = follows;
@@ -113,9 +108,7 @@ public class User extends BmobObject implements ToRealmObject {
 		realm.city = city;
 		realm.headBgUrl = headBgUrl;
 		realm.recentImgs = recentImgs;
-		realm.startWord1 = startWord1;
-		realm.startWord2 = startWord2;
-		realm.startWord3 = startWord3;
+		realm.startWords = startWords;
 		realm.selfIntroduce = selfIntroduce;
 		realm.birth = birth;
 		realm.follows = follows;

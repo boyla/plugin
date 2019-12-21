@@ -17,11 +17,17 @@ import top.wifistar.utils.Utils
 import com.kongzue.dialog.listener.InputDialogOkButtonClickListener
 import com.kongzue.dialog.v2.InputDialog
 import android.animation.ValueAnimator
+import com.kongzue.dialog.v2.DialogSettings
+import top.wifistar.constant.Constants
 
 
 class EditProfileActivity : ToolbarActivity() {
 
     lateinit var mUser: User
+    var startWord1 = ""
+    var startWord2 = ""
+    var startWord3 = ""
+
 
     override fun initTopBar() {
         mToolbar.setNavigationIcon(R.drawable.back)
@@ -55,7 +61,7 @@ class EditProfileActivity : ToolbarActivity() {
 
         rlNick.setOnClickListener {
             showEditDialog("修改昵称", mUser.name, object : EditDialogCallBack {
-                override fun onFinish(dialog:Dialog, result: String) {
+                override fun onFinish(dialog: Dialog, result: String) {
                     mUser.name = result
                     tvNickName.text = result
                 }
@@ -69,32 +75,35 @@ class EditProfileActivity : ToolbarActivity() {
             Utils.makeSysToast("注册邮箱暂时不支持修改")
         }
         rlSignature1.setOnClickListener {
-            showEditDialog("修改签名1", mUser.startWord1, object : EditDialogCallBack {
-                override fun onFinish(dialog:Dialog, result: String) {
-                    mUser.startWord1 = result
+            showEditDialog("修改签名1", startWord1, object : EditDialogCallBack {
+                override fun onFinish(dialog: Dialog, result: String) {
+                    startWord1 = result
                     tvSignature1.text = result
+                    mUser.startWords = TextUtils.join(Constants.JOIN_STR, arrayOf(startWord1, startWord2, startWord3))
                 }
             })
         }
         rlSignature2.setOnClickListener {
-            showEditDialog("修改签名2", mUser.startWord2, object : EditDialogCallBack {
-                override fun onFinish(dialog:Dialog, result: String) {
-                    mUser.startWord2 = result
+            showEditDialog("修改签名2", startWord2, object : EditDialogCallBack {
+                override fun onFinish(dialog: Dialog, result: String) {
+                    startWord2 = result
                     tvSignature2.text = result
+                    mUser.startWords = TextUtils.join(Constants.JOIN_STR, arrayOf(startWord1, startWord2, startWord3))
                 }
             })
         }
         rlSignature3.setOnClickListener {
-            showEditDialog("修改签名3", mUser.startWord3, object : EditDialogCallBack {
-                override fun onFinish(dialog:Dialog, result: String) {
-                    mUser.startWord3 = result
+            showEditDialog("修改签名3", startWord3, object : EditDialogCallBack {
+                override fun onFinish(dialog: Dialog, result: String) {
+                    startWord3 = result
                     tvSignature3.text = result
+                    mUser.startWords = TextUtils.join(Constants.JOIN_STR, arrayOf(startWord1, startWord2, startWord3))
                 }
             })
         }
         rlSelfIntro.setOnClickListener {
             showEditDialog("修改个人介绍", mUser.selfIntroduce, object : EditDialogCallBack {
-                override fun onFinish(dialog:Dialog, result: String) {
+                override fun onFinish(dialog: Dialog, result: String) {
                     mUser.selfIntroduce = result
                     tvSelfIntro.text = result
                 }
@@ -122,8 +131,9 @@ class EditProfileActivity : ToolbarActivity() {
         InputDialog.show(this, title, null, object : InputDialogOkButtonClickListener {
             override fun onClick(dialog: Dialog, inputText: String) {
                 editDialogCallBack.onFinish(dialog, inputText)
+                DialogSettings.unloadAllDialog()
             }
-        }).setDefaultInputHint(if (TextUtils.isEmpty(content)) "" else content)
+        }).setDefaultInputText(if (TextUtils.isEmpty(content)) "" else content)
     }
 
     interface EditDialogCallBack {
@@ -134,9 +144,14 @@ class EditProfileActivity : ToolbarActivity() {
         tvNickName.text = mUser.name
         tvBirth.text = mUser.birth
         tvEmail.text = BUser.getCurrentUser().email
-        tvSignature1.text = mUser.startWord1
-        tvSignature2.text = mUser.startWord2
-        tvSignature3.text = mUser.startWord3
+        var words = if (!TextUtils.isEmpty(mUser.startWords)) mUser.startWords.split(Constants.JOIN_STR) else listOf("")
+        var size = words.size
+        startWord1 = if (size > 0) words[0] else ""
+        tvSignature1.text = startWord1
+        startWord2 = if (size > 1) words[1] else ""
+        tvSignature2.text = startWord2
+        startWord3 = if (size > 2) words[2] else ""
+        tvSignature3.text = startWord3
         tvSelfIntro.text = mUser.selfIntroduce
     }
 

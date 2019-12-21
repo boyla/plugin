@@ -43,10 +43,10 @@ public class MomentsModel {
             @Override
             public void done(BmobException e) {
                 if (e == null) {
-                    Utils.showToast("删除动态成功");
+                    Utils.showToast("删除成功");
                     listener.onSuccess();
                 } else {
-                    Utils.showToast("删除动态失败");
+                    Utils.showToast("删除失败");
                 }
             }
         });

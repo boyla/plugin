@@ -7,10 +7,12 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -32,6 +34,7 @@ import com.greysonparrelli.permiso.Permiso;
 import com.jaeger.library.StatusBarUtil;
 import com.kongzue.dialog.v2.WaitDialog;
 
+import top.wifistar.constant.Constants;
 import top.wifistar.photopicker.PhotoPickerActivity;
 import top.wifistar.photopicker.SelectModel;
 import top.wifistar.photopicker.intent.PhotoPickerIntent;
@@ -937,8 +940,8 @@ public class UserProfileActivity extends AppCompatActivity {
                                 } else {
                                     vSex.setBackgroundDrawable(getResources().getDrawable(R.drawable.sex_female));
                                 }
-                                if (!TextUtils.isEmpty(shortUser.startWord1)) {
-                                    tvStartWord1.setText(shortUser.startWord1);
+                                if (!TextUtils.isEmpty(shortUser.startWords)) {
+                                    tvStartWord1.setText(shortUser.startWords.split(Constants.JOIN_STR)[0]);
                                 }
                                 tvInfo.setText(getAgeByBirth(shortUser.birth) + (TextUtils.isEmpty(shortUser.loaction) ? ", 中国" : ", " + shortUser.loaction));
                                 if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
@@ -992,8 +995,8 @@ public class UserProfileActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(shortUser.selfIntroduce)) {
             tvSelfIntro.setText(shortUser.selfIntroduce);
         }
-        if (!TextUtils.isEmpty(shortUser.startWord1)) {
-            tvStartWord1.setText(shortUser.startWord1);
+        if (!TextUtils.isEmpty(shortUser.startWords) && !TextUtils.isEmpty(shortUser.startWords.split(Constants.JOIN_STR)[0])) {
+            tvStartWord1.setText(shortUser.startWords.split(Constants.JOIN_STR)[0]);
         }
     }
 
