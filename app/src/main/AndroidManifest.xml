@@ -71,6 +71,11 @@
 
         <activity android:name=".photopicker.PhotoPreviewActivity" />
 
+        <activity
+            android:name=".plugin.ProxyActivity"
+            android:configChanges="locale|fontScale|orientation|keyboardHidden|screenSize"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
+
         <meta-data
             android:name="Bmob_APP_KEY"
             android:value="15210abb365601ec97b87f55b1efa0d4" />

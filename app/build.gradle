@@ -178,4 +178,5 @@ dependencies {
     // this way you only enable BlockCanary in debug package
 //     debugImplementation 'com.github.markzhai:blockcanary-android:1.5.0'
 //     releaseImplementation 'com.github.markzhai:blockcanary-no-op:1.5.0'
+    implementation 'com.github.boyla:apkPlugin:1.1'
 }
