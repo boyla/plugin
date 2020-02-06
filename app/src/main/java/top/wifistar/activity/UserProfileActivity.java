@@ -404,28 +404,33 @@ public class UserProfileActivity extends AppCompatActivity {
     private void initTopicCreated() {
         flexBoxTopicCreated.removeAllViews();
         hideTopicCreated(true);
-        if (!TextUtils.isEmpty(shortUser.topicCreate)) {
-            String[] topics = shortUser.topicCreate.split("_");
-            if (topics != null && topics.length > 0) {
-                for (String topic : topics) {
-                    if (!TextUtils.isEmpty(topic)) {
+        Topic.getTopicListByUserId(shortUser.getObjectId(), new FindListener<Topic>() {
+            @Override
+            public void done(List<Topic> topics, BmobException e) {
+                if (e == null) {
+                    if (topics != null && topics.size() > 0) {
                         hideTopicCreated(false);
-                        TextView tvLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_flex, flexBoxTopicCreated, false);
-                        String[] strs = topic.split("@");
-                        tvLabel.setText(strs[1]);
-                        tvLabel.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(UserProfileActivity.this, UserMomentsActivity.class);
-                                intent.putExtra("topic", topic);
-                                startActivity(intent);
+                        for (Topic topic : topics) {
+                            if (!TextUtils.isEmpty(topic.name)) {
+                                TextView tvLabel = (TextView) getLayoutInflater().inflate(R.layout.item_label_flex, flexBoxTopicCreated, false);
+                                tvLabel.setText(topic.name);
+                                tvLabel.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(UserProfileActivity.this, UserMomentsActivity.class);
+                                        intent.putExtra("topic", topic.getObjectId() + "@" + topic.name);
+                                        startActivity(intent);
+                                    }
+                                });
+                                flexBoxTopicCreated.addView(tvLabel);
                             }
-                        });
-                        flexBoxTopicCreated.addView(tvLabel);
+                        }
                     }
+                } else {
+                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
                 }
             }
-        }
+        });
     }
 
     private void initTopicFollowed() {

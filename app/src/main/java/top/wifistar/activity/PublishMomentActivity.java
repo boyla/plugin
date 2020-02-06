@@ -26,6 +26,8 @@ import com.greysonparrelli.permiso.Permiso;
 import com.kongzue.dialog.listener.OnMenuItemClickListener;
 import com.kongzue.dialog.v2.BottomMenu;
 
+import cn.bmob.v3.listener.FindListener;
+import top.wifistar.bean.bmob.Topic;
 import top.wifistar.photopicker.ImageCaptureManager;
 import top.wifistar.photopicker.PhotoPickerActivity;
 import top.wifistar.photopicker.PhotoPreviewActivity;
@@ -77,6 +79,35 @@ public class PublishMomentActivity extends ToolbarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Permiso.getInstance().setActivity(this);
+        fetchTopics();
+    }
+
+    private void fetchTopics() {
+        User user = Utils.getCurrentShortUser();
+        if (user == null) {
+            Utils.showToast("似乎出了点问题");
+            return;
+        }
+        if (topicList.size() > 0) {
+            return;
+        }
+        topicNameList.add("公开");
+        topicNameList.add("仅自己可见");
+        Topic.getTopicListByUserId(user.getObjectId(), new FindListener<Topic>() {
+            @Override
+            public void done(List<Topic> topics, BmobException e) {
+                if (e == null) {
+                    if (topics != null && topics.size() > 0) {
+                        for (Topic topic : topics) {
+                            topicNameList.add(topic.name);
+                            topicList.add(topic.getObjectId() + "@" + topic.name);
+                        }
+                    }
+                } else {
+                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
     }
 
     @Override
@@ -137,27 +168,10 @@ public class PublishMomentActivity extends ToolbarActivity {
     int menuIndex;
 
     private void showWhoCanSeeDialog() {
-        User user = Utils.getCurrentShortUser();
-        if (user == null) {
-            Utils.showToast("似乎出了点问题");
-            return;
-        }
-        String[] raw1 = user.topicCreate.split("_");
-        String[] raw2 = user.follows.split("_");
-        ArrayList<String> raw = new ArrayList<>();
-        raw.addAll(Arrays.asList(raw1));
-        raw.addAll(Arrays.asList(raw2));
-        topicNameList.clear();
-        topicList.clear();
-        topicNameList.add("公开");
-        topicNameList.add("仅自己可见");
-        for (String str : raw) {
-            if (str.contains("@")) {
-                topicNameList.add(str.split("@")[1]);
-                topicList.add(str);
-            }
-        }
-        BottomMenu.show(this, topicNameList, new OnMenuItemClickListener() {
+        // todo followss
+//        String[] raw2 = user.follows.split("_");
+//        topicNameList.addAll(Arrays.asList(raw2));
+        BottomMenu.show(PublishMomentActivity.this, topicNameList, new OnMenuItemClickListener() {
             @Override
             public void onClick(String text, int index) {
                 tvWhoCanSee.setText(text);
