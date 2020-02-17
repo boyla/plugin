@@ -43,6 +43,7 @@ class ImageLibUtils {
         fun getBmobImageUrls(list: MutableList<String>?, action: LoadedNext) {
             val query = BmobQuery<ImageUrl>()
             query.setLimit(20)
+            query.order("-createdAt")
             query.findObjects(object : FindListener<ImageUrl>() {
                 override fun done(res: List<ImageUrl>?, e: BmobException?) {
                     if (e == null && res != null && res.isNotEmpty()) {

@@ -11,6 +11,7 @@ import top.wifistar.utils.LogUtils;
  */
 @Keep
 public class ImageUrl extends BmobObject {
+    // 唯一键
     String url;
 
 
