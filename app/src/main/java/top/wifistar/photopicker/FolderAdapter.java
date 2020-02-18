@@ -48,24 +48,42 @@ public class FolderAdapter extends BaseAdapter {
      *
      * @param folders
      */
-    public void setData(List<Folder> folders) {
+    public synchronized void setData(List<Folder> folders) {
         if (folders != null && folders.size() > 0) {
-            mFolders = folders;
-        } else {
             mFolders.clear();
+            mFolders.addAll(folders);
+        } else {
+            return;
         }
+        if (allFolder == null) {
+            allFolder = new Folder();
+            allFolder.images = new ArrayList<>();
+            for (Folder f : folders) {
+                if (f != null) {
+                    allFolder.images.addAll(f.images);
+                }
+            }
+            allFolder.name = mContext.getResources().getString(R.string.all_image);
+            Image firstImg = allFolder.images.get(0);
+            allFolder.cover = firstImg != null ? firstImg : new Image("", "", 0);
+        }
+        mFolders.add(0, allFolder);
+        notifyDataSetChanged();
+    }
+
+    public void addNetData(Folder netFolder) {
+        mFolders.add(allFolder != null ? 1 : 0, netFolder);
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-        return mFolders.size() + 1;
+        return mFolders.size();
     }
 
     @Override
     public Folder getItem(int i) {
-        if (i == 0) return null;
-        return mFolders.get(i - 1);
+        return mFolders.get(i);
     }
 
     @Override
@@ -83,26 +101,7 @@ public class FolderAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         if (holder != null) {
-            if (i == 0) {
-                holder.name.setText(mContext.getResources().getString(R.string.all_image));
-                holder.size.setText(getTotalImageSize() + "张");
-                if (holder.cover.getDrawable() != null) {
-                    if (mFolders.size() > 0) {
-                        if (allFolder == null) {
-                            allFolder = mFolders.get(0);
-                        }
-                        Glide.with(mContext)
-                                .load(allFolder.cover.path.contains("http") ? allFolder.cover.path : new File(allFolder.cover.path))
-                                .error(R.mipmap.default_error)
-                                .override(mImageSize, mImageSize)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .centerCrop()
-                                .into(holder.cover);
-                    }
-                }
-            } else {
-                holder.bindData(getItem(i));
-            }
+            holder.bindData(getItem(i));
             if (lastSelected == i) {
                 holder.indicator.setVisibility(View.VISIBLE);
             } else {
@@ -149,13 +148,13 @@ public class FolderAdapter extends BaseAdapter {
             view.setTag(this);
         }
 
-        void bindData(Folder data) {
+        void bindData(Folder folder) {
             cover.setImageResource(R.mipmap.default_error);
-            name.setText(data.name);
-            size.setText(data.images.size() + "张");
+            name.setText(folder.name);
+            size.setText(folder.images.size() + "张");
             // 显示图片
             Glide.with(mContext)
-                    .load(data.cover.path.contains("http") ? data.cover.path : new File(data.cover.path))
+                    .load(folder.cover.path.contains("http") ? folder.cover.path : new File(folder.cover.path))
                     .asBitmap()
                     .placeholder(R.mipmap.default_error)
                     .error(R.mipmap.default_error)
@@ -166,10 +165,10 @@ public class FolderAdapter extends BaseAdapter {
                         public void onResourceReady(Bitmap bitmap, GlideAnimation<? super Bitmap> glideAnimation) {
                             cover.setImageBitmap(bitmap);
                             // _wh_2210&1242
-                            if (data.cover.path.contains("http")) {
+                            if (folder.cover.path.contains("http")) {
                                 int width = bitmap.getWidth();
                                 int height = bitmap.getHeight();
-                                ImageUrl.uploadUrl(data.cover.path + "_wh_" + width + "&" + height);
+                                ImageUrl.uploadUrl(folder.cover.path + "_wh_" + width + "&" + height);
                             }
                         }
                     });

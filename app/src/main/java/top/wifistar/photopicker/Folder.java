@@ -18,7 +18,7 @@ public class Folder {
         try {
             Folder other = (Folder) o;
             return this.path.equalsIgnoreCase(other.path);
-        }catch (ClassCastException e){
+        }catch (Exception e){
             e.printStackTrace();
         }
         return super.equals(o);

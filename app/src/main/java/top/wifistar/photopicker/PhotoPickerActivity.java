@@ -142,7 +142,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         } else {
             // 首次加载所有图片
-            getSupportLoaderManager().initLoader(LOADER_ALL, null, mLoaderCallback);
+            LoaderManager.getInstance(this).initLoader(LOADER_ALL, null, mLoaderCallback);
         }
 
         // 选择图片数量
@@ -222,7 +222,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 } else {
                     mFolderPopupWindow.show();
                     int index = mFolderAdapter.getSelectIndex();
-                    index = index == 0 ? index : index - 1;
                     mFolderPopupWindow.getListView().setSelection(index);
                 }
             }
@@ -271,10 +270,14 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 Image image = new Image(str, "", System.currentTimeMillis());
                 list.add(image);
             }
-            netFolder.cover = list.get(0);
+            netFolder.cover = list.get(1);
             netFolder.images = list;
-            allFolders.add(0, netFolder);
-            mFolderAdapter.setData(allFolders);
+            mGridView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mFolderAdapter.addNetData(netFolder);
+                }
+            }, 100);
         }
     }
 
@@ -304,7 +307,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
     }
 
     private void createPopupFolderList() {
-
         mFolderPopupWindow = new ListPopupWindow(mCxt);
         mFolderPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         mFolderPopupWindow.setAdapter(mFolderAdapter);
@@ -344,24 +346,20 @@ public class PhotoPickerActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mFolderPopupWindow.dismiss();
-
                         if (index == 0) {
-                            getSupportLoaderManager().restartLoader(LOADER_ALL, null, mLoaderCallback);
-                            btnAlbum.setText(R.string.all_image);
                             mImageAdapter.setShowCamera(mIsShowCamera);
                         } else {
-                            Folder folder = (Folder) v.getAdapter().getItem(index);
-                            if (null != folder) {
-                                mImageAdapter.setData(folder.images);
-                                btnAlbum.setText(folder.name);
-                                // 设定默认选择
-                                if (pickList != null && pickList.size() > 0) {
-                                    mImageAdapter.setDefaultSelected(pickList);
-                                }
-                            }
                             mImageAdapter.setShowCamera(false);
                         }
-
+                        Folder folder = (Folder) v.getAdapter().getItem(index);
+                        if (null != folder) {
+                            mImageAdapter.setData(folder.images);
+                            btnAlbum.setText(folder.name);
+                            // 设定默认选择
+                            if (pickList != null && pickList.size() > 0) {
+                                mImageAdapter.setDefaultSelected(pickList);
+                            }
+                        }
                         // 滑动到最初始位置
                         mGridView.smoothScrollToPosition(0);
                     }
@@ -580,7 +578,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                         IMAGE_PROJECTION[2] + " DESC");
                 return cursorLoader;
             }
-
             return null;
         }
 
