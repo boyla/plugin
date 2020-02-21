@@ -18,6 +18,7 @@
         progressCombine:loadingProgressBarHeight="58dp"
         progressCombine:loadingProgressBarWidth="58dp"
         progressCombine:loadingStateDotPlay="true"
+        android:focusableInTouchMode="true"
         progressCombine:loadingStateText="@string/loading...">
 
         <top.wifistar.view.OnTouchXRecyclerView
