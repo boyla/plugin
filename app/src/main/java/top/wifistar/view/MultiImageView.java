@@ -2,7 +2,10 @@ package top.wifistar.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.view.ViewCompat;
+
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,7 +35,7 @@ import top.wifistar.utils.DisplayUtils;
 
 public class MultiImageView extends LinearLayout {
     public static int MAX_WIDTH = 0;
-    static int maxH = DisplayUtils.getScreenHeight(App.getApp()) / 2;
+    static int maxH = DisplayUtils.getScreenHeight(App.getApp()) * 2 / 3;
 
     // 照片的Url列表
     private List<Photo> imagesList;
@@ -83,7 +86,6 @@ public class MultiImageView extends LinearLayout {
             pxOneMaxWandH = MAX_WIDTH - pxImagePadding * 2;
             initImageLayoutParams();
         }
-
         initView();
     }
 
@@ -210,10 +212,8 @@ public class MultiImageView extends LinearLayout {
             imageView.setScaleType(ScaleType.CENTER_CROP);
             imageView.setLayoutParams(position % MAX_PER_ROW_COUNT == 0 ? moreParaColumnFirst : morePara);
         } else {
-            imageView.setAdjustViewBounds(true);
-            imageView.setScaleType(ScaleType.FIT_CENTER);
+//            imageView.setAdjustViewBounds(true);
             imageView.setMaxHeight(maxH);
-
             if (photo.w == 0 || photo.h == 0) {
                 //get real w and h of pic
                 RealmResults<Photo> dbData = BaseRealmDao.realm.where(Photo.class).equalTo("url", photo.url).findAll();
@@ -249,7 +249,6 @@ public class MultiImageView extends LinearLayout {
         } else {
             Glide.with(getContext()).load(photo.url).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
         }
-
         return imageView;
     }
 
@@ -267,10 +266,10 @@ public class MultiImageView extends LinearLayout {
             if (rawW > pxOneMaxWandH) {
                 actualW = pxOneMaxWandH;
                 actualH = (int) (actualW * scale);
-            } else if(rawW < pxMoreWandH*3/2){
-                actualW = pxMoreWandH*3/2;
+            } else if (rawW < pxMoreWandH * 3 / 2) {
+                actualW = pxMoreWandH * 3 / 2;
                 actualH = (int) (actualW * scale);
-            }else{
+            } else {
                 actualW = rawW;
                 actualH = rawH;
             }
@@ -279,14 +278,13 @@ public class MultiImageView extends LinearLayout {
                 int scaleH = actualH / maxH;
                 actualH = maxH;
                 actualW = actualW / scaleH;
-                if (actualW < pxMoreWandH*3/2) {
-                    actualW = pxMoreWandH*3/2;
+                if (actualW < pxMoreWandH * 3 / 2) {
+                    actualW = pxMoreWandH * 3 / 2;
                     showPart = true;
-                    imageView.setScaleType(ScaleType.CENTER_CROP);
                 }
             }
-
-            imageView.setLayoutParams(new LayoutParams(actualW, actualH));
+            imageView.setScaleType(ScaleType.CENTER_CROP);
+            imageView.setLayoutParams(new LinearLayoutCompat.LayoutParams(actualW, actualH));
         }
     }
 
