@@ -12,11 +12,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -211,7 +213,8 @@ public class ImagePagerActivity extends YWActivity {
             if (view != null) {
                 SubsamplingScaleImageView bigImage = view.findViewById(R.id.bigImage);
                 PhotoView imageView = view.findViewById(R.id.image);
-//                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                setFinishByClick(bigImage);
+                setFinishByClick(imageView);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     imageView.setTransitionName(transitionName);
                     if (position == current) {
@@ -453,5 +456,9 @@ public class ImagePagerActivity extends YWActivity {
                 }
             }
         });
+    }
+
+    private void setFinishByClick(View view) {
+        view.setOnClickListener(v -> finishAfterTransition());
     }
 }
