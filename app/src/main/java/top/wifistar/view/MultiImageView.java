@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.view.ViewCompat;
 
+import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -43,7 +44,7 @@ public class MultiImageView extends LinearLayout {
     /**
      * 长度 单位为Pixel
      **/
-    private int pxOneMaxWandH;  // 单张图最大允许宽高
+    private int pxOneMaxW;  // 单张图最大允许宽
     private int pxMoreWandH = 0;// 多张图的宽高
     private int pxImagePadding = DensityUtil.dp2px(getContext(), 3);// 图片间的间距
 
@@ -83,7 +84,7 @@ public class MultiImageView extends LinearLayout {
 
         if (MAX_WIDTH > 0) {
             pxMoreWandH = (MAX_WIDTH - pxImagePadding * 2) / 3; //解决右侧图片和内容对不齐问题
-            pxOneMaxWandH = MAX_WIDTH - pxImagePadding * 2;
+            pxOneMaxW = MAX_WIDTH - pxImagePadding * 2;
             initImageLayoutParams();
         }
         initView();
@@ -252,8 +253,6 @@ public class MultiImageView extends LinearLayout {
         return imageView;
     }
 
-    boolean showPart = false;
-
     private void setWh(Photo photo, ImageView imageView) {
         int rawW = photo.w;
         int rawH = photo.h;
@@ -263,8 +262,8 @@ public class MultiImageView extends LinearLayout {
             int actualW = 0;
             int actualH = 0;
             float scale = ((float) rawH) / ((float) rawW);
-            if (rawW > pxOneMaxWandH) {
-                actualW = pxOneMaxWandH;
+            if (rawW > pxOneMaxW) {
+                actualW = pxOneMaxW;
                 actualH = (int) (actualW * scale);
             } else if (rawW < pxMoreWandH * 3 / 2) {
                 actualW = pxMoreWandH * 3 / 2;
@@ -274,16 +273,28 @@ public class MultiImageView extends LinearLayout {
                 actualH = rawH;
             }
 
+            boolean longPic = actualH / maxH > 2;
             if (actualH > maxH) {
                 int scaleH = actualH / maxH;
                 actualH = maxH;
                 actualW = actualW / scaleH;
                 if (actualW < pxMoreWandH * 3 / 2) {
                     actualW = pxMoreWandH * 3 / 2;
-                    showPart = true;
                 }
             }
-            imageView.setScaleType(ScaleType.CENTER_CROP);
+            if (longPic) {
+                imageView.setScaleType(ScaleType.MATRIX);
+                if (rawW <= pxOneMaxW && rawW >= pxMoreWandH * 3 / 2) {
+                    actualW = rawW;
+                }
+                float scaleRate = actualW * 1.0f / rawW;
+                Matrix matrix = new Matrix();
+                matrix.setScale(scaleRate, 1);
+                imageView.setImageMatrix(matrix);
+                ViewCompat.setTransitionName(imageView, "");
+            } else {
+                imageView.setScaleType(ScaleType.CENTER_CROP);
+            }
             imageView.setLayoutParams(new LinearLayoutCompat.LayoutParams(actualW, actualH));
         }
     }
