@@ -27,6 +27,7 @@ import top.wifistar.bean.bmob.Photo;
 import top.wifistar.realm.BaseRealmDao;
 import top.wifistar.utils.DensityUtil;
 import top.wifistar.utils.DisplayUtils;
+import top.wifistar.utils.LogUtils;
 
 /**
  * @author shoyu
@@ -257,7 +258,8 @@ public class MultiImageView extends LinearLayout {
         int rawW = photo.w;
         int rawH = photo.h;
         if (rawW == 0 || rawH == 0) {
-            imageView.setLayoutParams(onePicPara);
+            imageView.setScaleType(ScaleType.CENTER_CROP);
+            imageView.setLayoutParams(new LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.MATCH_PARENT, DisplayUtils.getScreenHeight(App.getApp()) / 3));
         } else {
             int actualW = 0;
             int actualH = 0;
@@ -295,6 +297,8 @@ public class MultiImageView extends LinearLayout {
             } else {
                 imageView.setScaleType(ScaleType.CENTER_CROP);
             }
+//            LogUtils.d("setWh", photo.url);
+//            LogUtils.d("setWh", "pic width: " + rawW + ", pic height: " + rawH + ", view width: " + actualW + ", view height: " + actualH);
             imageView.setLayoutParams(new LinearLayoutCompat.LayoutParams(actualW, actualH));
         }
     }
